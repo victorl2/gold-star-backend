@@ -15,8 +15,7 @@ import javax.persistence.MappedSuperclass;
  */
 
 @MappedSuperclass
-public abstract class BaseEntity {
-	
+public abstract class BaseEntity {	
 	/**
 	 * identificador da entidade
 	 */

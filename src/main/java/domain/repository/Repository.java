@@ -5,6 +5,9 @@ import java.util.Optional;
 
 import domain.entity.BaseEntity;
 
+/**
+ * Definicao das operacoes basicas de persistencia
+ */
 public interface Repository<E extends BaseEntity> {
 	public E searchByID(long oid);
 
