@@ -6,8 +6,6 @@ public class ImovelResidencial extends Imovel{
 	
 	private List<Pessoa> moradores;
 	
-	private Proprietario donoImovel;
-	
 	private boolean possuiAnimalEstimacao;
 
 	public List<Pessoa> getMoradores() {
@@ -16,14 +14,6 @@ public class ImovelResidencial extends Imovel{
 
 	public void setMoradores(List<Pessoa> moradores) {
 		this.moradores = moradores;
-	}
-
-	public Proprietario getDonoImovel() {
-		return donoImovel;
-	}
-
-	public void setDonoImovel(Proprietario donoImovel) {
-		this.donoImovel = donoImovel;
 	}
 
 	public boolean isPossuiAnimalEstimacao() {

@@ -1,5 +1,7 @@
 package domain.entity.structure;
 
+import java.util.Optional;
+
 public abstract class Imovel {
 	
 	/**
@@ -11,12 +13,22 @@ public abstract class Imovel {
 	 * Código RGI do imóvel
 	 */
 	private String rgi;
-	
-	
+		
 	/**
 	 * Indica se o cano ( barbara ) foi trocado
 	 */
 	private boolean trocouBarbara;
+	
+	
+	/**
+	 * Pessoa que é a proprietaria do imóvel
+	 */
+	private Proprietario donoImovel;
+	
+	/**
+	 * Pessoa que está atualmente alugando o imovel
+	 */
+	private Locatario locador;
 
 
 	public int getNumeroImovel() {
@@ -47,7 +59,21 @@ public abstract class Imovel {
 	public void setTrocouBarbara(boolean trocouBarbara) {
 		this.trocouBarbara = trocouBarbara;
 	}
+
+
+	public Proprietario getDonoImovel() {
+		return donoImovel;
+	}
+
+
+	public void setDonoImovel(Proprietario donoImovel) {
+		this.donoImovel = donoImovel;
+	}
 	
+	
+	public Optional<Locatario> getLocatario(){
+		return Optional.ofNullable(locador);
+	}
 	
 	
 	
