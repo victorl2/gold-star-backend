@@ -2,7 +2,9 @@ package domain.entity.negocio;
 
 import java.util.List;
 
-public class Relatorio {
+import domain.entity.BaseEntity;
+
+public class Relatorio extends BaseEntity{
 	private List<Imovel> imoveisPresentesRelatorio;
 
 	public List<Imovel> getImoveisPresentesRelatorio() {

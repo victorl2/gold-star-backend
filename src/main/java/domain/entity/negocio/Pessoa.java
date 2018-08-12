@@ -1,6 +1,8 @@
 package domain.entity.negocio;
 
-public abstract class Pessoa {
+import domain.entity.BaseEntity;
+
+public abstract class Pessoa extends BaseEntity{
 	
 	private String nome;
 	

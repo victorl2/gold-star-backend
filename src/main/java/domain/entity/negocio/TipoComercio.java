@@ -1,6 +1,8 @@
 package domain.entity.negocio;
 
-public class TipoComercio {
+import domain.entity.BaseEntity;
+
+public class TipoComercio extends BaseEntity{
 	private String nomeDoTipoComercio;
 
 	private String descricaoAtividadeComercial;

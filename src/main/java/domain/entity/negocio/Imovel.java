@@ -3,7 +3,9 @@ package domain.entity.negocio;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class Imovel {
+import domain.entity.BaseEntity;
+
+public abstract class Imovel extends BaseEntity{
 	
 	/**
 	 * Número do apartamento no edifício goldstar

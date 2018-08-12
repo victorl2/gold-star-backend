@@ -1,6 +1,8 @@
 package domain.entity.negocio;
 
-public class ProcessoCondominial {
+import domain.entity.BaseEntity;
+
+public class ProcessoCondominial extends BaseEntity{
 	private String codigoProcesso;
 	
 	private String descricao;
