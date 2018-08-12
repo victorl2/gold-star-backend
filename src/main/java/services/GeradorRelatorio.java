@@ -1,4 +1,4 @@
-package service;
+package services;
 
 import domain.entity.negocio.Relatorio;
 

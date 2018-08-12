@@ -14,6 +14,7 @@ import javax.persistence.PersistenceException;
 import domain.entity.BaseEntity;
 import domain.repository.Repository;
 
+
 public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	protected static final Integer IN_MAX_ELEMENTS = 1000;
 	public static final Integer JDBC_BATCH_SIZE = 50;
@@ -43,13 +44,13 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	public E searchByID(long oid) {
 		return getEntityManager().find(clazz, oid);		
 	}
-
 	
+
 	public Optional<List<E>> listAll() {
-		return Optional.of(getEntityManager().createQuery("from " + clazz.getName()).getResultList());
+		List<E> lista = getEntityManager().createQuery("from " + clazz.getName()).getResultList();
+		return Optional.ofNullable(lista);
 	}
 
-	@Override
 	public Optional<E> persist(E entity) {
 		try {
 			getEntityManager().persist(entity);
@@ -59,7 +60,8 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 			return Optional.empty();
 		}
 	}
-	@Override
+	
+
 	public Optional<E> merge(E entity) {
 		try {
 			E persistedEntity = getEntityManager().merge(entity);
@@ -70,12 +72,11 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 		}
 	}
 	
-	@Override
 	public void refresh(E entity) {
 		getEntityManager().refresh(entity);
 	}
 	
-	@Override
+
 	public Optional<E> save(E entity) {
 		try {
 			E persistedEntity = entity;
@@ -90,12 +91,14 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 			return Optional.empty();
 		}
 	}
-	@Override
+	
+
 	public void delete(E entity) {
 		try {
 			getEntityManager().remove(entity);
 			getEntityManager().flush();
-		} catch (PersistenceException exception) {}
+		} catch (PersistenceException exception) {
+		}
 	}
 	
 	

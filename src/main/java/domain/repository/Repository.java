@@ -6,7 +6,6 @@ import java.util.Optional;
 import domain.entity.BaseEntity;
 
 public interface Repository<E extends BaseEntity> {
-	
 	public E searchByID(long oid);
 
 	public Optional<List<E>> listAll();
