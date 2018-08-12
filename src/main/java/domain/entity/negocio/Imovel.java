@@ -1,5 +1,6 @@
 package domain.entity.negocio;
 
+import java.util.List;
 import java.util.Optional;
 
 public abstract class Imovel {
@@ -19,7 +20,6 @@ public abstract class Imovel {
 	 */
 	private boolean trocouBarbara;
 	
-	
 	/**
 	 * Pessoa que é a proprietaria do imóvel
 	 */
@@ -29,6 +29,11 @@ public abstract class Imovel {
 	 * Pessoa que está atualmente alugando o imovel
 	 */
 	private Locatario locador;
+	
+	/**
+	 * Lista de processos sobre o imovel
+	 */
+	private List<ProcessoCondominial> processos;
 
 
 	public int getNumeroImovel() {
@@ -73,6 +78,16 @@ public abstract class Imovel {
 	
 	public Optional<Locatario> getLocatario(){
 		return Optional.ofNullable(locador);
+	}
+
+
+	public List<ProcessoCondominial> getProcessos() {
+		return processos;
+	}
+
+
+	public void setProcessos(List<ProcessoCondominial> processos) {
+		this.processos = processos;
 	}
 	
 	
