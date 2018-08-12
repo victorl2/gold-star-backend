@@ -1,6 +1,6 @@
 package service;
 
-import domain.entity.structure.Relatorio;
+import domain.entity.negocio.Relatorio;
 
 /**
  * Interface definindo os metodos necessarios para gerar relatorios sobre os

@@ -1,4 +1,4 @@
-package domain.entity.structure;
+package domain.entity.negocio;
 
 public abstract class Pessoa {
 	

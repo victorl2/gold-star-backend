@@ -2,7 +2,7 @@ package service;
 
 import java.util.List;
 
-import domain.entity.structure.Imovel;
+import domain.entity.negocio.Imovel;
 
 /**
  * Interface definindo os metodos necessarios para realizar a busca de imoveis
