@@ -1,12 +1,21 @@
 package domain.entity.negocio;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+@Entity
 public class ImovelComercial extends Imovel{
+	@Column(name = "SOBRELOJA")
 	private boolean eSobreloja;
 	
 	/**
 	 * Tipo de atividade comercial
 	 * realizada no imovel
 	 */
+	@ManyToOne
+	@JoinColumn(name = "TIPO_COMERCIO")
 	private TipoComercio tipoLoja;
 
 	public boolean iseSobreloja() {
