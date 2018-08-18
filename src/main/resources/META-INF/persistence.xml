@@ -11,6 +11,14 @@
 
 		<!-- entidades mapeadas -->
 		<class>domain.entity.BaseEntity</class>
+		<class>domain.entity.negocio.Imovel</class>
+		<class>domain.entity.negocio.ImovelResidencial</class>
+		<class>domain.entity.negocio.ImovelComercial</class>
+		<class>domain.entity.negocio.Locatario</class>
+		<class>domain.entity.negocio.ProcessoCondominial</class>
+		<class>domain.entity.negocio.Proprietario</class>
+		<class>domain.entity.negocio.Relatorio</class>
+		<class>domain.entity.negocio.TipoComercio</class>
 		
 		<properties>
 			<!-- propriedades do hibernate -->

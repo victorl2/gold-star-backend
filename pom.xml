@@ -7,7 +7,7 @@
 	<artifactId>goldstar-backend</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>GoldStar app</name>
+	<name>goldstar</name>
 
 	<url>http://maven.apache.org</url>
 
@@ -60,7 +60,6 @@
 		</dependency>
 
 
-
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
@@ -75,11 +74,9 @@
 			<type>pom</type>
 			<scope>import</scope>
 		</dependency>
-
-
 	</dependencies>
 
 	<build>
-		<finalName>goldStar</finalName>
+		<finalName>goldstar</finalName>
 	</build>
 </project>
