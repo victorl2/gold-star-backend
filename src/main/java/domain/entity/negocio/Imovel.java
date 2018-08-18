@@ -3,7 +3,13 @@ package domain.entity.negocio;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
 import domain.entity.BaseEntity;
+
 
 public abstract class Imovel extends BaseEntity{
 	
