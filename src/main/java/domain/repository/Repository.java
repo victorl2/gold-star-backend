@@ -9,18 +9,18 @@ import domain.entity.BaseEntity;
  * Definicao das operacoes basicas de persistencia
  */
 public interface Repository<E extends BaseEntity> {
-	public E searchByID(long oid);
+	public Optional<E> buscarPorID(String oid);
 
-	public Optional<List<E>> listAll();
+	public List<E> buscarTodos();
 
 	public Optional<E> persist(E entity);
 
 	public Optional<E> merge(E entity);
 	
-	public Optional<E> save(E entidade);
+	public Optional<E> salvar(E entidade);
 
 	public void refresh(E entity);
 
-	public void delete(E entity);
+	public void deletar(E entity);
 
 }

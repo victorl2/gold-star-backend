@@ -15,7 +15,7 @@ import domain.entity.BaseEntity;
 @AttributeOverride(name = "ID", column = @Column(name = "RELATORIO_ID"))
 /**
  * Informações sobre imóveis agrupados utilizadas para
- * gerar relatórios
+ * gerar relatórios. HSUAHSAUHSAUSAHU
  *
  */
 public class Relatorio extends BaseEntity{

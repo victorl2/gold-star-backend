@@ -41,14 +41,13 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	}
 	
 
-	public E searchByID(long oid) {
-		return getEntityManager().find(clazz, oid);		
+	public Optional<E> buscarPorID(String oid) {
+		return Optional.ofNullable(getEntityManager().find(clazz, oid));		
 	}
 	
 
-	public Optional<List<E>> listAll() {
-		List<E> lista = getEntityManager().createQuery("from " + clazz.getName()).getResultList();
-		return Optional.ofNullable(lista);
+	public List<E> buscarTodos() {
+		return getEntityManager().createQuery("from " + clazz.getName()).getResultList();
 	}
 
 	public Optional<E> persist(E entity) {
@@ -77,7 +76,7 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	}
 	
 
-	public Optional<E> save(E entity) {
+	public Optional<E> salvar(E entity) {
 		try {
 			E persistedEntity = entity;
 			if (entity.getID() != 0) {
@@ -93,7 +92,7 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	}
 	
 
-	public void delete(E entity) {
+	public void deletar(E entity) {
 		try {
 			getEntityManager().remove(entity);
 			getEntityManager().flush();
