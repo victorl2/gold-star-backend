@@ -2,10 +2,19 @@ package domain.entity.negocio;
 
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
+
+@Entity
 public class ImovelResidencial extends Imovel{
 	
+	@OneToMany
+	@JoinTable(name = "MORADORES_RESIDENCIA")
 	private List<Pessoa> moradores;
 	
+	@Column(name = "POSSUI_ANIMAL")
 	private boolean possuiAnimalEstimacao;
 
 	public List<Pessoa> getMoradores() {
