@@ -13,6 +13,11 @@ import domain.entity.BaseEntity;
 @Entity
 @Table(name = "RELATORIO", schema = "NEGOCIO")
 @AttributeOverride(name = "ID", column = @Column(name = "RELATORIO_ID"))
+/**
+ * Informações sobre imóveis agrupados utilizadas para
+ * gerar relatórios
+ *
+ */
 public class Relatorio extends BaseEntity{
 	
 	@Column(name = "IMOVEIS_RELATADOS")
