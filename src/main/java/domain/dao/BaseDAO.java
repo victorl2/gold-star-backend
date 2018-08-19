@@ -19,6 +19,7 @@ import domain.repository.Repository;
 
 public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{	
 	private Logger LOGGER = Logger.getLogger(getClass().getName());
+	
 	private EntityManager em;
 	
 	protected Class<E> clazz;
@@ -100,6 +101,7 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 			getEntityManager().remove(entity);
 			getEntityManager().flush();
 		} catch (PersistenceException exception) {
+			LOGGER.log(Level.SEVERE, "Não foi possível deletar a entidade.\n", exception);
 		}
 	}
 	

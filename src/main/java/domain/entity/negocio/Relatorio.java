@@ -19,6 +19,7 @@ import domain.entity.BaseEntity;
  *
  */
 public class Relatorio extends BaseEntity{
+	private static final long serialVersionUID = -976818436413316325L;
 	
 	@Column(name = "IMOVEIS_RELATADOS")
 	@ManyToMany

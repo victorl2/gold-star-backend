@@ -1,6 +1,5 @@
 package resource;
 
-import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,8 +7,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import domain.entity.negocio.ImovelResidencial;
-import services.ImovelService;
 
 @Path("/imovel-residencial")
 @Produces("application/json; charset=UTF-8")
@@ -18,11 +15,7 @@ import services.ImovelService;
  * Endpoints para imoveis residenciais
  *
  */
-public class ImovelResidencialResource {
-	
-	@Inject
-	private ImovelService service;
-	
+public class ImovelResidencialResource {		
 	@GET
 	@Path("/{rgi}")
 	/**
@@ -36,16 +29,5 @@ public class ImovelResidencialResource {
 	 */
 	public Response getImoveisResidenciaisPorRGI(@PathParam(value = "rgi") String rgi) {
 		return Response.status(404).entity("Recurso ainda não implementando").build();
-	}
-	
-	@GET
-	public Response testando() {
-		ImovelResidencial imovel = new ImovelResidencial();
-		imovel.setNumeroImovel(1005);
-		imovel.setPossuiAnimalEstimacao(false);
-		imovel.setRgi("598171819");
-		imovel.setTrocouBarbara(true);
-		
-		return Response.ok().entity(service.salvar(imovel)).build();
 	}
 }

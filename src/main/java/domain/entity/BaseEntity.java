@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
  * 
  * @author Victor Silva
  * @since 21-04-2018
- * @version 1.0
+ * @version 1.1
  */
 
 @MappedSuperclass
@@ -26,8 +26,7 @@ public abstract class BaseEntity implements Serializable{
 	 * identificador da entidade
 	 */
 	@Id @GeneratedValue(generator="system-uuid")
-	@GenericGenerator(name="system-uuid",
-	  strategy = "uuid2")
+	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@Column(name = "ID")
 	private String ID;
 	

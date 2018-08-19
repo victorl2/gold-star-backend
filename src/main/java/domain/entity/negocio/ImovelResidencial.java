@@ -16,7 +16,7 @@ public class ImovelResidencial extends Imovel{
 	private List<Pessoa> moradores;
 	
 	@Column(name = "POSSUI_ANIMAL")
-	private boolean possuiAnimalEstimacao;
+	private Boolean possuiAnimalEstimacao;
 
 	public List<Pessoa> getMoradores() {
 		return moradores;
@@ -26,7 +26,7 @@ public class ImovelResidencial extends Imovel{
 		this.moradores = moradores;
 	}
 
-	public boolean isPossuiAnimalEstimacao() {
+	public Boolean isPossuiAnimalEstimacao() {
 		return possuiAnimalEstimacao;
 	}
 

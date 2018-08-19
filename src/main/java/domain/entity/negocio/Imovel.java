@@ -1,7 +1,6 @@
 package domain.entity.negocio;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -17,12 +16,13 @@ import domain.entity.BaseEntity;
 @Table(name = "IMOVEL", schema = "NEGOCIO")
 @AttributeOverride(name = "ID", column = @Column(name = "IMOVEL_ID"))
 public abstract class Imovel extends BaseEntity{
-	
+	private static final long serialVersionUID = 2635211862637609953L;
+
 	/**
 	 * Número do apartamento no edifício goldstar
 	 */
 	@Column(name = "NUMERO")
-	private int numeroImovel;
+	private Integer numeroImovel;
 	
 	/**
 	 * Código RGI do imóvel
@@ -34,7 +34,7 @@ public abstract class Imovel extends BaseEntity{
 	 * Indica se o cano ( barbara ) foi trocado
 	 */
 	@Column(name = "TROCOU_BARBARA")
-	private boolean trocouBarbara;
+	private Boolean trocouBarbara;
 	
 	/**
 	 * Pessoa que é a proprietaria do imóvel
@@ -58,7 +58,7 @@ public abstract class Imovel extends BaseEntity{
 	private List<ProcessoCondominial> processos;
 
 
-	public int getNumeroImovel() {
+	public Integer getNumeroImovel() {
 		return numeroImovel;
 	}
 
@@ -78,7 +78,7 @@ public abstract class Imovel extends BaseEntity{
 	}
 
 
-	public boolean isTrocouBarbara() {
+	public Boolean getTrocouBarbara() {
 		return trocouBarbara;
 	}
 
