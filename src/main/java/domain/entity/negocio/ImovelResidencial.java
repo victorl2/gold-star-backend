@@ -9,7 +9,8 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class ImovelResidencial extends Imovel{
-	
+	private static final long serialVersionUID = -1981916995685971317L;
+
 	@OneToMany
 	@JoinTable(name = "MORADORES_RESIDENCIA")
 	private List<Pessoa> moradores;

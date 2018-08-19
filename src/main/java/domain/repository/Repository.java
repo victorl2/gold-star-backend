@@ -13,11 +13,11 @@ public interface Repository<E extends BaseEntity> {
 
 	public List<E> buscarTodos();
 
-	public Optional<E> persist(E entity);
+	public E persist(E entity);
 
-	public Optional<E> merge(E entity);
+	public E merge(E entity);
 	
-	public Optional<E> salvar(E entidade);
+	public E salvar(E entidade);
 
 	public void refresh(E entity);
 

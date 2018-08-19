@@ -98,8 +98,12 @@ public abstract class Imovel extends BaseEntity{
 	}
 	
 	
-	public Optional<Locatario> getLocatario(){
-		return Optional.ofNullable(locador);
+	public Locatario getLocatario(){
+		return locador;
+	}
+	
+	public void setLocatario(Locatario locatario) {
+		this.locador = locatario;
 	}
 
 

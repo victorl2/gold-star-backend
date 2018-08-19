@@ -5,6 +5,8 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import org.hibernate.Session;
@@ -15,11 +17,10 @@ import domain.entity.BaseEntity;
 import domain.repository.Repository;
 
 
-public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
-	protected static final Integer IN_MAX_ELEMENTS = 1000;
-	public static final Integer JDBC_BATCH_SIZE = 50;
-	
+public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{	
+	private Logger LOGGER = Logger.getLogger(getClass().getName());
 	private EntityManager em;
+	
 	protected Class<E> clazz;
 	
 	protected EntityManager getEntityManager() {
@@ -50,24 +51,25 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 		return getEntityManager().createQuery("from " + clazz.getName()).getResultList();
 	}
 
-	public Optional<E> persist(E entity) {
+	public E persist(E entity) {
 		try {
 			getEntityManager().persist(entity);
 			getEntityManager().flush();
-			return Optional.of(entity);
-		} catch (Exception exception) {;
-			return Optional.empty();
+			return entity;
+		} catch (Exception exception) {
+			LOGGER.log(Level.SEVERE, "Não foi possível persistir a entidade.\n", exception);
+			return null;
 		}
 	}
 	
-
-	public Optional<E> merge(E entity) {
+	public E merge(E entity) {
 		try {
 			E persistedEntity = getEntityManager().merge(entity);
 			getEntityManager().flush();
-			return Optional.of(persistedEntity);
+			return persistedEntity;
 		} catch (PersistenceException exception) {
-			return Optional.empty();
+			LOGGER.log(Level.SEVERE, "Não foi possível realizar o merge na entidade.\n", exception);
+			return null;
 		}
 	}
 	
@@ -76,22 +78,23 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	}
 	
 
-	public Optional<E> salvar(E entity) {
+	public E salvar(E entity) {
 		try {
 			E persistedEntity = entity;
-			if (entity.getID() != 0) {
+			
+			if (entity.getID() == null || entity.getID().isEmpty()) {
 				getEntityManager().persist(entity);
 			} else {
 				persistedEntity = getEntityManager().merge(entity);
 			}
 			getEntityManager().flush();
-			return Optional.of(persistedEntity);
+			return persistedEntity;
 		} catch (PersistenceException exception) {
-			return Optional.empty();
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar a entidade.\n", exception);
+			return null;
 		}
 	}
 	
-
 	public void deletar(E entity) {
 		try {
 			getEntityManager().remove(entity);
