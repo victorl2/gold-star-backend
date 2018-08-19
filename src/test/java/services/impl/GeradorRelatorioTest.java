@@ -15,7 +15,7 @@ public class GeradorRelatorioTest {
 	
 	@Before
 	public void setup() {
-		gerador = new GeradoRelatorioImpl();
+		gerador = new GeradorRelatorioImpl();
 	}
 	
 	@Test

@@ -15,7 +15,7 @@ import domain.entity.negocio.Relatorio;
 import domain.repository.ImovelResidencialRepository;
 import services.GeradorRelatorio;
 
-public class GeradoRelatorioImpl implements GeradorRelatorio{
+public class GeradorRelatorioImpl implements GeradorRelatorio{
 	
 	@Inject
 	private ImovelResidencialRepository imovelRepository;
