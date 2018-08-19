@@ -1,9 +1,13 @@
 package domain.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+
+import org.hibernate.annotations.GenericGenerator;
 
 
 /**
@@ -11,32 +15,34 @@ import javax.persistence.MappedSuperclass;
  * 
  * @author Victor Silva
  * @since 21-04-2018
- * @version 1.0
+ * @version 1.1
  */
 
 @MappedSuperclass
-public abstract class BaseEntity {	
+public abstract class BaseEntity implements Serializable{	
+	private static final long serialVersionUID = -8953904135168796600L;
+	
 	/**
 	 * identificador da entidade
 	 */
-	@Id
-	@GeneratedValue
+	@Id @GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid2")
 	@Column(name = "ID")
-	private long ID;
+	private String ID;
 	
-	public long getID() {
+	public String getID() {
 		return this.ID;
 	}
 	
-	public void setID(long newID) {
+	public void setID(String newID) {
 		this.ID = newID;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (int) (ID ^ (ID >>> 32));
+		result = prime * result + ((ID == null) ? 0 : ID.hashCode());
 		return result;
 	}
 
@@ -49,7 +55,10 @@ public abstract class BaseEntity {
 		if (getClass() != obj.getClass())
 			return false;
 		BaseEntity other = (BaseEntity) obj;
-		if (ID != other.ID)
+		if (ID == null) {
+			if (other.ID != null)
+				return false;
+		} else if (!ID.equals(other.ID))
 			return false;
 		return true;
 	}
@@ -58,5 +67,5 @@ public abstract class BaseEntity {
 	public String toString() {
 		return "BaseEntity [ID=" + ID + "]";
 	}
-
+	
 }

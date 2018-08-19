@@ -7,8 +7,10 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class ImovelComercial extends Imovel{
+	private static final long serialVersionUID = -2351066021769937217L;
+
 	@Column(name = "SOBRELOJA")
-	private boolean eSobreloja;
+	private Boolean eSobreloja;
 	
 	/**
 	 * Tipo de atividade comercial
@@ -18,7 +20,7 @@ public class ImovelComercial extends Imovel{
 	@JoinColumn(name = "TIPO_COMERCIO")
 	private TipoComercio tipoLoja;
 
-	public boolean iseSobreloja() {
+	public Boolean iseSobreloja() {
 		return eSobreloja;
 	}
 

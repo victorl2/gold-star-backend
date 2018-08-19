@@ -2,17 +2,14 @@ package domain.entity.negocio;
 
 import java.util.List;
 
-import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "PROPRIETARIO", schema = "NEGOCIO")
-@AttributeOverride(name = "ID", column = @Column(name = "PROPRIETARIO_ID"))
 public class Proprietario extends Pessoa {
-	
+	private static final long serialVersionUID = -173814518654814808L;
+
 	@Column(name = "CPF")
 	private String cpf;
 	

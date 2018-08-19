@@ -12,6 +12,8 @@ import domain.entity.BaseEntity;
 @Table(name = "TIPO_COMERCIO", schema = "NEGOCIO")
 @AttributeOverride(name = "ID", column = @Column(name = "TIPO_COMERCIO_ID"))
 public class TipoComercio extends BaseEntity{
+	private static final long serialVersionUID = -1035845056965883092L;
+
 	@Column(name = "NOME")
 	private String nomeDoTipoComercio;
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import domain.entity.BaseEntity;
+import domain.exception.DAOException;
 
 /**
  * Definicao das operacoes basicas de persistencia
@@ -11,16 +12,16 @@ import domain.entity.BaseEntity;
 public interface Repository<E extends BaseEntity> {
 	public Optional<E> buscarPorID(String oid);
 
-	public List<E> buscarTodos();
+	public List<E> buscarTodos() throws DAOException;
 
-	public Optional<E> persist(E entity);
+	public E persist(E entity) throws DAOException;
 
-	public Optional<E> merge(E entity);
+	public E merge(E entity) ;
 	
-	public Optional<E> salvar(E entidade);
+	public E salvar(E entidade) throws DAOException;
 
-	public void refresh(E entity);
+	public void atualizar(E entity);
 
-	public void deletar(E entity);
+	public void deletar(E entity) throws DAOException;
 
 }

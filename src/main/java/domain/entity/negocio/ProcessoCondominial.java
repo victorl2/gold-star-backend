@@ -11,7 +11,8 @@ import domain.entity.BaseEntity;
 @Table(name = "PROCESSO_CONDOMINIAL", schema = "NEGOCIO")
 @AttributeOverride(name = "ID", column = @Column(name = "PROCESSO_ID"))
 public class ProcessoCondominial extends BaseEntity{
-	
+	private static final long serialVersionUID = 215332124728661546L;
+
 	@Column(name = "CODIGO_PROCESSO")
 	private String codigoProcesso;
 	
@@ -22,7 +23,7 @@ public class ProcessoCondominial extends BaseEntity{
 	 * Indica se o processo se encontra ativo ou ja foi arquivado
 	 */
 	@Column(name = "ATIVO")
-	private boolean processoAtivo;
+	private Boolean processoAtivo;
 
 	public String getCodigoProcesso() {
 		return codigoProcesso;
@@ -40,7 +41,7 @@ public class ProcessoCondominial extends BaseEntity{
 		this.descricao = descricao;
 	}
 
-	public boolean isProcessoAtivo() {
+	public Boolean getProcessoAtivo() {
 		return processoAtivo;
 	}
 

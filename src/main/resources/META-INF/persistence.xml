@@ -4,9 +4,10 @@
      http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
 	version="2.0">
 
-	<persistence-unit name="goldstar">
+	<persistence-unit name="goldstar" transaction-type="JTA">
+	
 		<!-- provedor/implementacao do JPA -->
-		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<jta-data-source>java:/datasources/goldstar</jta-data-source>
 
 		<!-- entidades mapeadas -->
@@ -21,10 +22,14 @@
 		<class>domain.entity.negocio.TipoComercio</class>
 		
 		<properties>
+			<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
+			
 			<!-- propriedades do hibernate -->
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL9Dialect" />
 			<property name="hibernate.show_sql" value="true" />
 			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.id.new_generator_mappings" value="true"/>
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<!-- atualiza o banco, gera as tabelas se for preciso -->
 			<property name="hibernate.hbm2ddl.auto" value="update" />

@@ -7,6 +7,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+
 @Path("/imovel-residencial")
 @Produces("application/json; charset=UTF-8")
 @Consumes("application/json; charset=UTF-8")
@@ -14,8 +15,7 @@ import javax.ws.rs.core.Response;
  * Endpoints para imoveis residenciais
  *
  */
-public class ImovelResidencialResource {
-	
+public class ImovelResidencialResource {		
 	@GET
 	@Path("/{rgi}")
 	/**

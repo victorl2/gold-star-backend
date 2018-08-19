@@ -5,6 +5,8 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import org.hibernate.Session;
@@ -12,14 +14,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
 import domain.entity.BaseEntity;
+import domain.exception.DAOException;
 import domain.repository.Repository;
 
-
-public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
-	protected static final Integer IN_MAX_ELEMENTS = 1000;
-	public static final Integer JDBC_BATCH_SIZE = 50;
+/**
+ * Implementação das definições de persistencia utilizando tipos <b>genéricos</b>
+ */
+public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{	
+	private Logger LOGGER = Logger.getLogger(getClass().getName());
 	
 	private EntityManager em;
+	
 	protected Class<E> clazz;
 	
 	protected EntityManager getEntityManager() {
@@ -50,53 +55,57 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 		return getEntityManager().createQuery("from " + clazz.getName()).getResultList();
 	}
 
-	public Optional<E> persist(E entity) {
+	public E persist(E entity) throws DAOException{
 		try {
 			getEntityManager().persist(entity);
 			getEntityManager().flush();
-			return Optional.of(entity);
-		} catch (Exception exception) {;
-			return Optional.empty();
+			return entity;
+		} catch (Exception exception) {
+			LOGGER.log(Level.SEVERE, "Não foi possível persistir a entidade.\n", exception);
+			throw new DAOException("Não foi possível persistir a entidade.".concat(exception.getMessage()));
 		}
 	}
 	
-
-	public Optional<E> merge(E entity) {
+	public E merge(E entity) throws DAOException{
 		try {
 			E persistedEntity = getEntityManager().merge(entity);
 			getEntityManager().flush();
-			return Optional.of(persistedEntity);
+			return persistedEntity;
 		} catch (PersistenceException exception) {
-			return Optional.empty();
+			LOGGER.log(Level.SEVERE, "Não foi possível realizar o merge na entidade.\n", exception);
+			throw new DAOException("Não foi possível realizar o merge na entidade.".concat(exception.getMessage()));
 		}
 	}
 	
-	public void refresh(E entity) {
+	public void atualizar(E entity) {
 		getEntityManager().refresh(entity);
 	}
 	
 
-	public Optional<E> salvar(E entity) {
+	public E salvar(E entity) throws DAOException{
 		try {
 			E persistedEntity = entity;
-			if (entity.getID() != 0) {
+			
+			if (entity.getID() == null || entity.getID().isEmpty()) {
 				getEntityManager().persist(entity);
 			} else {
 				persistedEntity = getEntityManager().merge(entity);
 			}
 			getEntityManager().flush();
-			return Optional.of(persistedEntity);
+			return persistedEntity;
 		} catch (PersistenceException exception) {
-			return Optional.empty();
+			LOGGER.log(Level.WARNING, "Não foi possível salvar a entidade.\n", exception);
+			throw new DAOException("Não foi possível salvar a entidade.".concat(exception.getMessage()));
 		}
 	}
 	
-
-	public void deletar(E entity) {
+	public void deletar(E entity) throws DAOException {
 		try {
 			getEntityManager().remove(entity);
 			getEntityManager().flush();
 		} catch (PersistenceException exception) {
+			LOGGER.log(Level.WARNING, "Não foi possível deletar a entidade.\n", exception);
+			throw new DAOException("Não foi possível deletar a entidade.".concat(exception.getMessage()));
 		}
 	}
 	

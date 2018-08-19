@@ -9,13 +9,14 @@ import javax.persistence.OneToMany;
 
 @Entity
 public class ImovelResidencial extends Imovel{
-	
+	private static final long serialVersionUID = -1981916995685971317L;
+
 	@OneToMany
 	@JoinTable(name = "MORADORES_RESIDENCIA")
 	private List<Pessoa> moradores;
 	
 	@Column(name = "POSSUI_ANIMAL")
-	private boolean possuiAnimalEstimacao;
+	private Boolean possuiAnimalEstimacao;
 
 	public List<Pessoa> getMoradores() {
 		return moradores;
@@ -25,7 +26,7 @@ public class ImovelResidencial extends Imovel{
 		this.moradores = moradores;
 	}
 
-	public boolean isPossuiAnimalEstimacao() {
+	public Boolean isPossuiAnimalEstimacao() {
 		return possuiAnimalEstimacao;
 	}
 
