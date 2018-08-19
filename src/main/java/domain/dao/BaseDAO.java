@@ -17,7 +17,9 @@ import domain.entity.BaseEntity;
 import domain.exception.DAOException;
 import domain.repository.Repository;
 
-
+/**
+ * Implementação das definições de persistencia utilizando tipos <b>genéricos</b>
+ */
 public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{	
 	private Logger LOGGER = Logger.getLogger(getClass().getName());
 	
