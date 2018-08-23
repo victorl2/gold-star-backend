@@ -14,20 +14,24 @@ import domain.entity.BaseEntity;
 @AttributeOverride(name = "ID", column = @Column(name = "USUARIO_ID"))
 public class Usuario extends BaseEntity{
 	private static final long serialVersionUID = 1932799233870617068L;
-
+	
+	@Column(name = "LOGIN")
 	private String login;
 	
+	@Column(name = "SENHA")
 	private String senha;
 	
+	@Column(name = "ULTIMO_LOGIN")
 	private Date ultimoLogin;
 	
 	public Usuario() {
-		
+		this.ultimoLogin = new Date();
 	}
 	
 	public Usuario(String login, String senha) {
 		this.login = login;
 		this.senha = senha;
+		this.ultimoLogin = new Date();
 	}
 
 	public String getLogin() {
