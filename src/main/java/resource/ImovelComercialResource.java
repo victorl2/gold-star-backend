@@ -2,6 +2,7 @@ package resource;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,6 +31,14 @@ public class ImovelComercialResource {
 	 */
 	public Response getImoveisComericiasPorRGI(@PathParam(value = "rgi") String rgi) {
 		return Response.status(404).entity("Recurso ainda não implementando").build();
+	}
+	
+	@POST
+	@Path("gerar-relatorio-comercial")
+	public Response gerarRelatorioTodosImoveisComerciais(String path) {
+		
+		
+		return Response.ok("relatório gerado com sucesso").build();
 	}
 
 }
