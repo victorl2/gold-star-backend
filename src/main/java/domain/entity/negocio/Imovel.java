@@ -37,6 +37,12 @@ public abstract class Imovel extends BaseEntity{
 	private Boolean trocouBarbara;
 	
 	/**
+	 * Contato de emergência associado ao imóvel
+	 */
+	@Column(name = "CONTATO_EMERGENCIA")
+	private Pessoa contatoEmergencia;
+	
+	/**
 	 * Pessoa que é a proprietaria do imóvel
 	 */
 	@ManyToOne

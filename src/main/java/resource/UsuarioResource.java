@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import resource.dto.InformacaoUsuario;
 import services.Autenticacao;
 
 @Path("/usuario")
@@ -19,8 +20,12 @@ public class UsuarioResource {
 	
 	@POST
 	@Path("/login")
-	public Response login(String login, String senha) {
-		boolean sucessoLogin = auth.login(login, senha);
+	public Response login(InformacaoUsuario info) {
+		if(!info.getOptLogin().isPresent() || !info.getOptSenha().isPresent())
+			return Response.status(415).entity("Informações inválidas para login").build();
+		
+		boolean sucessoLogin = auth.login(info.getLogin(), info.getSenha());
+		
 		if(sucessoLogin)
 			return Response.ok().entity("Login realizado com sucesso").build();
 		return Response.status(412).entity("Falha ao realizaro login").build();
@@ -28,12 +33,17 @@ public class UsuarioResource {
 	
 	@POST
 	@Path("/cadastrar")
-	public Response cadastrar(String login, String senha) {
-		if(auth.existeUsuario(login, senha)) 
+	public Response cadastrar(InformacaoUsuario info) {
+		if(!info.getOptLogin().isPresent() || !info.getOptSenha().isPresent())
+			return Response.status(415).entity("Informações inválidas para login").build();
+		
+		if(auth.existeUsuario(info.getLogin(), info.getSenha())) 
 			return Response.status(412).entity("Já existe um usuário com o login informado").build();
 		
-		if(auth.cadastrar(login, senha))
+		if(auth.cadastrar(info.getLogin(), info.getSenha()))
 			return Response.ok().entity("Cadastro realizado com sucesso").build();
 		return Response.status(415).entity("Não foi possível realizar o cadastro, verifique a senha informada").build();
 	}
+	
+	
 }
