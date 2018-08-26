@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.Relatorio;
+import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.impl.ImovelServiceImpl;
 	
@@ -33,6 +34,13 @@ public class ImovelResidencialResource {
 			return Response.ok("Relatório gerado com sucesso").build();
 		}
 		return Response.status(412,"Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();		
+	}
+	
+	@POST
+	@Path("/cadastrarImovelResidencial")
+	public Response gerarRelatorioTodosImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
+		imovelservice.cadastrarImovelResidencial(imovelResidencial);
+		return Response.ok("Cadastro realizado com sucesso").build();
 	}
 	
 

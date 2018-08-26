@@ -1,5 +1,6 @@
 package resource;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -7,6 +8,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+
+import domain.entity.negocio.Relatorio;
+import services.GeradorRelatorio;
+import services.impl.ImovelServiceImpl;
 
 
 @Path("/imovel-comercial")
@@ -17,7 +22,12 @@ import javax.ws.rs.core.Response;
  *
  */
 public class ImovelComercialResource {
+	@Inject
+	private GeradorRelatorio gerarRelatorio;
 	
+	@Inject
+	private ImovelServiceImpl imovelService;
+
 	@GET
 	@Path("/{rgi}")
 	/**
@@ -36,8 +46,8 @@ public class ImovelComercialResource {
 	@POST
 	@Path("gerar-relatorio-comercial")
 	public Response gerarRelatorioTodosImoveisComerciais(String path) {
-		
-		
+		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisComerciais();
+		imovelService.gerarRelatorioTodosImoveisComerciais(path, relatorio);
 		return Response.ok("relatório gerado com sucesso").build();
 	}
 

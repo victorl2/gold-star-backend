@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -22,13 +24,19 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.UnitValue;
 
+import assemblers.ImovelResidencialAssembler;
 import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
+import domain.entity.negocio.Locatario;
 import domain.entity.negocio.ProcessoCondominial;
+import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
+import domain.repository.LocatarioRepository;
+import domain.repository.ProprietarioRepository;
+import resource.dto.ImovelResidencialDTO;
 import services.ImovelService;
 
 @Stateless 
@@ -39,9 +47,46 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	@Inject
 	private ImovelComercialRepository imovelComercialRepository;
+	
+	@Inject
+	private ProprietarioRepository proprietarioRepository;
+	
+	@Inject
+	private LocatarioRepository locatarioRepository;
+	
+	@Inject
+	private ImovelResidencialAssembler imovelResidencialAssembler;
 
-	public ImovelResidencial cadastrarImovelResidencial(ImovelResidencial imovel) {
-		return imovelResidencialRepository.salvar(imovel);
+	public ImovelResidencial cadastrarImovelResidencial(ImovelResidencialDTO imovel) {
+		List<ImovelResidencial> imoveis = imovelResidencialRepository
+				.buscarTodos();
+		if(imovel.getNumeroImovel()!=null) {
+			imoveis.stream().filter(residencia -> 
+						imovel.getNumeroImovel().equals(residencia.getNumeroImovel())
+					).collect(Collectors.toList());
+		}else {
+				imoveis.stream().filter(residencia -> 
+							imovel.getRgi().equals(residencia.getRgi())
+						).collect(Collectors.toList());
+		}
+		
+		if(imoveis.isEmpty()) {
+			if(imovel.getOidProprietario()!=null) {
+				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
+				if(prop.isPresent()) {
+					prop.get().getImoveis().add(imovelResidencialAssembler.build(imovel));
+				}
+			}
+			if(imovel.getProcessos()!=null) {
+				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
+				if(loc.isPresent()) {
+					loc.get().getImoveisAlugados().add(imovelResidencialAssembler.build(imovel));
+				}
+			}
+			return imovelResidencialRepository.salvar(imovelResidencialAssembler.build(imovel));
+		}
+	
+		return null;
 	}
 
 	public ImovelComercial cadastrarImovelComercial(ImovelComercial imovel) {

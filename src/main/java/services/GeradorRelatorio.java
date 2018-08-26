@@ -36,4 +36,6 @@ public interface GeradorRelatorio {
 	 * @return Relatorio gerado contemplando todos os imoveis
 	 */
 	public Relatorio gerarRelatorioTodosImoveis();
+
+	public Relatorio gerarRelatorioTodosImoveisComerciais();
 }
