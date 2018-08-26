@@ -40,7 +40,6 @@ public abstract class Imovel extends BaseEntity{
 	/**
 	 * Contato de emergência associado ao imóvel
 	 */
-	@Column(name = "CONTATO_EMERGENCIA")
 	@OneToOne(optional=true)
 	private Pessoa contatoEmergencia;
 	
