@@ -21,7 +21,7 @@ public interface GeradorRelatorio {
 	 * @throws FileNotFoundException 
 	 * @throws IOException 
 	 */
-	public Relatorio gerarRelatorioTodosImoveisResidenciais() throws FileNotFoundException, IOException;
+	public Relatorio gerarRelatorioTodosImoveisResidenciais();
 
 	/**
 	 * Gera relatório para todos os imoveis comerciais cadastrados
