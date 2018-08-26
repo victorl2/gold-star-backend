@@ -123,6 +123,16 @@ public abstract class Imovel extends BaseEntity{
 	public void setProcessos(List<ProcessoCondominial> processos) {
 		this.processos = processos;
 	}
+
+
+	public Pessoa getContatoEmergencia() {
+		return contatoEmergencia;
+	}
+
+
+	public void setContatoEmergencia(Pessoa contatoEmergencia) {
+		this.contatoEmergencia = contatoEmergencia;
+	}
 	
 	
 	
