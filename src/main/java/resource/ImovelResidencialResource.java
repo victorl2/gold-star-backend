@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -36,7 +38,7 @@ import services.GeradorRelatorio;
  *
  */
 public class ImovelResidencialResource {
-	
+	private Logger LOGGER = Logger.getLogger(getClass().getName());
 	@Inject
 	private GeradorRelatorio gerarRelatorio;
 	
@@ -67,11 +69,10 @@ public class ImovelResidencialResource {
 			document.add(new Paragraph());
 				document.close();
 		}catch(FileNotFoundException e){
-			System.out.println("erro ao criar caminho de fluxo de dados para gerar o relatório");
+			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo");
 		}
-		
 		
 		
 		return Response.ok("Relatório gerado com sucesso").build();
@@ -87,6 +88,7 @@ public class ImovelResidencialResource {
 	}
 	
 	protected void process(Table table, Imovel imovel, PdfFont font, boolean isHeader) {
+		//Caso em que as informações devem ser geradas como cabeçalho das tabelas no pdf
 		if (isHeader) {
             table.addHeaderCell(
                 new Cell().add( 
@@ -100,6 +102,7 @@ public class ImovelResidencialResource {
                         new Cell().add(
                             new Paragraph("RGI do imóvel não informado: " + imovel.getRgi().toString()).setFont(font)));
             }
+        // Caso onde as informações serão geradas no corpo das tabelas no pdf
         }else {
 		    if(imovel.getDonoImovel()!=null) {
 		    	if(imovel.getDonoImovel().getNome()!=null) {
