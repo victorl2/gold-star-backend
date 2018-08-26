@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import domain.entity.BaseEntity;
@@ -35,6 +36,13 @@ public abstract class Imovel extends BaseEntity{
 	 */
 	@Column(name = "TROCOU_BARBARA")
 	private Boolean trocouBarbara;
+	
+	/**
+	 * Contato de emergência associado ao imóvel
+	 */
+	@Column(name = "CONTATO_EMERGENCIA")
+	@OneToOne(optional=true)
+	private Pessoa contatoEmergencia;
 	
 	/**
 	 * Pessoa que é a proprietaria do imóvel
@@ -114,6 +122,16 @@ public abstract class Imovel extends BaseEntity{
 
 	public void setProcessos(List<ProcessoCondominial> processos) {
 		this.processos = processos;
+	}
+
+
+	public Pessoa getContatoEmergencia() {
+		return contatoEmergencia;
+	}
+
+
+	public void setContatoEmergencia(Pessoa contatoEmergencia) {
+		this.contatoEmergencia = contatoEmergencia;
 	}
 	
 	
