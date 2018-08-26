@@ -2,6 +2,7 @@ package resource;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -43,6 +44,12 @@ public class UsuarioResource {
 		if(auth.cadastrar(info.getLogin(), info.getSenha()))
 			return Response.ok().entity("Cadastro realizado com sucesso").build();
 		return Response.status(415).entity("Não foi possível realizar o cadastro, verifique a senha informada").build();
+	}
+	
+	@GET
+	public Response gerarRelatorioTodosImoveisResidenciais2(){
+
+		return Response.ok("Relatório gerado com sucesso").build();
 	}
 	
 	
