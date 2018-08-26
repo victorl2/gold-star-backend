@@ -1,5 +1,8 @@
 package services;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import domain.entity.negocio.Relatorio;
 
 /**
@@ -15,8 +18,10 @@ public interface GeradorRelatorio {
 	 * Gera relatório para todos os imoveis residenciais cadastrados
 	 * 
 	 * @return Relatorio gerado contemplando todos os imoveis residenciais
+	 * @throws FileNotFoundException 
+	 * @throws IOException 
 	 */
-	public Relatorio gerarRelatorioImoveisResidenciais();
+	public Relatorio gerarRelatorioTodosImoveisResidenciais() throws FileNotFoundException, IOException;
 
 	/**
 	 * Gera relatório para todos os imoveis comerciais cadastrados
