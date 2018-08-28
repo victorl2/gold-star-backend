@@ -17,7 +17,7 @@ public class ImovelResidencial extends Imovel{
 	
 	@Column(name = "POSSUI_ANIMAL")
 	private Boolean possuiAnimalEstimacao;
-
+	
 	public List<Pessoa> getMoradores() {
 		return moradores;
 	}

@@ -1,7 +1,12 @@
 package resource;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+
+import filters.CORSResponseFilter;
 
 /**
  * 
@@ -12,4 +17,14 @@ import javax.ws.rs.core.Application;
 @ApplicationPath("/api")
 public class RestApplication extends Application{
 	
+	@Override
+    public Set<Class<?>> getClasses() {
+        final Set<Class<?>> resources = new HashSet<Class<?>>();
+        resources.add(CORSResponseFilter.class);
+        resources.add(ImovelComercialResource.class);
+        resources.add(UsuarioResource.class);
+        resources.add(ImovelResidencialResource.class);
+        return resources;
+    }
+
 }

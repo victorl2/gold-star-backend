@@ -20,7 +20,8 @@
 		<class>domain.entity.negocio.Proprietario</class>
 		<class>domain.entity.negocio.Relatorio</class>
 		<class>domain.entity.negocio.TipoComercio</class>
-		
+		<class>domain.entity.negocio.Pessoa</class>
+		<class>domain.entity.negocio.Usuario</class>
 		<properties>
 			<property name="hibernate.transaction.jta.platform" value="org.hibernate.service.jta.platform.internal.JBossAppServerJtaPlatform" />
 			
