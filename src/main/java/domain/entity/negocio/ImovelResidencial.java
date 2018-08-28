@@ -34,5 +34,4 @@ public class ImovelResidencial extends Imovel{
 		this.possuiAnimalEstimacao = possuiAnimalEstimacao;
 	}
 	
-	
 }
