@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.Relatorio;
 import services.GeradorRelatorio;
-import services.impl.ImovelServiceImpl;
+import services.ImovelService;
 
 
 @Path("/imovel-comercial")
@@ -26,7 +26,7 @@ public class ImovelComercialResource {
 	private GeradorRelatorio gerarRelatorio;
 	
 	@Inject
-	private ImovelServiceImpl imovelService;
+	private ImovelService imovelService;
 
 	@GET
 	@Path("/{rgi}")
@@ -47,8 +47,11 @@ public class ImovelComercialResource {
 	@Path("gerar-relatorio-comercial")
 	public Response gerarRelatorioTodosImoveisComerciais(String path) {
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisComerciais();
-		imovelService.gerarRelatorioTodosImoveisComerciais(path, relatorio);
-		return Response.ok("relatório gerado com sucesso").build();
+		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
+		if(imovelService.gerarRelatorioTodosImoveisComerciais(path, relatorio)) {
+			return Response.ok("relatório gerado com sucesso").build();
+		}
+		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
 	}
 
 }

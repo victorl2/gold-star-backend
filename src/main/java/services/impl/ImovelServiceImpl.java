@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -186,10 +187,10 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 
 	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio) {
-		
 		Date data = new Date(System.currentTimeMillis());
+		String pathFormatado = path+"relatorio"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
 		try {
-			FileOutputStream fos = new FileOutputStream(path);
+			FileOutputStream fos = new FileOutputStream(pathFormatado);
 			PdfWriter writer = new PdfWriter(fos);
 			PdfDocument pdf = new PdfDocument(writer);
 			Document document = new Document(pdf);
