@@ -1,6 +1,7 @@
 package domain.entity.negocio;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,4 +35,7 @@ public class ImovelResidencial extends Imovel{
 		this.possuiAnimalEstimacao = possuiAnimalEstimacao;
 	}
 	
+	public Optional<List<ProcessoCondominial>> getOptProcessos() {
+		return Optional.ofNullable(this.getProcessos());
+	}
 }
