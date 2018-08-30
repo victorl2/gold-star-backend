@@ -1,6 +1,7 @@
 package resource.dto;
 
 import java.util.List;
+import java.util.Optional;
 
 import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.ProcessoCondominial;
@@ -70,6 +71,7 @@ public class ImovelResidencialDTO {
 	public void setProcessos(List<ProcessoCondominial> processos) {
 		this.processos = processos;
 	}
-	
-	
+	public Optional<List<ProcessoCondominial>> getOptProcessos() {
+		return Optional.ofNullable(this.getProcessos());
+	}
 }

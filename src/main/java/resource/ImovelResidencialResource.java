@@ -1,11 +1,9 @@
 package resource;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -46,13 +44,12 @@ public class ImovelResidencialResource {
 	@POST
 	@Path("/cadastrarImovelResidencial")
 	public Response gerarRelatorioTodosImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
-		imovelService.cadastrarImovelResidencial(imovelResidencial);
-		return Response.ok("Cadastro realizado com sucesso").build();
+		if(imovelResidencial.getNumeroImovel()!=null) { 
+			if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
+				return Response.ok("Cadastro realizado com sucesso").build();
+			}
+		}
+		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
 	}
 	
-	@GET
-	@Path("/teste")
-	public Response teste() {
-		return Response.ok("Teste com sucesso").build();
-	}
 }

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.Proprietario;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ProprietarioDTO;
@@ -27,5 +28,15 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 		}
 		return false;
 		
+	}
+	
+	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa) {
+		Proprietario proprietario = new Proprietario();
+		proprietario.setCelular(pessoa.getCelular());
+		proprietario.setNome(pessoa.getNome());
+		proprietario.setTelefone(pessoa.getTelefone());
+		pessoa = (Pessoa) proprietarioRepository.salvar(proprietario);
+		
+		return pessoa;
 	}
 }

@@ -3,6 +3,7 @@ package domain.entity.negocio;
 import java.util.List;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -60,7 +61,7 @@ public abstract class Imovel extends BaseEntity{
 	/**
 	 * Lista de processos sobre o imovel
 	 */
-	@OneToMany
+	@OneToMany(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinColumn(unique = false, name="PROCESSOS_POR_IMOVEL")
 	private List<ProcessoCondominial> processos;
 
@@ -123,7 +124,7 @@ public abstract class Imovel extends BaseEntity{
 		this.processos = processos;
 	}
 
-
+	
 	public Pessoa getContatoEmergencia() {
 		return contatoEmergencia;
 	}
