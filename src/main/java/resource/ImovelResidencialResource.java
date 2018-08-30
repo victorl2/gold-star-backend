@@ -43,7 +43,7 @@ public class ImovelResidencialResource {
 	
 	@POST
 	@Path("/cadastrarImovelResidencial")
-	public Response gerarRelatorioTodosImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
+	public Response cadastrarImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
 		if(imovelResidencial.getNumeroImovel()!=null) { 
 			if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
 				return Response.ok("Cadastro realizado com sucesso").build();
@@ -51,5 +51,6 @@ public class ImovelResidencialResource {
 		}
 		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
 	}
+	
 	
 }

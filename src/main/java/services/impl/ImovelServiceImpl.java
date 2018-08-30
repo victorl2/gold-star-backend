@@ -63,13 +63,12 @@ public class ImovelServiceImpl implements ImovelService{
 	private ProprietarioService proprietarioSrv;
 
 	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovel) {
+		
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
-				.buscarTodos();
-		if(imovel.getNumeroImovel()!=null) {
-			imoveis =imoveis.stream().filter(residencia -> 
-						(residencia.getNumeroImovel() == imovel.getNumeroImovel())
+				.buscarTodos().stream().filter(residencia -> 
+						(residencia.getNumeroImovel().equals(imovel.getNumeroImovel()))
 					).collect(Collectors.toList());
-		}
+		
 		if(imoveis.isEmpty()) {
 			//salva o contato de emergencia 
 			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
