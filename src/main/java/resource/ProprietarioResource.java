@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import resource.dto.ProprietarioDTO;
 import services.ProprietarioService;
 
-@Path("/cadastro-proprietario")
+@Path("/proprietario")
 @Produces("application/json; charset=UTF-8")
 @Consumes("application/json; charset=UTF-8")
 /**
@@ -23,11 +23,20 @@ public class ProprietarioResource {
 	private ProprietarioService proprietarioSrv;
 	
 	@POST
-	@Path("/cadastrar")
+	@Path("/cadastrar-proprietario")
 	public Response cadastroProprietario(ProprietarioDTO proprietarioDTO) {
 		if(proprietarioSrv.cadastrarProprietario(proprietarioDTO)) {
 			return Response.ok("Cadastro realizado com sucesso").build();
 		}
 		return Response.status(412).entity("Cadastro não efetuado").build();
+	}
+	
+	@POST
+	@Path("/buscar-proprietario")
+	public Response buscarProprietarioPorCPF(String cpf) {
+		if(proprietarioSrv.buscaProprietarioPorCPF(cpf)) {
+			return Response.ok("Proprietário cadastrado").entity(true).build();
+		}
+		return Response.status(412).entity("Proprietario não cadastrado").entity(false).build();
 	}
 }

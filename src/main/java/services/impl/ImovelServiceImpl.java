@@ -37,6 +37,7 @@ import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
 import domain.repository.LocatarioRepository;
 import domain.repository.ProprietarioRepository;
+import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
 import services.ImovelService;
 import services.ProprietarioService;
@@ -93,8 +94,35 @@ public class ImovelServiceImpl implements ImovelService{
 		return false;
 	}
 
-	public ImovelComercial cadastrarImovelComercial(ImovelComercial imovel) {
-		return imovelComercialRepository.salvar(imovel);
+	public Boolean cadastrarImovelComercial(ImovelComercialDTO imovel) {
+
+		List<ImovelComercial> imoveis = imovelComercialRepository
+				.buscarTodos().stream().filter(comercio -> 
+						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
+					).collect(Collectors.toList());
+		
+		if(imoveis.isEmpty()) {
+			//salva o contato de emergencia 
+			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
+			imovel.setContatoEmergencia(pessoa);
+			
+			imovelComercialRepository.persist(imovel.build());
+			if(imovel.getOidProprietario()!=null) {
+				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
+				if(prop.isPresent()) {
+					prop.get().getImoveis().add(imovel.build());
+				}
+			}
+			if(imovel.getOidLocador()!=null) {
+				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
+				if(loc.isPresent()) {
+					loc.get().getImoveisAlugados().add(imovel.build());
+				}
+			}
+			return true;
+		}
+	
+		return false;
 	}
 
 	public List<ImovelResidencial> buscarTodosImoveisResidenciais() {

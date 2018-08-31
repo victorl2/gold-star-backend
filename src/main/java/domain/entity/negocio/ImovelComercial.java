@@ -1,5 +1,6 @@
 package domain.entity.negocio;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,7 +17,7 @@ public class ImovelComercial extends Imovel{
 	 * Tipo de atividade comercial
 	 * realizada no imovel
 	 */
-	@ManyToOne
+	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinColumn(name = "TIPO_COMERCIO")
 	private TipoComercio tipoLoja;
 
@@ -34,9 +35,6 @@ public class ImovelComercial extends Imovel{
 
 	public void setTipoLoja(TipoComercio tipoLoja) {
 		this.tipoLoja = tipoLoja;
-	}	
-	
-	
-	
+	}		
 	
 }

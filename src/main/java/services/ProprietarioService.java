@@ -7,4 +7,6 @@ public interface ProprietarioService {
 	public Boolean cadastrarProprietario(ProprietarioDTO proprietarioDTO);
 	
 	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa);
+
+	public Boolean buscaProprietarioPorCPF(String cpf);
 }

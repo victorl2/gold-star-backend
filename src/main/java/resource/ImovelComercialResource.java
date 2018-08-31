@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.Relatorio;
+import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
 
@@ -39,7 +40,7 @@ public class ImovelComercialResource {
 	 * @param rgi ( ou parte do rgi ) do imovel procurado
 	 * @return Lista contendo os imoveis procurados
 	 */
-	public Response getImoveisComericiasPorRGI(@PathParam(value = "rgi") String rgi) {
+	public Response getImoveisComerciaisPorRGI(@PathParam(value = "rgi") String rgi) {
 		return Response.status(404).entity("Recurso ainda não implementando").build();
 	}
 	
@@ -52,6 +53,17 @@ public class ImovelComercialResource {
 			return Response.ok("relatório gerado com sucesso").build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
+	}
+	
+	@POST
+	@Path("/cadastrar-imovel-comercial")
+	public Response cadastrarImoveisComerciais(ImovelComercialDTO imovelComercial) {
+		if(imovelComercial.getNumeroImovel()!=null) { 
+			if(imovelService.cadastrarImovelComercial(imovelComercial)) {
+				return Response.ok("Cadastro realizado com sucesso").build();
+			}
+		}
+		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
 	}
 
 }

@@ -18,6 +18,7 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	private ProprietarioRepository proprietarioRepository;
 	
 	public Boolean cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
+		if(proprietarioDTO.getCpf()==null) return false;
 		List<Proprietario> prop = proprietarioRepository.buscarTodos().stream()
 							.filter( propri -> propri.getCpf()
 									.equals(proprietarioDTO.getCpf()))
@@ -38,5 +39,16 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 		pessoa = (Pessoa) proprietarioRepository.salvar(proprietario);
 		
 		return pessoa;
+	}
+	
+	public Boolean buscaProprietarioPorCPF(String cpf) {
+		if(cpf !=null) {
+			if(proprietarioRepository.buscarTodos()
+					.stream().filter(proprietario -> proprietario.getCpf().equals(cpf))
+						.collect(Collectors.toList()).isEmpty()) {
+				return false;
+			}else return true;
+		}
+		return false;
 	}
 }
