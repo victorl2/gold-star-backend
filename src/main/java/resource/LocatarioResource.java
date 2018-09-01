@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
@@ -32,16 +34,16 @@ public class LocatarioResource{
 		if(locatario.isPresent()) {
 			return Response.ok("Cadastro realizado com sucesso").entity(locatario.get().getID()).build();
 		}
-		return Response.status(412,"Cadastro não efetuado").build();
+		return Response.status(412).entity("Cadastro não efetuado").build();
 	}
 	
-	@POST
-	@Path("/buscar-locatario")
-	public Response buscarLocatarioPorCPF(String cpf) {
+	@GET
+	@Path("/{cpf}")
+	public Response buscarLocatarioPorCPF(@PathParam("cpf") String cpf) {
 		Optional<Locatario> locatario = locatarioSrv.buscaLocatarioPorCPF(cpf);
 		if(locatario.isPresent()) {
 			return Response.ok("Locatario encontrado").entity(locatario.get()).build();
 		}
-		return Response.status(412,"Locatario não cadastrado").build();
+		return Response.status(412).entity("Locatario não cadastrado").build();
 	}
 }

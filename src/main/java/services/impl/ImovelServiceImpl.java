@@ -63,35 +63,50 @@ public class ImovelServiceImpl implements ImovelService{
 	@Inject
 	private ProprietarioService proprietarioSrv;
 
-	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovel) {
+	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
-				.buscarTodos().stream().filter(residencia -> 
-						(residencia.getNumeroImovel().equals(imovel.getNumeroImovel()))
-					).collect(Collectors.toList());
+				.buscarTodos().stream()//
+					.filter(residencia -> // 
+						(residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel()))//
+					).collect(Collectors.toList());//
 		
-		if(imoveis.isEmpty()) {
-			//salva o contato de emergencia 
-			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
-			imovel.setContatoEmergencia(pessoa);
+		if(!imoveis.isEmpty()) 
+			return false;
+		
+		ImovelResidencial novoImovel = new ImovelResidencial();
+		
+		novoImovel.setNumeroImovel(imovelDTO.getNumeroImovel());
+		novoImovel.setRgi(imovelDTO.getRgi());
+		novoImovel.setTrocouBarbara(imovelDTO.getTrocouBarbara());
+		novoImovel.setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
+		
+		novoImovel.setMoradores(imovelDTO.getMoradores());
+		novoImovel.setProcessos(imovelDTO.getProcessos());
+		novoImovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
+		
+		if(imovelDTO.getOidProprietario() != null && !imovelDTO.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getOidProprietario());
 			
-			imovelResidencialRepository.persist(imovelResidencialAssembler.build(imovel));
-			if(imovel.getOidProprietario()!=null) {
-				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
-				if(prop.isPresent()) {
-					prop.get().getImoveis().add(imovelResidencialAssembler.build(imovel));
-				}
-			}
-			if(imovel.getOidLocador()!=null) {
-				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
-				if(loc.isPresent()) {
-					loc.get().getImoveisAlugados().add(imovelResidencialAssembler.build(imovel));
-				}
-			}
-			return true;
+			if(proprietario.isPresent())
+				novoImovel.setDonoImovel(proprietario.get());
 		}
-	
-		return false;
+		
+		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocador());
+			
+			if(locatario.isPresent())
+				novoImovel.setLocatario(locatario.get());
+		}
+		
+		try {
+			imovelResidencialRepository.salvar(novoImovel);
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel residencial");
+			return false;
+		}
+			
 	}
 
 	public Boolean cadastrarImovelComercial(ImovelComercialDTO imovel) {

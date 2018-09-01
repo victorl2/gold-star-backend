@@ -4,13 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import domain.entity.negocio.Locatario;
 import domain.repository.LocatarioRepository;
 import resource.dto.LocatarioDTO;
+import services.LocatarioService;
 
-public class LocatarioServiceImpl {
+@Stateless
+public class LocatarioServiceImpl implements LocatarioService{
+	
 	@Inject
 	private LocatarioRepository locatarioRepository;
 	

@@ -1,6 +1,5 @@
 package services;
 
-import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
