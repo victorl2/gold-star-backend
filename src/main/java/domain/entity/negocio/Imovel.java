@@ -41,7 +41,7 @@ public abstract class Imovel extends BaseEntity{
 	/**
 	 * Contato de emergência associado ao imóvel
 	 */
-	@OneToOne(optional=true)
+	@OneToOne(optional=true, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Pessoa contatoEmergencia;
 	
 	/**

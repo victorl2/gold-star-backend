@@ -13,8 +13,10 @@ import domain.repository.LocatarioRepository;
 import resource.dto.LocatarioDTO;
 import services.LocatarioService;
 
+
 @Stateless 
 public class LocatarioServiceImpl implements LocatarioService{
+
 	@Inject
 	private LocatarioRepository locatarioRepository;
 	

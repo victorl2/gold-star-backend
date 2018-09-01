@@ -28,7 +28,7 @@ public class ProprietarioDTO {
 	public void setCelular(String celular) {
 		this.celular = celular;
 	}
-	public boolean isPossuidor() {
+	public Boolean isPossuidor() {
 		return possuidor;
 	}
 	public void setPossuidor(boolean possuidor) {
@@ -52,7 +52,6 @@ public class ProprietarioDTO {
 		prop.setCpf(this.getCpf());
 		prop.setEndereco(this.getEndereco());
 		prop.setNome(this.getNome());
-		prop.setPossuidor(this.isPossuidor());
 		return prop;
 	}
 }

@@ -3,6 +3,7 @@ package domain.entity.negocio;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinTable;
@@ -12,7 +13,7 @@ import javax.persistence.OneToMany;
 public class ImovelResidencial extends Imovel{
 	private static final long serialVersionUID = -1981916995685971317L;
 
-	@OneToMany
+	@OneToMany(cascade={CascadeType.ALL})
 	@JoinTable(name = "MORADORES_RESIDENCIA")
 	private List<Pessoa> moradores;
 	

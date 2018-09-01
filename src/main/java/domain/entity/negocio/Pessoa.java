@@ -26,7 +26,7 @@ public class Pessoa extends BaseEntity{
 	 * Indica que a pessoa é "possuidora" de um imovel
 	 */
 	@Column(name = "E_POSSUIDOR_IMOVEL")
-	private boolean possuidor;
+	private Boolean possuidor;
 
 	public String getNome() {
 		return nome;
@@ -59,7 +59,11 @@ public class Pessoa extends BaseEntity{
 	public void setPossuidor(boolean possuidor) {
 		this.possuidor = possuidor;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Pessoa [nome=" + nome + ", telefone=" + telefone + ", celular=" + celular + "]";
+	}
 	
 
 }
