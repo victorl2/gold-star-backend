@@ -1,15 +1,21 @@
 package resource.dto;
 
-import domain.entity.negocio.Proprietario;
+import domain.entity.negocio.Locatario;
 
-public class ProprietarioDTO {
+public class LocatarioDTO {
+	private String cpf;
 	private String nome;
 	private String telefone;
 	private String celular;
 	private Boolean possuidor;
-	private String cpf;
-	private String endereco;
 	
+	public String getCpf() {
+		return cpf;
+	}
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
 	public String getNome() {
 		return nome;
 	}
@@ -34,25 +40,13 @@ public class ProprietarioDTO {
 	public void setPossuidor(boolean possuidor) {
 		this.possuidor = possuidor;
 	}
-	public String getCpf() {
-		return cpf;
-	}
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
-	public String getEndereco() {
-		return endereco;
-	}
-	public void setEndereco(String endereco) {
-		this.endereco = endereco;
-	}
-	public Proprietario build() {
-		Proprietario prop = new Proprietario();
-		prop.setCelular(this.getCelular());
-		prop.setCpf(this.getCpf());
-		prop.setEndereco(this.getEndereco());
-		prop.setNome(this.getNome());
-		prop.setPossuidor(this.isPossuidor());
-		return prop;
+	
+	public Locatario build() {
+		Locatario loc = new Locatario();
+		loc.setCelular(this.getCelular());
+		loc.setCpf(this.getCpf());
+		loc.setNome(this.getNome());
+		loc.setPossuidor(this.isPossuidor());
+		return loc;
 	}
 }

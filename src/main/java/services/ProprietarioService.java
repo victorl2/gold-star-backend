@@ -1,12 +1,13 @@
 package services;
 
 import domain.entity.negocio.Pessoa;
+import domain.entity.negocio.Proprietario;
 import resource.dto.ProprietarioDTO;
 
 public interface ProprietarioService {
-	public Boolean cadastrarProprietario(ProprietarioDTO proprietarioDTO);
+	public Proprietario cadastrarProprietario(ProprietarioDTO proprietarioDTO);
 	
 	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa);
 
-	public Boolean buscaProprietarioPorCPF(String cpf);
+	public Proprietario buscaProprietarioPorCPF(String cpf);
 }

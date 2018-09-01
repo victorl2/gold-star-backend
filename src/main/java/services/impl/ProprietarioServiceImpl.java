@@ -17,17 +17,17 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	@Inject
 	private ProprietarioRepository proprietarioRepository;
 	
-	public Boolean cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
-		if(proprietarioDTO.getCpf()==null) return false;
+	public Proprietario cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
+		if(proprietarioDTO.getCpf()==null) return new Proprietario();
 		List<Proprietario> prop = proprietarioRepository.buscarTodos().stream()
 							.filter( propri -> propri.getCpf()
 									.equals(proprietarioDTO.getCpf()))
 											.collect(Collectors.toList());
 		if(prop.isEmpty()) {
-			proprietarioRepository.salvar(proprietarioDTO.build());
-			return true;
+			
+			return proprietarioRepository.salvar(proprietarioDTO.build());
 		}
-		return false;
+		return new Proprietario();
 		
 	}
 	
@@ -41,14 +41,15 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 		return pessoa;
 	}
 	
-	public Boolean buscaProprietarioPorCPF(String cpf) {
+	public Proprietario buscaProprietarioPorCPF(String cpf) {
 		if(cpf !=null) {
-			if(proprietarioRepository.buscarTodos()
+			List<Proprietario> proprietarios = proprietarioRepository.buscarTodos()
 					.stream().filter(proprietario -> proprietario.getCpf().equals(cpf))
-						.collect(Collectors.toList()).isEmpty()) {
-				return false;
-			}else return true;
+					.collect(Collectors.toList());
+			if(proprietarios.isEmpty()) {
+				return new Proprietario();
+			}else return proprietarios.get(0);
 		}
-		return false;
+		return new Proprietario();
 	}
 }

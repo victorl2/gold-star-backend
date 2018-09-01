@@ -7,6 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import domain.entity.negocio.Proprietario;
 import resource.dto.ProprietarioDTO;
 import services.ProprietarioService;
 
@@ -25,18 +26,20 @@ public class ProprietarioResource {
 	@POST
 	@Path("/cadastrar-proprietario")
 	public Response cadastroProprietario(ProprietarioDTO proprietarioDTO) {
-		if(proprietarioSrv.cadastrarProprietario(proprietarioDTO)) {
-			return Response.ok("Cadastro realizado com sucesso").build();
+		Proprietario proprietario = proprietarioSrv.cadastrarProprietario(proprietarioDTO);
+		if(proprietario.getID()!=null) {
+			return Response.ok("Cadastro realizado com sucesso").entity(proprietario.getID()).build();
 		}
-		return Response.status(412).entity("Cadastro não efetuado").build();
+		return Response.status(412,"Cadastro não efetuado").build();
 	}
 	
 	@POST
 	@Path("/buscar-proprietario")
 	public Response buscarProprietarioPorCPF(String cpf) {
-		if(proprietarioSrv.buscaProprietarioPorCPF(cpf)) {
-			return Response.ok("Proprietário cadastrado").entity(true).build();
+		Proprietario proprietario = proprietarioSrv.buscaProprietarioPorCPF(cpf);
+		if(proprietario.getID()!=null) {
+			return Response.ok("Proprietário cadastrado").entity(proprietario).build();
 		}
-		return Response.status(412).entity("Proprietario não cadastrado").entity(false).build();
+		return Response.status(412,"Locatario não cadastrado").build();
 	}
 }
