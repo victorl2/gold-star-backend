@@ -25,6 +25,7 @@ public class RestApplication extends Application{
         resources.add(UsuarioResource.class);
         resources.add(ImovelResidencialResource.class);
         resources.add(ProprietarioResource.class);
+        resources.add(LocatarioResource.class);
         return resources;
     }
 

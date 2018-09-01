@@ -1,6 +1,7 @@
 package services.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.ejb.Stateless;
@@ -17,16 +18,17 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	@Inject
 	private ProprietarioRepository proprietarioRepository;
 	
-	public Boolean cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
+	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
+		if(proprietarioDTO.getCpf()==null) return Optional.empty();
 		List<Proprietario> prop = proprietarioRepository.buscarTodos().stream()
 							.filter( propri -> propri.getCpf()
 									.equals(proprietarioDTO.getCpf()))
 											.collect(Collectors.toList());
 		if(prop.isEmpty()) {
-			proprietarioRepository.salvar(proprietarioDTO.build());
-			return true;
+			
+			return Optional.of(proprietarioRepository.salvar(proprietarioDTO.build()));
 		}
-		return false;
+		return Optional.empty();
 		
 	}
 	
@@ -38,5 +40,17 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 		pessoa = (Pessoa) proprietarioRepository.salvar(proprietario);
 		
 		return pessoa;
+	}
+	
+	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf) {
+		if(cpf !=null) {
+			List<Proprietario> proprietarios = proprietarioRepository.buscarTodos()
+					.stream().filter(proprietario -> proprietario.getCpf().equals(cpf))
+					.collect(Collectors.toList());
+			if(proprietarios.isEmpty()) {
+				return Optional.empty();
+			}else return Optional.of(proprietarios.get(0));
+		}
+		return Optional.empty();
 	}
 }

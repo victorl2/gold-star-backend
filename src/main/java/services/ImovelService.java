@@ -2,6 +2,7 @@ package services;
 
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.Relatorio;
+import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
 
 public interface ImovelService extends Buscador{
@@ -22,7 +23,7 @@ public interface ImovelService extends Buscador{
 	 * @param imovelComercial a ser inserido ou atualizado
 	 * @return ImovelComercial após ser persistido na base de dados
 	 */
-	public ImovelComercial cadastrarImovelComercial(ImovelComercial imovelComercial);
+	public Boolean cadastrarImovelComercial(ImovelComercialDTO imovel);
 	
 	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio);
 	

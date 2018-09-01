@@ -1,5 +1,6 @@
 package resource;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -9,6 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
@@ -50,6 +52,13 @@ public class ImovelResidencialResource {
 			}
 		}
 		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+	}
+	
+	@POST
+	@Path("atualizar-Processos")
+	public Response atualizaProcessosCondominiais(List<ProcessoCondominial> processos, String oidImovel) {
+		
+		return Response.ok("Processos atualizados com sucesso").build();
 	}
 	
 	
