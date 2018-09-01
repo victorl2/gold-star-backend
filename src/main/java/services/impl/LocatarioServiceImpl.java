@@ -1,6 +1,7 @@
 package services.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -13,29 +14,30 @@ public class LocatarioServiceImpl {
 	@Inject
 	private LocatarioRepository locatarioRepository;
 	
-	public Locatario cadastrarLocatario(LocatarioDTO locatarioDTO) {
-		if(locatarioDTO.getCpf()==null) return new Locatario();
+	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {
+		
+		if(locatarioDTO.getCpf()==null) return Optional.empty();
 		List<Locatario> locatarios = locatarioRepository.buscarTodos().stream()
 							.filter( locatario -> locatario.getCpf()
 									.equals(locatarioDTO.getCpf()))
 											.collect(Collectors.toList());
 		if(locatarios.isEmpty()) {
 			
-			return locatarioRepository.salvar(locatarioDTO.build());
+			return Optional.of(locatarioRepository.salvar(locatarioDTO.build()));
 		}
-		return new Locatario();
+		return Optional.empty();
 		
 	}
 	
-	public Locatario buscaLocatarioPorCPF(String cpf) {
+	public Optional<Locatario> buscaLocatarioPorCPF(String cpf) {
 		if(cpf !=null) {
 			List<Locatario> locatarios = locatarioRepository.buscarTodos()
 					.stream().filter(locatario -> locatario.getCpf().equals(cpf))
 					.collect(Collectors.toList());
 			if(locatarios.isEmpty()) {
-				return new Locatario();
-			}else return locatarios.get(0);
+				return Optional.empty();
+			}else return Optional.of(locatarios.get(0));
 		}
-		return new Locatario();
+		return Optional.empty();
 	}
 }
