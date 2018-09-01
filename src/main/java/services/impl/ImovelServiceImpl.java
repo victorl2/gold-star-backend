@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -106,19 +107,22 @@ public class ImovelServiceImpl implements ImovelService{
 			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
 			imovel.setContatoEmergencia(pessoa);
 			
-			imovelComercialRepository.persist(imovel.build());
+			ImovelComercial comercio = imovel.build();
 			if(imovel.getOidProprietario()!=null) {
 				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
 				if(prop.isPresent()) {
-					prop.get().getImoveis().add(imovel.build());
+					prop.get().getImoveis().add(comercio);
 				}
 			}
 			if(imovel.getOidLocador()!=null) {
 				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
 				if(loc.isPresent()) {
-					loc.get().getImoveisAlugados().add(imovel.build());
+					
+					loc.get().getImoveisAlugados().add(comercio);
+					comercio.setLocatario(loc.get());
 				}
 			}
+			imovelComercialRepository.salvar(comercio);
 			return true;
 		}
 	
@@ -401,4 +405,63 @@ public class ImovelServiceImpl implements ImovelService{
 		
 	}
 	
+	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+													.stream().filter(imovel -> imovel.getRgi().contains(rgi))
+																	.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelResidencial> buscarImovelResidencialPorNumero(String numero){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().toString().contains(numero))
+								.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nome){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos();
+		List<ImovelResidencial> temp = new ArrayList<ImovelResidencial>();
+		imoveis.forEach(imovel -> {
+			if (imovel.getLocatario()!=null) {
+				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
+																	.getNome().isEmpty()) {
+					if(imovel.getLocatario().getNome().contains(nome)) {
+						temp.add(imovel);
+					}
+				}
+			}
+		});
+		return temp;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorRGI(String rgi){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+													.stream().filter(imovel -> imovel.getRgi().contains(rgi))
+																	.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorNumero(String numero){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().toString().contains(numero))
+								.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorNomeLocatario(String nome){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos();
+		List<ImovelComercial> temp = new ArrayList<ImovelComercial>();
+		imoveis.forEach(imovel -> {
+			if (imovel.getLocatario()!=null) {
+				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
+																	.getNome().isEmpty()) {
+					if(imovel.getLocatario().getNome().contains(nome)) {
+						temp.add(imovel);
+					}
+				}
+			}
+		});
+		return temp;
+	}
 }

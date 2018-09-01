@@ -32,7 +32,7 @@ public class ProprietarioResource {
 		if(proprietario.isPresent()) {
 			return Response.ok("Cadastro realizado com sucesso").entity(proprietario.get().getID()).build();
 		}
-		return Response.status(412,"Cadastro não efetuado").build();
+		return Response.status(412).build();
 	}
 	
 	@POST
