@@ -30,7 +30,6 @@ import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
-import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
@@ -91,6 +90,7 @@ public class ImovelServiceImpl implements ImovelService{
 			
 			if(proprietario.isPresent())
 				novoImovel.setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(novoImovel);
 		}
 		
 		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
@@ -98,6 +98,7 @@ public class ImovelServiceImpl implements ImovelService{
 			
 			if(locatario.isPresent())
 				novoImovel.setLocatario(locatario.get());
+			locatario.get().getImoveisAlugados().add(novoImovel);
 		}
 		
 		try {
@@ -117,31 +118,31 @@ public class ImovelServiceImpl implements ImovelService{
 						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
 					).collect(Collectors.toList());
 		
-		if(imoveis.isEmpty()) {
-			//salva o contato de emergencia 
-			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
-			imovel.setContatoEmergencia(pessoa);
-			
-			ImovelComercial comercio = imovel.build();
-			if(imovel.getOidProprietario()!=null) {
-				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
-				if(prop.isPresent()) {
-					prop.get().getImoveis().add(comercio);
-				}
+		if(!imoveis.isEmpty())
+			return false;
+		ImovelComercial comercio = imovel.build();
+		
+		if(imovel.getOidProprietario()!=null && !imovel.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
+			if(prop.isPresent()) {
+				comercio.setDonoImovel(prop.get());
+				prop.get().getImoveis().add(comercio);
 			}
-			if(imovel.getOidLocador()!=null) {
-				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
-				if(loc.isPresent()) {
-					
-					loc.get().getImoveisAlugados().add(comercio);
-					comercio.setLocatario(loc.get());
-				}
+		}
+		if(imovel.getOidLocador()!=null && !imovel.getOidLocador().isEmpty()) {
+			Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
+			if(loc.isPresent()) {
+				loc.get().getImoveisAlugados().add(comercio);
+				comercio.setLocatario(loc.get());
 			}
+		}
+		try {
 			imovelComercialRepository.salvar(comercio);
 			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel comercial");
+			return false;
 		}
-	
-		return false;
 	}
 
 	public List<ImovelResidencial> buscarTodosImoveisResidenciais() {

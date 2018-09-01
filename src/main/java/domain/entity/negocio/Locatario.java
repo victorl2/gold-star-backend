@@ -1,9 +1,12 @@
 package domain.entity.negocio;
 
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Locatario extends Pessoa {
@@ -12,6 +15,7 @@ public class Locatario extends Pessoa {
 	@Column(name = "CPF")
 	private String cpf;
 	
+	@JsonBackReference
 	@OneToMany(mappedBy = "locador")
 	private List<Imovel> imoveisAlugados;
 
