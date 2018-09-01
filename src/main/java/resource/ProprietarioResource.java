@@ -1,5 +1,7 @@
 package resource;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -26,9 +28,9 @@ public class ProprietarioResource {
 	@POST
 	@Path("/cadastrar-proprietario")
 	public Response cadastroProprietario(ProprietarioDTO proprietarioDTO) {
-		Proprietario proprietario = proprietarioSrv.cadastrarProprietario(proprietarioDTO);
-		if(proprietario.getID()!=null) {
-			return Response.ok("Cadastro realizado com sucesso").entity(proprietario.getID()).build();
+		Optional<Proprietario> proprietario = proprietarioSrv.cadastrarProprietario(proprietarioDTO);
+		if(proprietario.isPresent()) {
+			return Response.ok("Cadastro realizado com sucesso").entity(proprietario.get().getID()).build();
 		}
 		return Response.status(412,"Cadastro não efetuado").build();
 	}
@@ -36,9 +38,9 @@ public class ProprietarioResource {
 	@POST
 	@Path("/buscar-proprietario")
 	public Response buscarProprietarioPorCPF(String cpf) {
-		Proprietario proprietario = proprietarioSrv.buscaProprietarioPorCPF(cpf);
-		if(proprietario.getID()!=null) {
-			return Response.ok("Proprietário cadastrado").entity(proprietario).build();
+		Optional<Proprietario> proprietario = proprietarioSrv.buscaProprietarioPorCPF(cpf);
+		if(proprietario.isPresent()) {
+			return Response.ok("Proprietário cadastrado").entity(proprietario.get()).build();
 		}
 		return Response.status(412,"Locatario não cadastrado").build();
 	}

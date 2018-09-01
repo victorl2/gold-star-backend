@@ -1,5 +1,7 @@
 package resource;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -26,9 +28,9 @@ public class LocatarioResource{
 	@POST
 	@Path("/cadastrar-locatario")
 	public Response cadastroLocatario(LocatarioDTO locatarioDTO) {
-		Locatario locatario = locatarioSrv.cadastrarLocatario(locatarioDTO);
-		if(locatario.getID()!=null) {
-			return Response.ok("Cadastro realizado com sucesso").entity(locatario.getID()).build();
+		Optional<Locatario> locatario = locatarioSrv.cadastrarLocatario(locatarioDTO);
+		if(locatario.isPresent()) {
+			return Response.ok("Cadastro realizado com sucesso").entity(locatario.get().getID()).build();
 		}
 		return Response.status(412,"Cadastro não efetuado").build();
 	}
@@ -36,9 +38,9 @@ public class LocatarioResource{
 	@POST
 	@Path("/buscar-locatario")
 	public Response buscarLocatarioPorCPF(String cpf) {
-		Locatario locatario = locatarioSrv.buscaLocatarioPorCPF(cpf);
-		if(locatario.getID()!=null) {
-			return Response.ok("Locatario encontrado").entity(locatario).build();
+		Optional<Locatario> locatario = locatarioSrv.buscaLocatarioPorCPF(cpf);
+		if(locatario.isPresent()) {
+			return Response.ok("Locatario encontrado").entity(locatario.get()).build();
 		}
 		return Response.status(412,"Locatario não cadastrado").build();
 	}
