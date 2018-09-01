@@ -1,6 +1,7 @@
 package resource;
 
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ public class ImovelResidencialResource {
 	@POST
 	@Path("/cadastrarImovelResidencial")
 	public Response cadastrarImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
+		
 		if(imovelResidencial.getNumeroImovel()!=null) { 
 			if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
 				return Response.ok("Cadastro realizado com sucesso").build();
@@ -55,9 +57,8 @@ public class ImovelResidencialResource {
 	}
 	
 	@POST
-	@Path("atualizar-Processos")
+	@Path("/atualizar-Processos")
 	public Response atualizaProcessosCondominiais(List<ProcessoCondominial> processos, String oidImovel) {
-		
 		return Response.ok("Processos atualizados com sucesso").build();
 	}
 	

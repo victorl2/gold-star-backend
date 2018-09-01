@@ -88,10 +88,13 @@ public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 			
 			if (entity.getID() == null || entity.getID().isEmpty()) {
 				getEntityManager().persist(entity);
+				
 			} else {
 				persistedEntity = getEntityManager().merge(entity);
 			}
+			
 			getEntityManager().flush();
+			
 			return persistedEntity;
 		} catch (PersistenceException exception) {
 			LOGGER.log(Level.WARNING, "Não foi possível salvar a entidade.\n", exception);
