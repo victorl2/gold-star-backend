@@ -1,6 +1,7 @@
 package services.impl;
 
 import java.util.List;
+
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,9 +13,10 @@ import domain.repository.LocatarioRepository;
 import resource.dto.LocatarioDTO;
 import services.LocatarioService;
 
-@Stateless
+
+@Stateless 
 public class LocatarioServiceImpl implements LocatarioService{
-	
+
 	@Inject
 	private LocatarioRepository locatarioRepository;
 	

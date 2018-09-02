@@ -25,7 +25,7 @@ public class ImovelComercial extends Imovel{
 		return eSobreloja;
 	}
 
-	public void seteSobreloja(boolean eSobreloja) {
+	public void seteSobreloja(Boolean eSobreloja) {
 		this.eSobreloja = eSobreloja;
 	}
 

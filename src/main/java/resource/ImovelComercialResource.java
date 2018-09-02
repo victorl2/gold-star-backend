@@ -1,5 +1,7 @@
 package resource;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -9,6 +11,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
@@ -64,6 +67,36 @@ public class ImovelComercialResource {
 			}
 		}
 		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+	}
+	
+	@GET
+	@Path("busca-rgi/{rgi}")
+	public Response buscaImovelComercialPorRGI(@PathParam("rgi") String rgi) {
+		List<ImovelComercial> imoveis = imovelService.buscarImovelComercialPorRGI(rgi);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Comercial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
+	}
+	
+	@GET
+	@Path("busca-numero/{numero}")
+	public Response buscaImovelComercialPorNumero(@PathParam("numero") String numero) {
+		List<ImovelComercial> imoveis = imovelService.buscarImovelComercialPorNumero(numero);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Comercial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
+	}
+	
+	@GET
+	@Path("busca-nomeLocatario/{nome}")
+	public Response buscaImovelComercialPorNomeLocatario(@PathParam("nome") String nome) {
+		List<ImovelComercial> imoveis = imovelService.buscarImovelComercialPorNomeLocatario(nome);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Comercial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
 	}
 
 }

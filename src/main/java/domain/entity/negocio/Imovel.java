@@ -11,7 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
+import com.fasterxml.jackson.annotation.*;
 import domain.entity.BaseEntity;
 
 @Entity
@@ -54,8 +54,10 @@ public abstract class Imovel extends BaseEntity{
 	/**
 	 * Pessoa que está atualmente alugando o imovel
 	 */
+
 	@ManyToOne
 	@JoinColumn(unique = false, name="LOCATARIO")
+	@JsonManagedReference
 	private Locatario locador;
 	
 	/**
@@ -91,7 +93,7 @@ public abstract class Imovel extends BaseEntity{
 	}
 
 
-	public void setTrocouBarbara(boolean trocouBarbara) {
+	public void setTrocouBarbara(Boolean trocouBarbara) {
 		this.trocouBarbara = trocouBarbara;
 	}
 

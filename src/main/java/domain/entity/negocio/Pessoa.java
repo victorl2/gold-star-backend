@@ -52,11 +52,11 @@ public class Pessoa extends BaseEntity{
 		this.celular = celular;
 	}
 
-	public boolean isPossuidor() {
+	public Boolean isPossuidor() {
 		return possuidor;
 	}
 
-	public void setPossuidor(boolean possuidor) {
+	public void setPossuidor(Boolean possuidor) {
 		this.possuidor = possuidor;
 	}
 
