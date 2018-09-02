@@ -6,11 +6,14 @@ import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelResidencialDTO;
@@ -62,5 +65,34 @@ public class ImovelResidencialResource {
 		return Response.ok("Processos atualizados com sucesso").build();
 	}
 	
+	@GET
+	@Path("busca-rgi/{rgi}")
+	public Response buscaImovelResidencialPorRGI(@PathParam("rgi") String rgi) {
+		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorRGI(rgi);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
+	}
 	
+	@GET
+	@Path("busca-numero/{numero}")
+	public Response buscaImovelResidencialPorNumero(@PathParam("numero") String numero) {
+		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorNumero(numero);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
+	}
+	
+	@GET
+	@Path("busca-nomeLocatario/{nome}")
+	public Response buscaImovelResidencialPorNomeLocatario(@PathParam("nome") String nome) {
+		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorNomeLocatario(nome);
+		if(!imoveis.isEmpty()) 
+			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
+		
+		return Response.status(412).build();
+	}
+
 }

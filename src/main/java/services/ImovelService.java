@@ -1,5 +1,9 @@
 package services;
 
+import java.util.List;
+
+import domain.entity.negocio.ImovelComercial;
+import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
@@ -27,4 +31,16 @@ public interface ImovelService extends Buscador{
 	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio);
 	
 	public boolean gerarRelatorioTodosImoveisComerciais(String path, Relatorio relatorio);
+
+	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi);
+
+	public List<ImovelResidencial> buscarImovelResidencialPorNumero(String numero);
+
+	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nome);
+	
+	public List<ImovelComercial> buscarImovelComercialPorRGI(String rgi);
+
+	public List<ImovelComercial> buscarImovelComercialPorNumero(String numero);
+
+	public List<ImovelComercial> buscarImovelComercialPorNomeLocatario(String nome);
 }

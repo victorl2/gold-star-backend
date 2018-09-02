@@ -1,3 +1,4 @@
+
 package domain.entity.negocio;
 
 import java.util.List;

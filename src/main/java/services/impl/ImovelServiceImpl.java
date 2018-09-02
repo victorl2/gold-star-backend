@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +30,6 @@ import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
-import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
@@ -90,6 +90,7 @@ public class ImovelServiceImpl implements ImovelService{
 			
 			if(proprietario.isPresent())
 				novoImovel.setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(novoImovel);
 		}
 		
 		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
@@ -97,6 +98,7 @@ public class ImovelServiceImpl implements ImovelService{
 			
 			if(locatario.isPresent())
 				novoImovel.setLocatario(locatario.get());
+			locatario.get().getImoveisAlugados().add(novoImovel);
 		}
 		
 		try {
@@ -116,28 +118,31 @@ public class ImovelServiceImpl implements ImovelService{
 						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
 					).collect(Collectors.toList());
 		
-		if(imoveis.isEmpty()) {
-			//salva o contato de emergencia 
-			Pessoa pessoa = proprietarioSrv.cadastrarPessoaComProprietario(imovel.getContatoEmergencia());
-			imovel.setContatoEmergencia(pessoa);
-			
-			imovelComercialRepository.persist(imovel.build());
-			if(imovel.getOidProprietario()!=null) {
-				Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
-				if(prop.isPresent()) {
-					prop.get().getImoveis().add(imovel.build());
-				}
+		if(!imoveis.isEmpty())
+			return false;
+		ImovelComercial comercio = imovel.build();
+		
+		if(imovel.getOidProprietario()!=null && !imovel.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
+			if(prop.isPresent()) {
+				comercio.setDonoImovel(prop.get());
+				prop.get().getImoveis().add(comercio);
 			}
-			if(imovel.getOidLocador()!=null) {
-				Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
-				if(loc.isPresent()) {
-					loc.get().getImoveisAlugados().add(imovel.build());
-				}
-			}
-			return true;
 		}
-	
-		return false;
+		if(imovel.getOidLocador()!=null && !imovel.getOidLocador().isEmpty()) {
+			Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
+			if(loc.isPresent()) {
+				loc.get().getImoveisAlugados().add(comercio);
+				comercio.setLocatario(loc.get());
+			}
+		}
+		try {
+			imovelComercialRepository.salvar(comercio);
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel comercial");
+			return false;
+		}
 	}
 
 	public List<ImovelResidencial> buscarTodosImoveisResidenciais() {
@@ -160,6 +165,7 @@ public class ImovelServiceImpl implements ImovelService{
 			document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
 													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 																.format(data)).setFont(bold));
+			
 			for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
 				Table table = montaTabelaComercial(bold,font,imovel);
 				document.add(new Paragraph());
@@ -176,7 +182,6 @@ public class ImovelServiceImpl implements ImovelService{
 			return false;
 		}
 		return true;
-
 	}
 	
 	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel) {
@@ -193,7 +198,7 @@ public class ImovelServiceImpl implements ImovelService{
             table.addHeaderCell(
                 new Cell().add( 
                     new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).setFont(font)));
-            if(imovel.getRgi()!=null) {
+            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
                     new Cell().add(
                         new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
@@ -215,7 +220,7 @@ public class ImovelServiceImpl implements ImovelService{
     	    }
         	
         	if(imovel.getTipoLoja()!=null) {
-        		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null) {
+        		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null && !imovel.getTipoLoja().getNomeDoTipoComercio().isEmpty()) {
         			table.addCell(
         		            new Cell().add(
         		                new Paragraph("Tipo de loja: " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
@@ -277,7 +282,7 @@ public class ImovelServiceImpl implements ImovelService{
             table.addHeaderCell(
                 new Cell().add( 
                     new Paragraph("Nº do apartamento: " + imovel.getNumeroImovel().toString()).setFont(font)));
-            if(imovel.getRgi()!=null) {
+            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
                     new Cell().add(
                         new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
@@ -316,7 +321,7 @@ public class ImovelServiceImpl implements ImovelService{
 		    
 		    //contato emergencia
 		    if(imovel.getContatoEmergencia()!=null) {
-		    	if(imovel.getContatoEmergencia().getNome()!=null) {
+		    	if(imovel.getContatoEmergencia().getNome()!=null && !imovel.getContatoEmergencia().getNome().isEmpty()) {
 				    table.addCell(
 				    		new Cell().add(
 				                new Paragraph("Contato emergência: " + imovel.getContatoEmergencia().getNome()).setFont(font)));
@@ -325,7 +330,7 @@ public class ImovelServiceImpl implements ImovelService{
 				    		new Cell().add(
 				                new Paragraph("Contato emergência não informado").setFont(font)));
 		    	}
-		    	if(imovel.getContatoEmergencia().getCelular() !=null) {
+		    	if(imovel.getContatoEmergencia().getCelular() !=null && !imovel.getContatoEmergencia().getCelular().isEmpty()) {
 		    		table.addCell(
 				    		new Cell().add(
 				                new Paragraph("Tel Emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font)));
@@ -356,7 +361,7 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	private void adicionaInformacaoSobreLocatario(Imovel imovel, Table table, PdfFont font) {
 		if(imovel.getLocatario()!=null) {
-	    	if(imovel.getLocatario().getNome()!=null) {
+	    	if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Nome Locatário: " + imovel.getLocatario().getNome()).setFont(font)));
@@ -365,7 +370,7 @@ public class ImovelServiceImpl implements ImovelService{
 			    		new Cell().add(
 			                new Paragraph("Nome locatário não informado").setFont(font)));
 	    	}
-	    	if(imovel.getLocatario().getCelular() !=null) {
+	    	if(imovel.getLocatario().getCelular() !=null && !imovel.getLocatario().getCelular().isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Tel Locatário: " + imovel.getLocatario().getCelular()).setFont(font)));
@@ -377,7 +382,7 @@ public class ImovelServiceImpl implements ImovelService{
 	    }else {
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font)));
+		                new Paragraph("Nome locatário não informado").setFont(font)));
 	    	table.addCell(
 			    	new Cell().add(
 			               new Paragraph("Tel locatário não informado").setFont(font)));
@@ -387,7 +392,7 @@ public class ImovelServiceImpl implements ImovelService{
 
 	private void adicionaInformacaoSobreDonoDoImovel(Imovel imovel, Table table, PdfFont font) {
 		if(imovel.getDonoImovel()!=null) {
-	    	if(imovel.getDonoImovel().getNome()!=null) {
+	    	if(imovel.getDonoImovel().getNome()!=null && !imovel.getDonoImovel().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Nome Proprietário: " + imovel.getDonoImovel().getNome()).setFont(font)));
@@ -396,7 +401,7 @@ public class ImovelServiceImpl implements ImovelService{
 			    		new Cell().add(
 			                new Paragraph("Nome Proprietário: não informado").setFont(font)));
 	    	}
-	    	if(imovel.getDonoImovel().getCelular() !=null) {
+	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular() .isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Tel Proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font)));
@@ -416,4 +421,63 @@ public class ImovelServiceImpl implements ImovelService{
 		
 	}
 	
+	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+													.stream().filter(imovel -> imovel.getRgi().contains(rgi))
+																	.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelResidencial> buscarImovelResidencialPorNumero(String numero){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().toString().contains(numero))
+								.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nome){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos();
+		List<ImovelResidencial> temp = new ArrayList<ImovelResidencial>();
+		imoveis.forEach(imovel -> {
+			if (imovel.getLocatario()!=null) {
+				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
+																	.getNome().isEmpty()) {
+					if(imovel.getLocatario().getNome().contains(nome)) {
+						temp.add(imovel);
+					}
+				}
+			}
+		});
+		return temp;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorRGI(String rgi){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+													.stream().filter(imovel -> imovel.getRgi().contains(rgi))
+																	.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorNumero(String numero){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().toString().contains(numero))
+								.collect(Collectors.toList());
+		return imoveis;
+	}
+	
+	public List<ImovelComercial> buscarImovelComercialPorNomeLocatario(String nome){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos();
+		List<ImovelComercial> temp = new ArrayList<ImovelComercial>();
+		imoveis.forEach(imovel -> {
+			if (imovel.getLocatario()!=null) {
+				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
+																	.getNome().isEmpty()) {
+					if(imovel.getLocatario().getNome().contains(nome)) {
+						temp.add(imovel);
+					}
+				}
+			}
+		});
+		return temp;
+	}
 }
