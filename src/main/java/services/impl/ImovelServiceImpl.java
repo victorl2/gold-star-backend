@@ -302,14 +302,18 @@ public class ImovelServiceImpl implements ImovelService{
 		    adicionaInformacaoSobreLocatario(imovel,table,font);
 		    
 		    //barbara
-		    if(imovel.getTrocouBarbara()) {
+		    if(imovel.getTrocouBarbara() != null && imovel.getTrocouBarbara()) {
 			    table.addCell(
 			            new Cell().add(
 			                new Paragraph("Trocou barbará").setFont(font)));
-		    }else {
+		    }else if(imovel.getTrocouBarbara() != null) {
 		    	table.addCell(
 			            new Cell().add(
 			                new Paragraph("Não trocou barbará").setFont(font)));
+		    }else {
+		    	table.addCell(
+			            new Cell().add(
+			                new Paragraph("Não informado").setFont(font)));
 		    }
 		    
 		    //processo
