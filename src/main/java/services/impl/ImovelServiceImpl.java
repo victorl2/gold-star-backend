@@ -165,6 +165,7 @@ public class ImovelServiceImpl implements ImovelService{
 			document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
 													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 																.format(data)).setFont(bold));
+			
 			for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
 				Table table = montaTabelaComercial(bold,font,imovel);
 				document.add(new Paragraph());
@@ -181,7 +182,6 @@ public class ImovelServiceImpl implements ImovelService{
 			return false;
 		}
 		return true;
-
 	}
 	
 	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel) {
@@ -382,7 +382,7 @@ public class ImovelServiceImpl implements ImovelService{
 	    }else {
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font)));
+		                new Paragraph("Nome locatário não informado").setFont(font)));
 	    	table.addCell(
 			    	new Cell().add(
 			               new Paragraph("Tel locatário não informado").setFont(font)));
