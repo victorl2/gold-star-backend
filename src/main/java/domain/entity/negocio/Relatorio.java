@@ -24,6 +24,17 @@ public class Relatorio extends BaseEntity{
 	@Column(name = "IMOVEIS_RELATADOS")
 	@ManyToMany
 	private List<Imovel> imoveisPresentesRelatorio;
+	
+	@Column(name = "NUMERO")
+	private Integer numeroDeImoveis;
+	
+	public Integer getNumeroDeImoveis() {
+		return numeroDeImoveis;
+	}
+
+	public void setNumeroDeImoveis(Integer numeroDeImoveis) {
+		this.numeroDeImoveis = numeroDeImoveis;
+	}
 
 	public List<Imovel> getImoveisPresentesRelatorio() {
 		return imoveisPresentesRelatorio;

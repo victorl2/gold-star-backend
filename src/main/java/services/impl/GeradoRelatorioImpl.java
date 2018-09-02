@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import domain.entity.negocio.Imovel;
 import domain.entity.negocio.Relatorio;
+import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
 import services.GeradorRelatorio;
 
@@ -15,7 +16,7 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	private ImovelResidencialRepository imovelResidencialRepository;
 	
 	@Inject
-	private ImovelResidencialRepository imovelComercialRepository;
+	private ImovelComercialRepository imovelComercialRepository;
 	
 	public Relatorio gerarRelatorioTodosImoveisResidenciais() {
 		
@@ -43,17 +44,17 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 
 	public Relatorio gerarRelatorioTodosImoveisComerciais() {
 		Relatorio relatorio = new Relatorio();
-		
+		relatorio.setNumeroDeImoveis(0);
 		relatorio.setImoveisPresentesRelatorio(
 				imovelComercialRepository
 					.buscarTodos()
 						.stream()
 							.map(comercio -> (Imovel) comercio)
 								.collect(Collectors.toList()));
+		relatorio.getImoveisPresentesRelatorio().forEach(imovel -> 
+								relatorio.setNumeroDeImoveis(relatorio.getNumeroDeImoveis()+1));
 	    return relatorio;
-		
 	}
-	
 }
 
 
