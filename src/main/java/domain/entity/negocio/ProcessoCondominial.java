@@ -45,7 +45,7 @@ public class ProcessoCondominial extends BaseEntity{
 		return processoAtivo;
 	}
 
-	public void setProcessoAtivo(boolean processoAtivo) {
+	public void setProcessoAtivo(Boolean processoAtivo) {
 		this.processoAtivo = processoAtivo;
 	}
 	

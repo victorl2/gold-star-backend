@@ -198,7 +198,7 @@ public class ImovelServiceImpl implements ImovelService{
             table.addHeaderCell(
                 new Cell().add( 
                     new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).setFont(font)));
-            if(imovel.getRgi()!=null) {
+            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
                     new Cell().add(
                         new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
@@ -220,7 +220,7 @@ public class ImovelServiceImpl implements ImovelService{
     	    }
         	
         	if(imovel.getTipoLoja()!=null) {
-        		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null) {
+        		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null && !imovel.getTipoLoja().getNomeDoTipoComercio().isEmpty()) {
         			table.addCell(
         		            new Cell().add(
         		                new Paragraph("Tipo de loja: " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
@@ -282,7 +282,7 @@ public class ImovelServiceImpl implements ImovelService{
             table.addHeaderCell(
                 new Cell().add( 
                     new Paragraph("Nº do apartamento: " + imovel.getNumeroImovel().toString()).setFont(font)));
-            if(imovel.getRgi()!=null) {
+            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
                     new Cell().add(
                         new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
@@ -321,7 +321,7 @@ public class ImovelServiceImpl implements ImovelService{
 		    
 		    //contato emergencia
 		    if(imovel.getContatoEmergencia()!=null) {
-		    	if(imovel.getContatoEmergencia().getNome()!=null) {
+		    	if(imovel.getContatoEmergencia().getNome()!=null && !imovel.getContatoEmergencia().getNome().isEmpty()) {
 				    table.addCell(
 				    		new Cell().add(
 				                new Paragraph("Contato emergência: " + imovel.getContatoEmergencia().getNome()).setFont(font)));
@@ -330,7 +330,7 @@ public class ImovelServiceImpl implements ImovelService{
 				    		new Cell().add(
 				                new Paragraph("Contato emergência não informado").setFont(font)));
 		    	}
-		    	if(imovel.getContatoEmergencia().getCelular() !=null) {
+		    	if(imovel.getContatoEmergencia().getCelular() !=null && !imovel.getContatoEmergencia().getCelular().isEmpty()) {
 		    		table.addCell(
 				    		new Cell().add(
 				                new Paragraph("Tel Emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font)));
@@ -361,7 +361,7 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	private void adicionaInformacaoSobreLocatario(Imovel imovel, Table table, PdfFont font) {
 		if(imovel.getLocatario()!=null) {
-	    	if(imovel.getLocatario().getNome()!=null) {
+	    	if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Nome Locatário: " + imovel.getLocatario().getNome()).setFont(font)));
@@ -370,7 +370,7 @@ public class ImovelServiceImpl implements ImovelService{
 			    		new Cell().add(
 			                new Paragraph("Nome locatário não informado").setFont(font)));
 	    	}
-	    	if(imovel.getLocatario().getCelular() !=null) {
+	    	if(imovel.getLocatario().getCelular() !=null && !imovel.getLocatario().getCelular().isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Tel Locatário: " + imovel.getLocatario().getCelular()).setFont(font)));
@@ -392,7 +392,7 @@ public class ImovelServiceImpl implements ImovelService{
 
 	private void adicionaInformacaoSobreDonoDoImovel(Imovel imovel, Table table, PdfFont font) {
 		if(imovel.getDonoImovel()!=null) {
-	    	if(imovel.getDonoImovel().getNome()!=null) {
+	    	if(imovel.getDonoImovel().getNome()!=null && !imovel.getDonoImovel().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Nome Proprietário: " + imovel.getDonoImovel().getNome()).setFont(font)));
@@ -401,7 +401,7 @@ public class ImovelServiceImpl implements ImovelService{
 			    		new Cell().add(
 			                new Paragraph("Nome Proprietário: não informado").setFont(font)));
 	    	}
-	    	if(imovel.getDonoImovel().getCelular() !=null) {
+	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular() .isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Tel Proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font)));

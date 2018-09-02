@@ -93,7 +93,7 @@ public abstract class Imovel extends BaseEntity{
 	}
 
 
-	public void setTrocouBarbara(boolean trocouBarbara) {
+	public void setTrocouBarbara(Boolean trocouBarbara) {
 		this.trocouBarbara = trocouBarbara;
 	}
 

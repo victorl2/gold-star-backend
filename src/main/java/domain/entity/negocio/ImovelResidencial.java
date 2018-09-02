@@ -32,7 +32,7 @@ public class ImovelResidencial extends Imovel{
 		return possuiAnimalEstimacao;
 	}
 
-	public void setPossuiAnimalEstimacao(boolean possuiAnimalEstimacao) {
+	public void setPossuiAnimalEstimacao(Boolean possuiAnimalEstimacao) {
 		this.possuiAnimalEstimacao = possuiAnimalEstimacao;
 	}
 	
