@@ -271,6 +271,7 @@ public class ImovelServiceImpl implements ImovelService{
 	private Table montaTabelaResidencial(PdfFont bold, PdfFont font, Imovel imovel) {
 		Table table = new Table(new float[]{1,1});
 		table.setWidth(UnitValue.createPercentValue(100));
+		table.setFixedLayout();
 		process(table, imovel, bold, true);
 		process(table, imovel, font, false);
 		return table;
