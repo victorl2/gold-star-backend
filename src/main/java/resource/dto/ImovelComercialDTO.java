@@ -9,7 +9,7 @@ import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.TipoComercio;
 
 public class ImovelComercialDTO {
-	private Integer numeroImovel;
+	private String numeroImovel;
 	private String rgi;
 	private Boolean trocouBarbara;
 	private Pessoa contatoEmergencia;
@@ -19,10 +19,10 @@ public class ImovelComercialDTO {
 	private Boolean eSobreloja;
 	private TipoComercio tipoLoja;
 	
-	public Integer getNumeroImovel() {
+	public String getNumeroImovel() {
 		return numeroImovel;
 	}
-	public void setNumeroImovel(Integer numeroImovel) {
+	public void setNumeroImovel(String numeroImovel) {
 		this.numeroImovel = numeroImovel;
 	}
 	public String getRgi() {
