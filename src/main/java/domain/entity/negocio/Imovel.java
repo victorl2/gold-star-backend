@@ -49,6 +49,7 @@ public abstract class Imovel extends BaseEntity{
 	 */
 	@ManyToOne
 	@JoinColumn(unique = false, name="PROPRIETARIO")
+	@JsonManagedReference
 	private Proprietario donoImovel;
 	
 	/**
