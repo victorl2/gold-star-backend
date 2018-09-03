@@ -24,7 +24,7 @@ public abstract class Imovel extends BaseEntity{
 	 * Número do apartamento no edifício goldstar
 	 */
 	@Column(name = "NUMERO")
-	private Integer numeroImovel;
+	private String numeroImovel;
 	
 	/**
 	 * Código RGI do imóvel
@@ -67,14 +67,14 @@ public abstract class Imovel extends BaseEntity{
 	@OneToMany(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinColumn(unique = false, name="PROCESSOS_POR_IMOVEL")
 	private List<ProcessoCondominial> processos;
+	
 
-
-	public Integer getNumeroImovel() {
+	public String getNumeroImovel() {
 		return numeroImovel;
 	}
 
 
-	public void setNumeroImovel(int numeroImovel) {
+	public void setNumeroImovel(String numeroImovel) {
 		this.numeroImovel = numeroImovel;
 	}
 

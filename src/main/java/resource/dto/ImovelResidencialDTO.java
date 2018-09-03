@@ -9,7 +9,7 @@ import domain.entity.negocio.ProcessoCondominial;
 public class ImovelResidencialDTO {
 	private List<Pessoa> moradores;
 	private Boolean possuiAnimalEstimacao;
-	private Integer numeroImovel;
+	private String numeroImovel;
 	private String rgi;
 	private Boolean trocouBarbara;
 	private Pessoa contatoEmergencia;
@@ -29,10 +29,10 @@ public class ImovelResidencialDTO {
 	public void setPossuiAnimalEstimacao(Boolean possuiAnimalEstimacao) {
 		this.possuiAnimalEstimacao = possuiAnimalEstimacao;
 	}
-	public Integer getNumeroImovel() {
+	public String getNumeroImovel() {
 		return numeroImovel;
 	}
-	public void setNumeroImovel(Integer numeroImovel) {
+	public void setNumeroImovel(String numeroImovel) {
 		this.numeroImovel = numeroImovel;
 	}
 	public String getRgi() {
