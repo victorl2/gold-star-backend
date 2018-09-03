@@ -155,24 +155,28 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	public boolean gerarRelatorioTodosImoveisComerciais(String path, Relatorio relatorio) {
 		Date data = new Date(System.currentTimeMillis());
+		String pathFormatado = path+"relatorio"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
 		try {
-			FileOutputStream fos = new FileOutputStream(path);
+			FileOutputStream fos = new FileOutputStream(pathFormatado);
 			PdfWriter writer = new PdfWriter(fos);
 			PdfDocument pdf = new PdfDocument(writer);
 			Document document = new Document(pdf);
 			PdfFont font = PdfFontFactory.createFont("Helvetica");
 			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
-			document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
+			document.add(new Paragraph("Relatório: Todos os imóveis Comerciais.             " 
 													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-																.format(data)).setFont(bold));
-			
-			for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
-				Table table = montaTabelaComercial(bold,font,imovel);
+																.format(data)+".").setFont(bold));
+			document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
+			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
+				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
+					Table table = montaTabelaComercial(bold,font,imovel);
+					document.add(new Paragraph());
+					document.add(new Paragraph());
+					document.add(table);
+				}
 				document.add(new Paragraph());
-				document.add(new Paragraph());
-				document.add(table);
 			}
-			document.add(new Paragraph());
+			
 				document.close();
 		}catch(FileNotFoundException e){
 			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
@@ -250,13 +254,16 @@ public class ImovelServiceImpl implements ImovelService{
 			document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
 													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 																.format(data)).setFont(bold));
-			for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
-				Table table = montaTabelaResidencial(bold,font,imovel);
+			document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
+			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
+				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
+					Table table = montaTabelaResidencial(bold,font,imovel);
+					document.add(new Paragraph());
+					document.add(new Paragraph());
+					document.add(table);
+				}
 				document.add(new Paragraph());
-				document.add(new Paragraph());
-				document.add(table);
 			}
-			document.add(new Paragraph());
 				document.close();
 		}catch(FileNotFoundException e){
 			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
