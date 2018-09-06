@@ -3,6 +3,7 @@ package resource.dto;
 import domain.entity.negocio.Proprietario;
 
 public class ProprietarioDTO {
+	private String id;
 	private String nome;
 	private String telefone;
 	private String celular;
@@ -53,5 +54,11 @@ public class ProprietarioDTO {
 		prop.setEndereco(this.getEndereco());
 		prop.setNome(this.getNome());
 		return prop;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

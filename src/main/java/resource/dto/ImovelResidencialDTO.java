@@ -13,8 +13,8 @@ public class ImovelResidencialDTO {
 	private String rgi;
 	private Boolean trocouBarbara;
 	private Pessoa contatoEmergencia;
-	private String oidProprietario;
-	private String oidLocador;
+	private ProprietarioDTO proprietario;
+	private LocatarioDTO locador;
 	private List<ProcessoCondominial> processos;
 	
 	public List<Pessoa> getMoradores() {
@@ -53,17 +53,18 @@ public class ImovelResidencialDTO {
 	public void setContatoEmergencia(Pessoa contatoEmergencia) {
 		this.contatoEmergencia = contatoEmergencia;
 	}
-	public String getOidProprietario() {
-		return oidProprietario;
+	
+	public ProprietarioDTO getProprietario() {
+		return proprietario;
 	}
-	public void setOidProprietario(String oidProprietario) {
-		this.oidProprietario = oidProprietario;
+	public void setProprietario(ProprietarioDTO proprietario) {
+		this.proprietario = proprietario;
 	}
-	public String getOidLocador() {
-		return oidLocador;
+	public LocatarioDTO getLocador() {
+		return locador;
 	}
-	public void setOidLocador(String oidLocador) {
-		this.oidLocador = oidLocador;
+	public void setLocador(LocatarioDTO locador) {
+		this.locador = locador;
 	}
 	public List<ProcessoCondominial> getProcessos() {
 		return processos;
@@ -73,5 +74,17 @@ public class ImovelResidencialDTO {
 	}
 	public Optional<List<ProcessoCondominial>> getOptProcessos() {
 		return Optional.ofNullable(this.getProcessos());
+	}
+	
+	public String getOidProprietario() {
+		if(this.proprietario != null && this.proprietario.getId() != null)
+			return this.proprietario.getId();
+		return null;
+	}
+	
+	public String getOidLocatario() {
+		if(this.locador != null && this.locador.getId() != null)
+			return this.locador.getId();
+		return null;
 	}
 }

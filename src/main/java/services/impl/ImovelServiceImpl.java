@@ -95,8 +95,8 @@ public class ImovelServiceImpl implements ImovelService{
 			}
 		}
 		
-		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
-			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocador());
+		if(imovelDTO.getOidLocatario() != null && !imovelDTO.getOidLocatario().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocatario());
 			
 			if(locatario.isPresent())
 				novoImovel.setLocatario(locatario.get());

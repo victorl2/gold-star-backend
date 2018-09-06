@@ -3,11 +3,20 @@ package resource.dto;
 import domain.entity.negocio.Locatario;
 
 public class LocatarioDTO {
+	private String id;
 	private String cpf;
 	private String nome;
 	private String telefone;
 	private String celular;
 	private Boolean possuidor;
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	
 	public String getCpf() {
 		return cpf;

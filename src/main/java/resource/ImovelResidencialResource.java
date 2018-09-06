@@ -1,7 +1,7 @@
 package resource;
 
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
@@ -14,12 +14,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.ImovelResidencial;
+import domain.entity.negocio.Locatario;
 import domain.entity.negocio.ProcessoCondominial;
+import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
-	
+import services.LocatarioService;
+import services.ProprietarioService;
+
 @Path("/imovel-residencial")
 @Produces("application/json; charset=UTF-8")
 @Consumes("application/json; charset=UTF-8")
@@ -29,69 +33,98 @@ import services.ImovelService;
  */
 public class ImovelResidencialResource {
 	private Logger LOGGER = Logger.getLogger(this.getClass().getName());
-	
+
 	@Inject
 	private GeradorRelatorio gerarRelatorio;
-	
+
 	@Inject
 	private ImovelService imovelService;
-	
+
+	@Inject
+	private ProprietarioService proprietarioService;
+
+	@Inject
+	private LocatarioService locatarioService;
+
 	@POST
 	@Path("/gerar-relatorio")
 	public Response gerarRelatorioTodosImoveisResidenciais(String path) {
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisResidenciais();
-		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
-		if(imovelService.gerarRelatorioTodosImoveisResidenciais(path, relatorio)) {
+		if (relatorio.getImoveisPresentesRelatorio().isEmpty())
+			return Response.status(412).entity("Relatorio está vazio.").build();
+		if (imovelService.gerarRelatorioTodosImoveisResidenciais(path, relatorio)) {
 			return Response.ok("Relatório gerado com sucesso.").build();
 		}
-		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();		
+		return Response.status(412)
+				.entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
 	}
-	
+
 	@POST
 	@Path("/cadastrarImovelResidencial")
 	public Response cadastrarImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
+
+		if (imovelResidencial.getNumeroImovel() == null)
+			return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
 		
-		if(imovelResidencial.getNumeroImovel()!=null) { 
-			if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
-				return Response.ok("Cadastro realizado com sucesso").build();
+		if (imovelResidencial.getProprietario() != null) {
+			if (imovelResidencial.getProprietario().getId() == null
+					|| imovelResidencial.getProprietario().getId().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioService
+						.cadastrarProprietario(imovelResidencial.getProprietario());
+				if (proprietario.isPresent()) {
+					imovelResidencial.getProprietario().setId(proprietario.get().getID());
+				}
 			}
 		}
-		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+		if (imovelResidencial.getLocador() != null) {
+			if (imovelResidencial.getLocador().getId() == null
+					|| imovelResidencial.getLocador().getId().isEmpty()) {
+				Optional<Locatario> locatario = locatarioService
+						.cadastrarLocatario(imovelResidencial.getLocador());
+				if (locatario.isPresent()) {
+					imovelResidencial.getLocador().setId(locatario.get().getID());
+				}
+			}
+		}
+		if (imovelService.cadastrarImovelResidencial(imovelResidencial)) {
+			return Response.ok("Cadastro realizado com sucesso").build();
+		}
+		return Response.status(415).entity("Falha ao realizar cadastro").build();
 	}
-	
+
 	@POST
 	@Path("/atualizar-Processos")
 	public Response atualizaProcessosCondominiais(List<ProcessoCondominial> processos, String oidImovel) {
 		return Response.ok("Processos atualizados com sucesso").build();
 	}
-	
+
 	@GET
 	@Path("busca-rgi/{rgi}")
 	public Response buscaImovelResidencialPorRGI(@PathParam("rgi") String rgi) {
 		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorRGI(rgi);
-		if(!imoveis.isEmpty()) 
+		if (!imoveis.isEmpty())
 			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
-		
+
 		return Response.status(412).build();
 	}
-	
+
 	@GET
 	@Path("busca-numero/{numero}")
 	public Response buscaImovelResidencialPorNumero(@PathParam("numero") String numero) {
 		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorNumero(numero);
-		if(!imoveis.isEmpty()) 
+		if (!imoveis.isEmpty())
 			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
-		
+
 		return Response.status(412).build();
 	}
-	
+
 	@GET
 	@Path("busca-nomeLocatario/{nome}")
 	public Response buscaImovelResidencialPorNomeLocatario(@PathParam("nome") String nome) {
 		List<ImovelResidencial> imoveis = imovelService.buscarImovelResidencialPorNomeLocatario(nome);
-		if(!imoveis.isEmpty()) 
+		if (!imoveis.isEmpty())
 			return Response.ok("Imovel Residencial encontrado").entity(imoveis).build();
-		
+
 		return Response.status(412).build();
 	}
 
