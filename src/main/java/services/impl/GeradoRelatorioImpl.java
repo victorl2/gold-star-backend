@@ -1,10 +1,12 @@
 package services.impl;
 
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import domain.entity.negocio.Imovel;
+import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Relatorio;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
@@ -27,7 +29,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.buscarTodos()
 						.stream()
 							.map(residencia -> (Imovel) residencia)
-								.collect(Collectors.toList()));
+								.sorted(Comparator.comparing(Imovel::getNumeroImovel))
+									.collect(Collectors.toList()));
 	    return relatorio;
 	}
 	
@@ -50,7 +53,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.buscarTodos()
 						.stream()
 							.map(comercio -> (Imovel) comercio)
-								.collect(Collectors.toList()));
+								.sorted(Comparator.comparing(Imovel::getNumeroImovel))
+									.collect(Collectors.toList()));
 		relatorio.getImoveisPresentesRelatorio().forEach(imovel -> 
 								relatorio.setNumeroDeImoveis(relatorio.getNumeroDeImoveis()+1));
 	    return relatorio;
