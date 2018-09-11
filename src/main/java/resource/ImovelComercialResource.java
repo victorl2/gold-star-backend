@@ -1,6 +1,7 @@
 package resource;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -12,10 +13,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.ImovelComercial;
+import domain.entity.negocio.Locatario;
+import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
+import services.LocatarioService;
+import services.ProprietarioService;
 
 
 @Path("/imovel-comercial")
@@ -31,6 +36,12 @@ public class ImovelComercialResource {
 	
 	@Inject
 	private ImovelService imovelService;
+	
+	@Inject
+	private ProprietarioService proprietarioService;
+
+	@Inject
+	private LocatarioService locatarioService;
 
 	@GET
 	@Path("/{rgi}")
@@ -61,12 +72,33 @@ public class ImovelComercialResource {
 	@POST
 	@Path("/cadastrar-imovel-comercial")
 	public Response cadastrarImoveisComerciais(ImovelComercialDTO imovelComercial) {
-		if(imovelComercial.getNumeroImovel()!=null) { 
-			if(imovelService.cadastrarImovelComercial(imovelComercial)) {
-				return Response.ok("Cadastro realizado com sucesso").build();
+		if (imovelComercial.getNumeroImovel() == null)
+			return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+		
+		if (imovelComercial.getProprietario() != null) {
+			if (imovelComercial.getProprietario().getId() == null
+					|| imovelComercial.getProprietario().getId().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioService
+						.cadastrarProprietario(imovelComercial.getProprietario());
+				if (proprietario.isPresent()) {
+					imovelComercial.getProprietario().setId(proprietario.get().getID());
+				}
 			}
 		}
-		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+		if (imovelComercial.getLocador() != null) {
+			if (imovelComercial.getLocador().getId() == null
+					|| imovelComercial.getLocador().getId().isEmpty()) {
+				Optional<Locatario> locatario = locatarioService
+						.cadastrarLocatario(imovelComercial.getLocador());
+				if (locatario.isPresent()) {
+					imovelComercial.getLocador().setId(locatario.get().getID());
+				}
+			}
+		}
+		if (imovelService.cadastrarImovelComercial(imovelComercial)) {
+			return Response.ok("Cadastro realizado com sucesso").build();
+		}
+		return Response.status(415).entity("Falha ao realizar cadastro").build();
 	}
 	
 	@GET
