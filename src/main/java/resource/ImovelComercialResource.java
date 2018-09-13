@@ -134,7 +134,7 @@ public class ImovelComercialResource {
 	
 	@POST
 	@Path("/atualizarImovelComercial")
-	public Response atualizarImoveisResidenciais(ImovelComercialDTO imovelComercial, String idImovel) {
+	public Response atualizarImoveisComerciais(ImovelComercialDTO imovelComercial, String idImovel) {
 		if(idImovel == null) return Response.status(415).entity("Falha: IdImovel Vazio").build();
 		if (imovelComercial.getProprietario() != null) {
 			if (imovelComercial.getProprietario().getId() == null
