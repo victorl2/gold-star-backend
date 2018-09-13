@@ -127,5 +127,38 @@ public class ImovelResidencialResource {
 
 		return Response.status(412).build();
 	}
+	
+	@POST
+	@Path("/atualizarImovelResidencial")
+	public Response atualizarImoveisResidenciais(ImovelResidencialDTO imovelResidencial, String idImovel) {
+		if(idImovel == null) return Response.status(415).entity("Falha: IdImovel Vazio").build();
+		if (imovelResidencial.getProprietario() != null) {
+			if (imovelResidencial.getProprietario().getId() == null
+					|| imovelResidencial.getProprietario().getId().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioService
+						.cadastrarProprietario(imovelResidencial.getProprietario());
+				if (proprietario.isPresent()) {
+					imovelResidencial.getProprietario().setId(proprietario.get().getID());
+				}
+			}else{
+				proprietarioService.atualizarProprietario(imovelResidencial.getProprietario());
+			}
+		}
+		if (imovelResidencial.getLocador() != null) {
+			if (imovelResidencial.getLocador().getId() == null
+					|| imovelResidencial.getLocador().getId().isEmpty()) {
+				Optional<Locatario> locatario = locatarioService
+						.cadastrarLocatario(imovelResidencial.getLocador());
+				if (locatario.isPresent()) {
+					imovelResidencial.getLocador().setId(locatario.get().getID());
+				}
+			}else{
+				locatarioService.atualizarLocatario(imovelResidencial.getLocador());
+			}
+		}if (imovelService.atualizarImovelResidencial(imovelResidencial,idImovel)) {
+			return Response.ok("atualização realizada com sucesso").build();
+		}
+		return Response.status(415).entity("Falha ao realizar a atualização").build();
+	}
 
 }

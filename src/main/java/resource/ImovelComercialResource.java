@@ -17,6 +17,7 @@ import domain.entity.negocio.Locatario;
 import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
+import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
 import services.LocatarioService;
@@ -130,5 +131,39 @@ public class ImovelComercialResource {
 		
 		return Response.status(412).build();
 	}
+	
+	@POST
+	@Path("/atualizarImovelComercial")
+	public Response atualizarImoveisResidenciais(ImovelComercialDTO imovelComercial, String idImovel) {
+		if(idImovel == null) return Response.status(415).entity("Falha: IdImovel Vazio").build();
+		if (imovelComercial.getProprietario() != null) {
+			if (imovelComercial.getProprietario().getId() == null
+					|| imovelComercial.getProprietario().getId().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioService
+						.cadastrarProprietario(imovelComercial.getProprietario());
+				if (proprietario.isPresent()) {
+					imovelComercial.getProprietario().setId(proprietario.get().getID());
+				}
+			}else{
+				proprietarioService.atualizarProprietario(imovelComercial.getProprietario());
+			}
+		}
+		if (imovelComercial.getLocador() != null) {
+			if (imovelComercial.getLocador().getId() == null
+					|| imovelComercial.getLocador().getId().isEmpty()) {
+				Optional<Locatario> locatario = locatarioService
+						.cadastrarLocatario(imovelComercial.getLocador());
+				if (locatario.isPresent()) {
+					imovelComercial.getLocador().setId(locatario.get().getID());
+				}
+			}else{
+				locatarioService.atualizarLocatario(imovelComercial.getLocador());
+			}
+		}if (imovelService.atualizarImovelComercial(imovelComercial,idImovel)) {
+			return Response.ok("atualização realizada com sucesso").build();
+		}
+		return Response.status(415).entity("Falha ao realizar a atualização").build();
+	}
 
 }
+

@@ -32,16 +32,6 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 		
 	}
 	
-	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa) {
-		Proprietario proprietario = new Proprietario();
-		proprietario.setCelular(pessoa.getCelular());
-		proprietario.setNome(pessoa.getNome());
-		proprietario.setTelefone(pessoa.getTelefone());
-		pessoa = (Pessoa) proprietarioRepository.salvar(proprietario);
-		
-		return pessoa;
-	}
-	
 	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf) {
 		if(cpf !=null) {
 			List<Proprietario> proprietarios = proprietarioRepository.buscarTodos()
@@ -52,5 +42,15 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			}else return Optional.of(proprietarios.get(0));
 		}
 		return Optional.empty();
+	}
+	
+	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO) {
+		Optional<Proprietario> prop = proprietarioRepository.buscarPorID(proprietarioDTO.getId());
+			prop.get().setCelular(proprietarioDTO.getCelular());
+			prop.get().setCpf(proprietarioDTO.getCpf());
+			prop.get().setEndereco(proprietarioDTO.getEndereco());
+			prop.get().setNome(proprietarioDTO.getNome());
+			prop.get().setTelefone(proprietarioDTO.getTelefone());
+			return Optional.of(proprietarioRepository.merge(prop.get()));
 	}
 }

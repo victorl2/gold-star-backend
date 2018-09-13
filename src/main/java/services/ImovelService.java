@@ -43,4 +43,9 @@ public interface ImovelService extends Buscador{
 	public List<ImovelComercial> buscarImovelComercialPorNumero(String numero);
 
 	public List<ImovelComercial> buscarImovelComercialPorNomeLocatario(String nome);
+
+	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO, String idImovel);
+
+	public Boolean atualizarImovelComercial(ImovelComercialDTO imovelComercial, String idImovel);
+
 }

@@ -505,4 +505,83 @@ public class ImovelServiceImpl implements ImovelService{
 		});
 		return temp;
 	}
+	
+	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO, String idImovel) {
+		Optional<ImovelResidencial> imovel = imovelResidencialRepository.buscarPorID(idImovel);
+		imovel.get().setRgi(imovelDTO.getRgi());
+		imovel.get().setTrocouBarbara(imovelDTO.getTrocouBarbara());
+		imovel.get().setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
+		
+		imovel.get().setMoradores(imovelDTO.getMoradores());
+		imovel.get().setProcessos(imovelDTO.getProcessos());
+		imovel.get().setContatoEmergencia(imovelDTO.getContatoEmergencia());
+		
+		if(imovelDTO.getOidProprietario() != null && !imovelDTO.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getOidProprietario());
+			if(proprietario.isPresent()) {
+				imovel.get().setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(imovel.get());
+			}	
+		}else {
+			imovel.get().setDonoImovel(null);
+		}
+		
+		if(imovelDTO.getOidLocatario() != null && !imovelDTO.getOidLocatario().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocatario());
+			
+			if(locatario.isPresent())
+				imovel.get().setLocatario(locatario.get());
+			locatario.get().getImoveisAlugados().add(imovel.get());
+		}else {
+			imovel.get().setLocatario(null);
+		}
+		
+		try {
+			imovelResidencialRepository.salvar(imovel.get());
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel residencial");
+			return false;
+		}
+			
+	}
+	
+	public Boolean atualizarImovelComercial(ImovelComercialDTO imovelComercial, String idImovel) {
+		Optional<ImovelComercial> imovel = imovelComercialRepository.buscarPorID(idImovel);
+		imovel.get().setRgi(imovelComercial.getRgi());
+		imovel.get().setTrocouBarbara(imovelComercial.getTrocouBarbara());
+		
+		imovel.get().setTipoLoja(imovelComercial.getTipoLoja());
+		imovel.get().seteSobreloja(imovelComercial.geteSobreloja());
+		imovel.get().setProcessos(imovelComercial.getProcessos());
+		imovel.get().setContatoEmergencia(imovelComercial.getContatoEmergencia());
+		
+		if(imovelComercial.getOidProprietario() != null && !imovelComercial.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelComercial.getOidProprietario());
+			if(proprietario.isPresent()) {
+				imovel.get().setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(imovel.get());
+			}	
+		}else {
+			imovel.get().setDonoImovel(null);
+		}
+		
+		if(imovelComercial.getOidLocador() != null && !imovelComercial.getOidLocador().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelComercial.getOidLocador());
+			
+			if(locatario.isPresent())
+				imovel.get().setLocatario(locatario.get());
+			locatario.get().getImoveisAlugados().add(imovel.get());
+		}else {
+			imovel.get().setLocatario(null);
+		}
+		
+		try {
+			imovelComercialRepository.salvar(imovel.get());
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel comercial");
+			return false;
+		}
+	}
 }

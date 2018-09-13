@@ -1,7 +1,6 @@
 package services.impl;
 
 import java.util.List;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,5 +44,15 @@ public class LocatarioServiceImpl implements LocatarioService{
 			}else return Optional.of(locatarios.get(0));
 		}
 		return Optional.empty();
+	}
+	
+	public Optional<Locatario> atualizarLocatario(LocatarioDTO locatarioDTO){
+		Optional<Locatario> locatario = locatarioRepository.buscarPorID(locatarioDTO.getId());
+			locatario.get().setCelular(locatarioDTO.getCelular());
+			locatario.get().setCpf(locatarioDTO.getCpf());
+			locatario.get().setNome(locatarioDTO.getNome());
+			locatario.get().setTelefone(locatarioDTO.getTelefone());
+			locatario.get().setPossuidor(locatarioDTO.getPossuidor());
+			return Optional.of(locatarioRepository.merge(locatario.get()));
 	}
 }

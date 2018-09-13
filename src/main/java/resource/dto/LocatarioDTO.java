@@ -46,10 +46,13 @@ public class LocatarioDTO {
 	public boolean isPossuidor() {
 		return possuidor;
 	}
-	public void setPossuidor(boolean possuidor) {
+	
+	public Boolean getPossuidor() {
+		return possuidor;
+	}
+	public void setPossuidor(Boolean possuidor) {
 		this.possuidor = possuidor;
 	}
-	
 	public Locatario build() {
 		Locatario loc = new Locatario();
 		loc.setCelular(this.getCelular());
