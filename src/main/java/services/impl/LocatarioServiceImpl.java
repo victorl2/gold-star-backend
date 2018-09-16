@@ -20,19 +20,12 @@ public class LocatarioServiceImpl implements LocatarioService{
 	@Inject
 	private LocatarioRepository locatarioRepository;
 	
-	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {
-		
-		if(locatarioDTO.getCpf()==null) return Optional.empty();
-		List<Locatario> locatarios = locatarioRepository.buscarTodos().stream()
-							.filter( locatario -> locatario.getCpf()
-									.equals(locatarioDTO.getCpf()))
-											.collect(Collectors.toList());
-		if(locatarios.isEmpty()) {
-			
-			return Optional.of(locatarioRepository.salvar(locatarioDTO.build()));
-		}
-		return Optional.empty();
-		
+	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {	
+		if(locatarioDTO.getCpf() ==null) 
+			return Optional.empty();
+	
+		//Removida a verificação de unicidade de cpf temporariamente
+		return Optional.of(locatarioRepository.salvar(locatarioDTO.build()));
 	}
 	
 	public Optional<Locatario> buscaLocatarioPorCPF(String cpf) {
