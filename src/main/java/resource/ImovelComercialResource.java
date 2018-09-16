@@ -1,7 +1,10 @@
 package resource;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -17,7 +20,6 @@ import domain.entity.negocio.Locatario;
 import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
-import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
 import services.LocatarioService;
@@ -32,6 +34,8 @@ import services.ProprietarioService;
  *
  */
 public class ImovelComercialResource {
+	private Logger LOGGER = Logger.getLogger(getClass().getName());
+	
 	@Inject
 	private GeradorRelatorio gerarRelatorio;
 	
@@ -44,28 +48,26 @@ public class ImovelComercialResource {
 	@Inject
 	private LocatarioService locatarioService;
 
-	@GET
-	@Path("/{rgi}")
-	/**
-	 * Endpoint informando os imoveis comerciais que podem estar associado
-	 * ou rgi informado 
-	 * 
-	 * nota: o rgi não precisa necessariamente estar completo
-	 * 
-	 * @param rgi ( ou parte do rgi ) do imovel procurado
-	 * @return Lista contendo os imoveis procurados
-	 */
-	public Response getImoveisComerciaisPorRGI(@PathParam(value = "rgi") String rgi) {
-		return Response.status(404).entity("Recurso ainda não implementando").build();
-	}
 	
 	@POST
 	@Path("gerar-relatorio-comercial")
 	public Response gerarRelatorioTodosImoveisComerciais(String path) {
+		
+		final String usuarioPC = System.getProperty("user.name");
+		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
+		
+		
+		File pasta = new File(caminhoPadrao);
+		LOGGER.log(Level.INFO, "pasta:" + caminhoPadrao);
+		
+		if(!new File(caminhoPadrao).isDirectory()) {
+			pasta.mkdir();
+		}
+		
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisComerciais();
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
-		if(imovelService.gerarRelatorioTodosImoveisComerciais(path, relatorio)) {
-			return Response.ok("relatório gerado com sucesso").build();
+		if(imovelService.gerarRelatorioTodosImoveisComerciais(caminhoPadrao, relatorio)) {
+			return Response.ok("relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
 	}

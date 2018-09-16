@@ -19,16 +19,11 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	private ProprietarioRepository proprietarioRepository;
 	
 	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
-		if(proprietarioDTO.getCpf()==null) return Optional.empty();
-		List<Proprietario> prop = proprietarioRepository.buscarTodos().stream()
-							.filter( propri -> propri.getCpf()
-									.equals(proprietarioDTO.getCpf()))
-											.collect(Collectors.toList());
-		if(prop.isEmpty()) {
-			
-			return Optional.of(proprietarioRepository.salvar(proprietarioDTO.build()));
-		}
-		return Optional.empty();
+		if(proprietarioDTO.getCpf()==null) 
+			return Optional.empty();
+		
+		//Removida a verificação de unicidade para cpf temporariamente
+		return Optional.of(proprietarioRepository.salvar(proprietarioDTO.build()));
 		
 	}
 	

@@ -25,15 +25,10 @@ public class Relatorio extends BaseEntity{
 	@ManyToMany
 	private List<Imovel> imoveisPresentesRelatorio;
 	
-	@Column(name = "NUMERO")
-	private Integer numeroDeImoveis;
-	
-	public Integer getNumeroDeImoveis() {
-		return numeroDeImoveis;
-	}
-
-	public void setNumeroDeImoveis(Integer numeroDeImoveis) {
-		this.numeroDeImoveis = numeroDeImoveis;
+	public int getNumeroDeImoveis() {
+		if(imoveisPresentesRelatorio == null)
+			return 0;
+		return imoveisPresentesRelatorio.size();
 	}
 
 	public List<Imovel> getImoveisPresentesRelatorio() {

@@ -216,14 +216,18 @@ public class ImovelServiceImpl implements ImovelService{
             }
         // Caso onde as informações serão geradas no corpo das tabelas no pdf
         }else {
-        	if(imovel.iseSobreloja()) {
+        	if(imovel.iseSobreloja() != null && imovel.iseSobreloja()) {
     		    table.addCell(
     		            new Cell().add(
     		                new Paragraph("É sobreloja").setFont(font)));
-    	    }else {
+    	    }else if(imovel.iseSobreloja() != null){
     	    	table.addCell(
     		            new Cell().add(
     		                new Paragraph("É loja").setFont(font)));
+    	    }else {
+    	    	table.addCell(
+    		            new Cell().add(
+    		                new Paragraph("Não informado").setFont(font)));
     	    }
         	
         	if(imovel.getTipoLoja()!=null) {
@@ -238,8 +242,7 @@ public class ImovelServiceImpl implements ImovelService{
         		}
         	}else {
         		table.addCell(
-    		            new Cell().add(
-    		                new Paragraph("Tipo de loja não informado " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
+    		            new Cell().add(new Paragraph("Tipo de loja não informado ")));
         	}
         }
 	}
@@ -348,11 +351,11 @@ public class ImovelServiceImpl implements ImovelService{
 		    	if(imovel.getContatoEmergencia().getCelular() !=null && !imovel.getContatoEmergencia().getCelular().isEmpty()) {
 		    		table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Tel Emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font)));
+				                new Paragraph("Tel emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font)));
 		    	}else {
 		    		table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Tel Emergência não informado").setFont(font)));
+				                new Paragraph("Tel emergência não informado").setFont(font)));
 		    	}
 		    }else {
 		    	table.addCell(
@@ -360,7 +363,7 @@ public class ImovelServiceImpl implements ImovelService{
 			                new Paragraph("Contato emergência não informado").setFont(font)));
 		    	table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel Emergência não informado").setFont(font)));
+			                new Paragraph("Tel emergência não informado").setFont(font)));
 		    }
         }
 	}
@@ -379,7 +382,7 @@ public class ImovelServiceImpl implements ImovelService{
 	    	if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome Locatário: " + imovel.getLocatario().getNome()).setFont(font)));
+			                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
@@ -388,7 +391,7 @@ public class ImovelServiceImpl implements ImovelService{
 	    	if(imovel.getLocatario().getCelular() !=null && !imovel.getLocatario().getCelular().isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel Locatário: " + imovel.getLocatario().getCelular()).setFont(font)));
+			                new Paragraph("Tel locatário: " + imovel.getLocatario().getCelular()).setFont(font)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
@@ -410,28 +413,28 @@ public class ImovelServiceImpl implements ImovelService{
 	    	if(imovel.getDonoImovel().getNome()!=null && !imovel.getDonoImovel().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome Proprietário: " + imovel.getDonoImovel().getNome()).setFont(font)));
+			                new Paragraph("Nome proprietário: " + imovel.getDonoImovel().getNome()).setFont(font)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome Proprietário: não informado").setFont(font)));
+			                new Paragraph("Nome proprietário: não informado").setFont(font)));
 	    	}
 	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular() .isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel Proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font)));
+			                new Paragraph("Tel proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel Proprietário: não informado").setFont(font)));
+			                new Paragraph("Tel proprietário: não informado").setFont(font)));
 	    	}	    
 	    }else {
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Nome Proprietário: não informado").setFont(font)));
+		                new Paragraph("Nome proprietário: não informado").setFont(font)));
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Tel Proprietário: não informado").setFont(font)));
+		                new Paragraph("Tel proprietário: não informado").setFont(font)));
 	    }
 		
 	}
