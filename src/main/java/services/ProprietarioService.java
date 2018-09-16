@@ -8,8 +8,8 @@ import resource.dto.ProprietarioDTO;
 
 public interface ProprietarioService {
 	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO);
-	
-	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa);
 
 	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf);
+
+	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO, String idImovel);
 }

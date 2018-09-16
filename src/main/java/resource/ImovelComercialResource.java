@@ -2,6 +2,7 @@ package resource;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.ImovelComercial;
+import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
@@ -99,6 +101,27 @@ public class ImovelComercialResource {
 			return Response.ok("Imovel Comercial encontrado").entity(imoveis).build();
 		
 		return Response.status(412).build();
+	}
+	
+	@POST
+	@Path("/atualizar-imovel-comercial")
+	public Response atualizarImoveisComerciais(ImovelComercialDTO imovelComercial) {
+		if(imovelComercial.getNumeroImovel()!=null) { 
+			if(imovelService.atualizarImovelComercial(imovelComercial)) {
+				return Response.ok("Atualizacao realizada com sucesso").build();
+			}
+		}
+		return Response.status(412).entity("Atualizacao não realizada.").build();
+	}
+	
+	@POST
+	@Path("recuperar-imovelComercial-completo")
+	public Response recuperarImovelCompleto(String numero) {
+		Optional<ImovelComercial> imovelComercial = imovelService.recuperarImovelComercialPorNumero(numero);
+		if(imovelComercial.isPresent()) {
+			return Response.ok().entity(imovelComercial.get()).build();
+		}
+		return Response.status(412).entity("Imovel nao recuperado").build();
 	}
 
 }

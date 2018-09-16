@@ -2,6 +2,7 @@ package resource;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -107,5 +108,28 @@ public class ImovelResidencialResource {
 		
 		return Response.status(412).build();
 	}
+	
+	@POST
+	@Path("/atualizar-imovel-residencial")
+	public Response atualizarImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
+		
+		if(imovelResidencial.getNumeroImovel()!=null) { 
+			if(imovelService.atualizarImovelResidencial(imovelResidencial)) {
+				return Response.ok("Atualização realizada com sucesso").build();
+			}
+		}
+		return Response.status(412).entity("Atualização não realizada.").build();
+	}
+	
+	@POST
+	@Path("recuperar-imovelResidencial-completo")
+	public Response recuperarImovelCompleto(String numero) {
+		Optional<ImovelResidencial> imovelResidencial = imovelService.recuperarImovelResidencialPorNumero(numero);
+		if(imovelResidencial.isPresent()) {
+			return Response.ok().entity(imovelResidencial.get()).build();
+		}
+		return Response.status(412).entity("Imovel nao recuperado").build();
+	}
+	
 
 }
