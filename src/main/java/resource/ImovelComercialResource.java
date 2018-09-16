@@ -1,6 +1,10 @@
 package resource;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -26,6 +30,8 @@ import services.ImovelService;
  *
  */
 public class ImovelComercialResource {
+	private Logger LOGGER = Logger.getLogger(getClass().getName());
+	
 	@Inject
 	private GeradorRelatorio gerarRelatorio;
 	
@@ -50,9 +56,21 @@ public class ImovelComercialResource {
 	@POST
 	@Path("gerar-relatorio-comercial")
 	public Response gerarRelatorioTodosImoveisComerciais(String path) {
+		
+		final String usuarioPC = System.getProperty("user.name");
+		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\";
+		
+		
+		File pasta = new File(caminhoPadrao.concat("goldstar"));
+		LOGGER.log(Level.INFO, "pasta:" + caminhoPadrao.concat("goldstar"));
+		
+		if(new File(caminhoPadrao).isDirectory()) {
+			pasta.mkdir();
+		}
+		
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisComerciais();
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
-		if(imovelService.gerarRelatorioTodosImoveisComerciais(path, relatorio)) {
+		if(imovelService.gerarRelatorioTodosImoveisComerciais(caminhoPadrao.concat("goldstar\\"), relatorio)) {
 			return Response.ok("relatório gerado com sucesso").build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
