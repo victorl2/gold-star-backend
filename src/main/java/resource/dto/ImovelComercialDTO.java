@@ -9,6 +9,7 @@ import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.TipoComercio;
 
 public class ImovelComercialDTO {
+	private String id;
 	private String numeroImovel;
 	private String rgi;
 	private Boolean trocouBarbara;
@@ -87,5 +88,11 @@ public class ImovelComercialDTO {
 		imovel.setTipoLoja(this.getTipoLoja());
 		imovel.seteSobreloja(this.geteSobreloja());
 		return imovel;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

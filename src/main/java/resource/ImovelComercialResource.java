@@ -104,7 +104,7 @@ public class ImovelComercialResource {
 	}
 	
 	@POST
-	@Path("/atualizar-imovel-comercial")
+	@Path("atualizar-imovel-comercial")
 	public Response atualizarImoveisComerciais(ImovelComercialDTO imovelComercial) {
 		if(imovelComercial.getNumeroImovel()!=null) { 
 			if(imovelService.atualizarImovelComercial(imovelComercial)) {
@@ -114,9 +114,9 @@ public class ImovelComercialResource {
 		return Response.status(412).entity("Atualizacao não realizada.").build();
 	}
 	
-	@POST
-	@Path("recuperar-imovelComercial-completo")
-	public Response recuperarImovelCompleto(String numero) {
+	@GET
+	@Path("recuperar-imovelComercial-completo/{numero}")
+	public Response recuperarImovelCompleto(@PathParam("numero") String numero) {
 		Optional<ImovelComercial> imovelComercial = imovelService.recuperarImovelComercialPorNumero(numero);
 		if(imovelComercial.isPresent()) {
 			return Response.ok().entity(imovelComercial.get()).build();

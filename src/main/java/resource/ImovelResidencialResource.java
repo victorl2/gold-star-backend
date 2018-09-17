@@ -121,9 +121,9 @@ public class ImovelResidencialResource {
 		return Response.status(412).entity("Atualização não realizada.").build();
 	}
 	
-	@POST
-	@Path("recuperar-imovelResidencial-completo")
-	public Response recuperarImovelCompleto(String numero) {
+	@GET
+	@Path("recuperar-imovelResidencial-completo/{numero}")
+	public Response recuperarImovelCompleto(@PathParam("numero") String numero) {
 		Optional<ImovelResidencial> imovelResidencial = imovelService.recuperarImovelResidencialPorNumero(numero);
 		if(imovelResidencial.isPresent()) {
 			return Response.ok().entity(imovelResidencial.get()).build();

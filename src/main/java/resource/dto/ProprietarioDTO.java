@@ -52,6 +52,7 @@ public class ProprietarioDTO {
 		prop.setCpf(this.getCpf());
 		prop.setEndereco(this.getEndereco());
 		prop.setNome(this.getNome());
+		prop.setTelefone(this.getTelefone());
 		return prop;
 	}
 }
