@@ -30,7 +30,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 	private ImovelResidencialRepository imovelResidencialRepository;
 	
 	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {	
-		if(locatarioDTO.getCpf() ==null) 
+		if(locatarioDTO.getCpf() == null) 
 			return Optional.empty();
 	
 		//Removida a verificação de unicidade de cpf temporariamente
@@ -50,15 +50,15 @@ public class LocatarioServiceImpl implements LocatarioService{
 	}
 	
 	public Optional<Locatario> atualizarLocatario(LocatarioDTO locatarioDTO, String idImovel){
-		if(locatarioDTO.getCpf()==null || locatarioDTO.getCpf().isEmpty()) 
+		if(locatarioDTO.getCpf() == null || locatarioDTO.getCpf().isEmpty()) 
 			return Optional.empty();
-		List<Locatario> lista = locatarioRepository.buscarTodos().stream()
-										.filter(locatario ->locatario.getCpf()
-													.equals(locatarioDTO.getCpf())).collect(Collectors.toList());
-		if(lista.isEmpty()) {
+		
+		Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
+
+		if(imovelComercial.isPresent() && imovelComercial.get().getLocatario() == null) {
 			return this.cadastrarLocatario(locatarioDTO);
 		}
-		Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
+		
 		if(imovelComercial.isPresent()) {
 			imovelComercial.get().getLocatario().setCelular(locatarioDTO.getCelular());
 			imovelComercial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());
@@ -66,6 +66,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 			imovelComercial.get().getLocatario().setNome(locatarioDTO.getNome());
 			return Optional.ofNullable(locatarioRepository.salvar(imovelComercial.get().getLocatario()));
 		}
+		
 		Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
 			imovelResidencial.get().getLocatario().setCelular(locatarioDTO.getCelular());
 			imovelResidencial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());

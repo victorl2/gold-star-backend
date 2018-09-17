@@ -7,6 +7,7 @@ import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.ProcessoCondominial;
 
 public class ImovelResidencialDTO {
+	private String id;
 	private List<Pessoa> moradores;
 	private Boolean possuiAnimalEstimacao;
 	private String numeroImovel;
@@ -73,5 +74,11 @@ public class ImovelResidencialDTO {
 	}
 	public Optional<List<ProcessoCondominial>> getOptProcessos() {
 		return Optional.ofNullable(this.getProcessos());
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 }

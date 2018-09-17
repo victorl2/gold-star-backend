@@ -48,8 +48,8 @@ public class LocatarioResource{
 	}
 	
 	@POST
-	@Path("/atualizar-locatario")
-	public Response atualizarLocatario(LocatarioDTO locatarioDTO, String idImovel) {
+	@Path("/atualizar-locatario/{idImovel}")
+	public Response atualizarLocatario(LocatarioDTO locatarioDTO, @PathParam("idImovel") String idImovel) {
 		Optional<Locatario> locatario = locatarioSrv.atualizarLocatario(locatarioDTO, idImovel);
 		if(locatario.isPresent()) {
 			return Response.ok("Atualizaçao realizada com sucesso").entity(locatario.get().getID()).build();
