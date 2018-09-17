@@ -1,6 +1,7 @@
 package services;
 
 import java.util.List;
+import java.util.Optional;
 
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
@@ -43,4 +44,12 @@ public interface ImovelService extends Buscador{
 	public List<ImovelComercial> buscarImovelComercialPorNumero(String numero);
 
 	public List<ImovelComercial> buscarImovelComercialPorNomeLocatario(String nome);
+
+	public Boolean atualizarImovelComercial(ImovelComercialDTO imovelComercial);
+
+	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelResidencial);
+
+	public Optional<ImovelResidencial> recuperarImovelResidencialPorNumero(String numero);
+
+	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero);
 }

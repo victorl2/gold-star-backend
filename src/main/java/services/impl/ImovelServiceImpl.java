@@ -464,7 +464,7 @@ public class ImovelServiceImpl implements ImovelService{
 			if (imovel.getLocatario()!=null) {
 				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
 																	.getNome().isEmpty()) {
-					if(imovel.getLocatario().getNome().contains(nome)) {
+					if(imovel.getLocatario().getNome().toLowerCase().contains(nome.toLowerCase())) {
 						temp.add(imovel);
 					}
 				}
@@ -499,12 +499,152 @@ public class ImovelServiceImpl implements ImovelService{
 			if (imovel.getLocatario()!=null) {
 				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
 																	.getNome().isEmpty()) {
-					if(imovel.getLocatario().getNome().contains(nome)) {
+					if(imovel.getLocatario().getNome().toLowerCase().contains(nome.toLowerCase())) {
 						temp.add(imovel);
 					}
 				}
 			}
 		});
 		return temp;
+	}
+	
+	public Boolean atualizarImovelComercial(ImovelComercialDTO imovel) {
+		boolean temProprietario = true;
+		boolean temLocatario = true;
+		List<ImovelComercial> imoveis = imovelComercialRepository
+				.buscarTodos().stream().filter(comercio -> 
+						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
+					).collect(Collectors.toList());
+		
+		if(imoveis.isEmpty())
+			return false;
+		imoveis.get(0).setContatoEmergencia(imovel.getContatoEmergencia());
+		imoveis.get(0).seteSobreloja(imovel.geteSobreloja());
+		imoveis.get(0).setProcessos(imovel.getProcessos());
+		imoveis.get(0).setRgi(imovel.getRgi());
+		imoveis.get(0).setTipoLoja(imovel.getTipoLoja());
+		imoveis.get(0).setTrocouBarbara(imovel.getTrocouBarbara());
+		
+		Proprietario prop = imoveis.get(0).getDonoImovel();
+		Locatario loc = imoveis.get(0).getLocatario();
+		
+		if(imovel.getOidProprietario()!=null && !imovel.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
+			if(proprietario.isPresent()) {
+				imoveis.get(0).setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(imoveis.get(0));
+			}
+		}else {
+			if(imoveis.get(0).getDonoImovel()!=null) {
+				temProprietario =false;
+			}
+			imoveis.get(0).setDonoImovel(null);
+		}
+		
+		if(imovel.getOidLocador()!=null && !imovel.getOidLocador().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovel.getOidLocador());
+			if(locatario.isPresent()) {
+				locatario.get().getImoveisAlugados().add(imoveis.get(0));
+				imoveis.get(0).setLocatario(locatario.get());
+			}
+		}else {
+			if(imoveis.get(0).getLocatario()!=null) {
+				temLocatario = false;
+			}
+			imoveis.get(0).setLocatario(null);
+		}
+		
+		try {
+			imovelComercialRepository.salvar(imoveis.get(0));
+			if(!temProprietario) {
+				proprietarioRepository.deletar(prop);
+			}
+			if(!temLocatario) {
+				locatarioRepository.deletar(loc);
+			}
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível atualizar o novo imóvel comercial",e);
+			return false;
+		}
+	}
+	
+public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
+		boolean temProprietario = true;
+		boolean temLocatario = true;
+		List<ImovelResidencial> imoveis = imovelResidencialRepository
+				.buscarTodos().stream()//
+					.filter(residencia -> // 
+						(residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel()))//
+					).collect(Collectors.toList());//
+		
+		if(imoveis.isEmpty()) 
+			return false;
+		
+		imoveis.get(0).setRgi(imovelDTO.getRgi());
+		imoveis.get(0).setTrocouBarbara(imovelDTO.getTrocouBarbara());
+		imoveis.get(0).setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
+		
+		imoveis.get(0).setMoradores(imovelDTO.getMoradores());
+		imoveis.get(0).setProcessos(imovelDTO.getProcessos());
+		imoveis.get(0).setContatoEmergencia(imovelDTO.getContatoEmergencia());
+		
+		Proprietario prop = imoveis.get(0).getDonoImovel();
+		Locatario loc = imoveis.get(0).getLocatario();
+		
+		if(imovelDTO.getOidProprietario() != null && !imovelDTO.getOidProprietario().isEmpty()) {
+			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getOidProprietario());
+			
+			if(proprietario.isPresent()) {
+				imoveis.get(0).setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(imoveis.get(0));
+			}
+		}else {
+			if(imoveis.get(0).getDonoImovel()!=null) {
+				temProprietario = false;
+			}
+			imoveis.get(0).setDonoImovel(null);
+			
+		}
+		
+		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
+			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocador());
+			
+			if(locatario.isPresent())
+				imoveis.get(0).setLocatario(locatario.get());
+			locatario.get().getImoveisAlugados().add(imoveis.get(0));
+		}else {
+			if(imoveis.get(0).getLocatario()!=null) {
+				temLocatario = false;
+			}
+			imoveis.get(0).setLocatario(null);
+		}
+		
+		try {
+			imovelResidencialRepository.salvar(imoveis.get(0));
+			if(!temProprietario) {
+				proprietarioRepository.deletar(prop);
+			}
+			if(!temLocatario) {
+				locatarioRepository.deletar(loc);
+			}
+			return true;
+		}catch(Exception e) {
+			LOGGER.log(Level.SEVERE, "Não foi possível salvar o novo imóvel residencial",e);
+			return false;
+		}
+			
+	}
+	public Optional<ImovelResidencial> recuperarImovelResidencialPorNumero(String numero){
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equals(numero)).collect(Collectors.toList());
+		
+		return Optional.ofNullable(imoveis.get(0));
+	}
+	
+	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero){
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equals(numero)).collect(Collectors.toList());
+		return Optional.ofNullable(imoveis.get(0));
 	}
 }

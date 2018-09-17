@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import domain.entity.negocio.Pessoa;
+import domain.entity.negocio.ImovelComercial;
+import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Proprietario;
+import domain.repository.ImovelComercialRepository;
+import domain.repository.ImovelResidencialRepository;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ProprietarioDTO;
 import services.ProprietarioService;
@@ -18,23 +21,19 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	@Inject
 	private ProprietarioRepository proprietarioRepository;
 	
+	@Inject
+	private ImovelResidencialRepository imovelResidencialRepository;
+	
+	@Inject
+	private ImovelComercialRepository imovelComercialRepository;
+	
 	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
-		if(proprietarioDTO.getCpf()==null) 
+		if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
 			return Optional.empty();
 		
 		//Removida a verificação de unicidade para cpf temporariamente
 		return Optional.of(proprietarioRepository.salvar(proprietarioDTO.build()));
 		
-	}
-	
-	public Pessoa cadastrarPessoaComProprietario(Pessoa pessoa) {
-		Proprietario proprietario = new Proprietario();
-		proprietario.setCelular(pessoa.getCelular());
-		proprietario.setNome(pessoa.getNome());
-		proprietario.setTelefone(pessoa.getTelefone());
-		pessoa = (Pessoa) proprietarioRepository.salvar(proprietario);
-		
-		return pessoa;
 	}
 	
 	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf) {
@@ -47,5 +46,32 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			}else return Optional.of(proprietarios.get(0));
 		}
 		return Optional.empty();
+	}
+	
+	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO, String idImovel){
+			if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
+				return Optional.empty();
+			List<Proprietario> lista = proprietarioRepository.buscarTodos().stream()
+											.filter(proprietario ->proprietario.getCpf()
+														.equals(proprietarioDTO.getCpf())).collect(Collectors.toList());
+			if(lista.isEmpty()) {
+				return this.cadastrarProprietario(proprietarioDTO);
+			}
+			Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
+			if(imovelComercial.isPresent()) {
+				imovelComercial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
+				imovelComercial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
+				imovelComercial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());
+				imovelComercial.get().getDonoImovel().setEndereco(proprietarioDTO.getEndereco());
+				imovelComercial.get().getDonoImovel().setNome(proprietarioDTO.getNome());
+				return Optional.ofNullable(proprietarioRepository.salvar(imovelComercial.get().getDonoImovel()));
+			}
+			Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
+				imovelResidencial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
+				imovelResidencial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
+				imovelResidencial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());
+				imovelResidencial.get().getDonoImovel().setEndereco(proprietarioDTO.getEndereco());
+				imovelResidencial.get().getDonoImovel().setNome(proprietarioDTO.getNome());
+				return Optional.ofNullable(proprietarioRepository.salvar(imovelResidencial.get().getDonoImovel()));
 	}
 }
