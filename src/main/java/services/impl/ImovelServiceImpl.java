@@ -193,6 +193,7 @@ public class ImovelServiceImpl implements ImovelService{
 	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel) {
 		Table table = new Table(new float[]{1,1});
 		table.setWidth(UnitValue.createPercentValue(100));
+		table.setFixedLayout();
 		processComercial(table,(ImovelComercial)imovel,bold,true);
 		process(table, imovel, font, false);
 		processComercial(table,(ImovelComercial)imovel,font,false);
