@@ -42,7 +42,7 @@ public class ProcessoCondominial extends BaseEntity{
 	}
 
 	public Boolean getProcessoAtivo() {
-		return processoAtivo;
+		return processoAtivo == null ? false : true;
 	}
 
 	public void setProcessoAtivo(Boolean processoAtivo) {
