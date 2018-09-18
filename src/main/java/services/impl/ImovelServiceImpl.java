@@ -645,6 +645,7 @@ public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero){
 		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
 				.stream().filter(imovel -> imovel.getNumeroImovel().equals(numero)).collect(Collectors.toList());
+		if(imoveis.isEmpty()) return Optional.empty();
 		return Optional.ofNullable(imoveis.get(0));
 	}
 }

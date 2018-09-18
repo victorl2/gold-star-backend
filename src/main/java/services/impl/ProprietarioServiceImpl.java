@@ -51,13 +51,13 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO, String idImovel){
 			if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
 				return Optional.empty();
-			List<Proprietario> lista = proprietarioRepository.buscarTodos().stream()
-											.filter(proprietario ->proprietario.getCpf()
-														.equals(proprietarioDTO.getCpf())).collect(Collectors.toList());
-			if(lista.isEmpty()) {
+			
+			Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
+	
+			if(imovelComercial.isPresent() && imovelComercial.get().getDonoImovel() == null) {
 				return this.cadastrarProprietario(proprietarioDTO);
 			}
-			Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
+			
 			if(imovelComercial.isPresent()) {
 				imovelComercial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
 				imovelComercial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
@@ -66,6 +66,7 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 				imovelComercial.get().getDonoImovel().setNome(proprietarioDTO.getNome());
 				return Optional.ofNullable(proprietarioRepository.salvar(imovelComercial.get().getDonoImovel()));
 			}
+			
 			Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
 				imovelResidencial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
 				imovelResidencial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
