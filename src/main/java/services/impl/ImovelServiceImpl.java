@@ -31,6 +31,7 @@ import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
+import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Proprietario;
 import domain.entity.negocio.Relatorio;
@@ -157,7 +158,12 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	public boolean gerarRelatorioTodosImoveisComerciais(String path, Relatorio relatorio) {
 		Date data = new Date(System.currentTimeMillis());
-		String pathFormatado = path+"relatorio"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		String pathFormatado= "";
+		if(relatorio.getNumeroDeImoveis() == 1) {
+			pathFormatado = path+"relatorioImovel"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		}else {
+			pathFormatado = path+"relatorioImoveis"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		}
 		try {
 			FileOutputStream fos = new FileOutputStream(pathFormatado);
 			PdfWriter writer = new PdfWriter(fos);
@@ -165,10 +171,17 @@ public class ImovelServiceImpl implements ImovelService{
 			Document document = new Document(pdf);
 			PdfFont font = PdfFontFactory.createFont("Helvetica");
 			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
-			document.add(new Paragraph("Relatório: Todos os imóveis Comerciais.             " 
-													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-																.format(data)+".").setFont(bold));
-			document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
+			if(relatorio.getNumeroDeImoveis() == 1) {
+				document.add(new Paragraph("Relatório: Imóvel Comercial.             " 
+						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
+									.format(data)).setFont(bold));
+			}else {
+				document.add(new Paragraph("Relatório: Todos os imóveis Comerciais.             " 
+						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
+									.format(data)+".").setFont(bold));
+				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
+			}
+			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
 				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
 					Table table = montaTabelaComercial(bold,font,imovel);
@@ -238,18 +251,23 @@ public class ImovelServiceImpl implements ImovelService{
         		}else {
         			table.addCell(
         		            new Cell().add(
-        		                new Paragraph("Tipo de loja não informado " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
+        		                new Paragraph("Tipo de loja não informado" + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
         		}
         	}else {
         		table.addCell(
-    		            new Cell().add(new Paragraph("Tipo de loja não informado ")));
+    		            new Cell().add(new Paragraph("Tipo de loja não informado")));
         	}
         }
 	}
 
 	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio) {
 		Date data = new Date(System.currentTimeMillis());
-		String pathFormatado = path+"relatorio"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		String pathFormatado = "";
+		if(relatorio.getNumeroDeImoveis() == 1) {
+			pathFormatado = path+"relatorioImovel"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		}else {
+			pathFormatado = path+"relatorioImoveis"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		}
 		try {
 			FileOutputStream fos = new FileOutputStream(pathFormatado);
 			PdfWriter writer = new PdfWriter(fos);
@@ -257,10 +275,17 @@ public class ImovelServiceImpl implements ImovelService{
 			Document document = new Document(pdf);
 			PdfFont font = PdfFontFactory.createFont("Helvetica");
 			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
-			document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
-													+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-																.format(data)).setFont(bold));
-			document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
+			if(relatorio.getNumeroDeImoveis() == 1) {
+				document.add(new Paragraph("Relatório: Imóvel Residencial.             " 
+						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
+									.format(data)).setFont(bold));
+			}else {
+				document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
+						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
+									.format(data)).setFont(bold));
+				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
+			}
+			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
 				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
 					Table table = montaTabelaResidencial(bold,font,imovel);
@@ -269,6 +294,9 @@ public class ImovelServiceImpl implements ImovelService{
 					document.add(table);
 				}
 				document.add(new Paragraph());
+			}
+			if(relatorio.getNumeroDeImoveis() == 1) {
+				addInformacaoParaImovelUnico(relatorio,document);
 			}
 				document.close();
 		}catch(FileNotFoundException e){
@@ -281,6 +309,27 @@ public class ImovelServiceImpl implements ImovelService{
 		return true;
 	}
 	
+	private void addInformacaoParaImovelUnico(Relatorio relatorio, Document document) {
+		ImovelResidencial imovelResidencial = (ImovelResidencial)relatorio.getImoveisPresentesRelatorio().get(0);
+		if(!imovelResidencial.getMoradores().isEmpty() || imovelResidencial.getMoradores() != null) {
+			Integer moradores = imovelResidencial.getMoradores().size();
+			document.add(new Paragraph("Número de moradores deste imóvel: "+ moradores.toString()+"."));
+			int i =1;
+			for(Pessoa pessoa : imovelResidencial.getMoradores()) {
+				document.add(new Paragraph("Morador "+ i +": "+ pessoa.getNome()));
+				i++;
+			}
+		}
+		
+		String sim ="";
+		if(imovelResidencial.isPossuiAnimalEstimacao()==null) sim = "Não.";
+		else {
+			sim = imovelResidencial.isPossuiAnimalEstimacao()? "Sim.":"Nao.";
+		}
+		document.add(new Paragraph("Possui animal de estimação: "+ sim));
+		
+	}
+
 	private Table montaTabelaResidencial(PdfFont bold, PdfFont font, Imovel imovel) {
 		Table table = new Table(new float[]{1,1});
 		table.setWidth(UnitValue.createPercentValue(100));

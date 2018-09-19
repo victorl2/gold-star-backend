@@ -38,4 +38,8 @@ public interface GeradorRelatorio {
 	public Relatorio gerarRelatorioTodosImoveis();
 
 	public Relatorio gerarRelatorioTodosImoveisComerciais();
+	
+	public Relatorio gerarRelatorioImovelResidencial(String numero);
+	
+	public Relatorio gerarRelatorioImovelComercial(String numero);
 }

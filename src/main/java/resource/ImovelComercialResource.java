@@ -123,5 +123,27 @@ public class ImovelComercialResource {
 		}
 		return Response.status(412).entity("Imovel nao recuperado").build();
 	}
+	
+	@GET
+	@Path("gerar-relatorio-imovel/{numero}")
+	public Response gerarRelatarorioImovelComercial(@PathParam("numero") String numero) {
+		final String usuarioPC = System.getProperty("user.name");
+		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
+		
+		
+		File pasta = new File(caminhoPadrao);
+		LOGGER.log(Level.INFO, "pasta:" + caminhoPadrao);
+		
+		if(!new File(caminhoPadrao).isDirectory()) {
+			pasta.mkdir();
+		}
+		
+		Relatorio relatorio = gerarRelatorio.gerarRelatorioImovelComercial(numero);
+		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
+		if(imovelService.gerarRelatorioTodosImoveisComerciais(caminhoPadrao, relatorio)) {
+			return Response.ok("relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
+		}
+		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
+	}
 
 }
