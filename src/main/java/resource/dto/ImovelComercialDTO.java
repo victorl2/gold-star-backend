@@ -14,8 +14,8 @@ public class ImovelComercialDTO {
 	private String rgi;
 	private Boolean trocouBarbara;
 	private Pessoa contatoEmergencia;
-	private String oidProprietario;
-	private String oidLocador;
+	private ProprietarioDTO proprietario;
+	private LocatarioDTO locador;
 	private List<ProcessoCondominial> processos;
 	private Boolean eSobreloja;
 	private TipoComercio tipoLoja;
@@ -44,17 +44,17 @@ public class ImovelComercialDTO {
 	public void setContatoEmergencia(Pessoa contatoEmergencia) {
 		this.contatoEmergencia = contatoEmergencia;
 	}
-	public String getOidProprietario() {
-		return oidProprietario;
+	public ProprietarioDTO getProprietario() {
+		return proprietario;
 	}
-	public void setOidProprietario(String oidProprietario) {
-		this.oidProprietario = oidProprietario;
+	public void setProprietario(ProprietarioDTO proprietario) {
+		this.proprietario = proprietario;
 	}
-	public String getOidLocador() {
-		return oidLocador;
+	public LocatarioDTO getLocador() {
+		return locador;
 	}
-	public void setOidLocador(String oidLocador) {
-		this.oidLocador = oidLocador;
+	public void setLocador(LocatarioDTO locador) {
+		this.locador = locador;
 	}
 	public List<ProcessoCondominial> getProcessos() {
 		return processos;

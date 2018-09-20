@@ -65,12 +65,12 @@ public class ImovelComercialResource {
 	@POST
 	@Path("/cadastrar-imovel-comercial")
 	public Response cadastrarImoveisComerciais(ImovelComercialDTO imovelComercial) {
-		if(imovelComercial.getNumeroImovel()!=null) { 
+		if(imovelComercial.getNumeroImovel()==null || imovelComercial.getNumeroImovel().isEmpty()) 
+			return Response.status(412).entity("Cadastro não realizado, número vazio.").build();
 			if(imovelService.cadastrarImovelComercial(imovelComercial)) {
 				return Response.ok("Cadastro realizado com sucesso").build();
-			}
 		}
-		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+		return Response.status(412).entity("Cadastro não realizado.").build();
 	}
 	
 	@GET

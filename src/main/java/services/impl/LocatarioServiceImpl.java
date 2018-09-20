@@ -30,7 +30,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 	private ImovelResidencialRepository imovelResidencialRepository;
 	
 	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {	
-		if(locatarioDTO.getCpf() == null) 
+		if(locatarioDTO.getCpf() == null || locatarioDTO.getCpf().isEmpty() ) 
 			return Optional.empty();
 	
 		//Removida a verificação de unicidade de cpf temporariamente

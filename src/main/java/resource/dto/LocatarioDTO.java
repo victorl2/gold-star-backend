@@ -3,6 +3,7 @@ package resource.dto;
 import domain.entity.negocio.Locatario;
 
 public class LocatarioDTO {
+	private String id;
 	private String cpf;
 	private String nome;
 	private String telefone;
@@ -34,19 +35,26 @@ public class LocatarioDTO {
 	public void setCelular(String celular) {
 		this.celular = celular;
 	}
-	public boolean isPossuidor() {
+	public Boolean getPossuidor() {
 		return possuidor;
 	}
-	public void setPossuidor(boolean possuidor) {
+	public void setPossuidor(Boolean possuidor) {
 		this.possuidor = possuidor;
 	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	
 	public Locatario build() {
 		Locatario loc = new Locatario();
 		loc.setCelular(this.getCelular());
 		loc.setCpf(this.getCpf());
 		loc.setNome(this.getNome());
-		loc.setPossuidor(this.isPossuidor());
+		loc.setPossuidor(this.getPossuidor());
 		return loc;
 	}
 }
