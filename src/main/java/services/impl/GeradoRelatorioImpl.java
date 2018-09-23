@@ -55,6 +55,26 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 									.collect(Collectors.toList()));
 	    return relatorio;
 	}
+	
+	public Relatorio gerarRelatorioImovelResidencial(String numero) {
+		Relatorio relatorio = new Relatorio();
+		relatorio.setImoveisPresentesRelatorio(
+				imovelResidencialRepository
+					.buscarTodos()
+						.stream().filter(imovel->imovel.getNumeroImovel().equals(numero))
+										.collect(Collectors.toList()));
+	    return relatorio;
+	}
+	
+	public Relatorio gerarRelatorioImovelComercial(String numero) {
+		Relatorio relatorio = new Relatorio();
+		relatorio.setImoveisPresentesRelatorio(
+				imovelComercialRepository
+					.buscarTodos()
+						.stream().filter(imovel->imovel.getNumeroImovel().equals(numero))
+										.collect(Collectors.toList()));
+	    return relatorio;
+	}
 }
 
 
