@@ -3,6 +3,7 @@ package resource.dto;
 import domain.entity.negocio.Proprietario;
 
 public class ProprietarioDTO {
+	private String id;
 	private String nome;
 	private String telefone;
 	private String celular;
@@ -28,12 +29,7 @@ public class ProprietarioDTO {
 	public void setCelular(String celular) {
 		this.celular = celular;
 	}
-	public Boolean isPossuidor() {
-		return possuidor;
-	}
-	public void setPossuidor(boolean possuidor) {
-		this.possuidor = possuidor;
-	}
+
 	public String getCpf() {
 		return cpf;
 	}
@@ -45,6 +41,18 @@ public class ProprietarioDTO {
 	}
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Boolean getPossuidor() {
+		return possuidor;
+	}
+	public void setPossuidor(Boolean possuidor) {
+		this.possuidor = possuidor;
 	}
 	public Proprietario build() {
 		Proprietario prop = new Proprietario();

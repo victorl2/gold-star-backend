@@ -21,6 +21,8 @@ import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
+import services.LocatarioService;
+import services.ProprietarioService;
 	
 @Path("/imovel-residencial")
 @Produces("application/json; charset=UTF-8")
@@ -38,6 +40,12 @@ public class ImovelResidencialResource {
 	@Inject
 	private ImovelService imovelService;
 	
+	@Inject
+	private ProprietarioService proprietarioService;
+	
+	@Inject
+	private LocatarioService locatarioService;
+
 	@POST
 	@Path("/gerar-relatorio")
 	public Response gerarRelatorioTodosImoveisResidenciais(String path) {
@@ -65,12 +73,12 @@ public class ImovelResidencialResource {
 	@Path("/cadastrarImovelResidencial")
 	public Response cadastrarImoveisResidenciais(ImovelResidencialDTO imovelResidencial) {
 		
-		if(imovelResidencial.getNumeroImovel()!=null) { 
-			if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
-				return Response.ok("Cadastro realizado com sucesso").build();
-			}
+		if(imovelResidencial.getNumeroImovel()==null || imovelResidencial.getNumeroImovel().isEmpty()) 
+			return Response.status(412).entity("Cadastro não realizado, número vazio.").build();
+		if(imovelService.cadastrarImovelResidencial(imovelResidencial)) {
+			return Response.ok("Cadastro realizado com sucesso").build();
 		}
-		return Response.status(412).entity("Cadastro não realizado, imovel ja cadastrado ou numero vazio.").build();
+		return Response.status(412).entity("Cadastro não realizado.").build();
 	}
 	
 	@POST

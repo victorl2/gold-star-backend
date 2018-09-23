@@ -26,7 +26,6 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.UnitValue;
 
-import assemblers.ImovelResidencialAssembler;
 import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
@@ -42,6 +41,7 @@ import domain.repository.ProprietarioRepository;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
 import services.ImovelService;
+import services.LocatarioService;
 import services.ProprietarioService;
 
 @Stateless 
@@ -60,10 +60,11 @@ public class ImovelServiceImpl implements ImovelService{
 	private LocatarioRepository locatarioRepository;
 	
 	@Inject
-	private ImovelResidencialAssembler imovelResidencialAssembler;
-	
+	private ProprietarioService proprietarioService;
+
 	@Inject
-	private ProprietarioService proprietarioSrv;
+	private LocatarioService locatarioService;
+
 
 	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		
@@ -87,21 +88,19 @@ public class ImovelServiceImpl implements ImovelService{
 		novoImovel.setProcessos(imovelDTO.getProcessos());
 		novoImovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
 		
-		if(imovelDTO.getOidProprietario() != null && !imovelDTO.getOidProprietario().isEmpty()) {
-			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getOidProprietario());
-			
+		if(imovelDTO.getProprietario() != null) {
+			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario());
 			if(proprietario.isPresent()) {
 				novoImovel.setDonoImovel(proprietario.get());
 				proprietario.get().getImoveis().add(novoImovel);
 			}
 		}
-		
-		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
-			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocador());
-			
-			if(locatario.isPresent())
+		if(imovelDTO.getLocador()!=null) {
+			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovelDTO.getLocador());
+			if(locatario.isPresent()) {
 				novoImovel.setLocatario(locatario.get());
-			locatario.get().getImoveisAlugados().add(novoImovel);
+				locatario.get().getImoveisAlugados().add(novoImovel);
+			}
 		}
 		
 		try {
@@ -125,18 +124,18 @@ public class ImovelServiceImpl implements ImovelService{
 			return false;
 		ImovelComercial comercio = imovel.build();
 		
-		if(imovel.getOidProprietario()!=null && !imovel.getOidProprietario().isEmpty()) {
-			Optional<Proprietario> prop = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
-			if(prop.isPresent()) {
-				comercio.setDonoImovel(prop.get());
-				prop.get().getImoveis().add(comercio);
+		if(imovel.getProprietario() != null) {
+			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario());
+			if(proprietario.isPresent()) {
+				comercio.setDonoImovel(proprietario.get());
+				proprietario.get().getImoveis().add(comercio);
 			}
 		}
-		if(imovel.getOidLocador()!=null && !imovel.getOidLocador().isEmpty()) {
-			Optional<Locatario> loc = locatarioRepository.buscarPorID(imovel.getOidLocador());
-			if(loc.isPresent()) {
-				loc.get().getImoveisAlugados().add(comercio);
-				comercio.setLocatario(loc.get());
+		if(imovel.getLocador()!=null) {
+			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador());
+			if(locatario.isPresent()) {
+				comercio.setLocatario(locatario.get());
+				locatario.get().getImoveisAlugados().add(comercio);
 			}
 		}
 		try {
@@ -578,11 +577,18 @@ public class ImovelServiceImpl implements ImovelService{
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
-		if(imovel.getOidProprietario()!=null && !imovel.getOidProprietario().isEmpty()) {
-			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovel.getOidProprietario());
-			if(proprietario.isPresent()) {
-				imoveis.get(0).setDonoImovel(proprietario.get());
-				proprietario.get().getImoveis().add(imoveis.get(0));
+		if(imovel.getProprietario() !=null ) {
+			if(imovel.getProprietario().getCpf()!=null && !imovel.getProprietario().getCpf().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovel.getProprietario().getId());
+				if(proprietario.isPresent()) {
+					imoveis.get(0).setDonoImovel(proprietario.get());
+					proprietario.get().getImoveis().add(imoveis.get(0));
+				}
+			}else {
+				if(imoveis.get(0).getDonoImovel()!=null) {
+					temProprietario =false;
+				}
+				imoveis.get(0).setDonoImovel(null);
 			}
 		}else {
 			if(imoveis.get(0).getDonoImovel()!=null) {
@@ -591,11 +597,18 @@ public class ImovelServiceImpl implements ImovelService{
 			imoveis.get(0).setDonoImovel(null);
 		}
 		
-		if(imovel.getOidLocador()!=null && !imovel.getOidLocador().isEmpty()) {
-			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovel.getOidLocador());
-			if(locatario.isPresent()) {
-				locatario.get().getImoveisAlugados().add(imoveis.get(0));
-				imoveis.get(0).setLocatario(locatario.get());
+		if(imovel.getLocador()!=null) {
+			if(imovel.getLocador().getCpf()!=null && !imovel.getLocador().getCpf().isEmpty()) {
+				Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovel.getLocador().getId());
+				if(locatario.isPresent()) {
+					locatario.get().getImoveisAlugados().add(imoveis.get(0));
+					imoveis.get(0).setLocatario(locatario.get());
+				}
+			}else {
+				if(imoveis.get(0).getLocatario()!=null) {
+					temLocatario = false;
+				}
+				imoveis.get(0).setLocatario(null);
 			}
 		}else {
 			if(imoveis.get(0).getLocatario()!=null) {
@@ -642,33 +655,8 @@ public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
-		if(imovelDTO.getOidProprietario() != null && !imovelDTO.getOidProprietario().isEmpty()) {
-			Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getOidProprietario());
-			
-			if(proprietario.isPresent()) {
-				imoveis.get(0).setDonoImovel(proprietario.get());
-				proprietario.get().getImoveis().add(imoveis.get(0));
-			}
-		}else {
-			if(imoveis.get(0).getDonoImovel()!=null) {
-				temProprietario = false;
-			}
-			imoveis.get(0).setDonoImovel(null);
-			
-		}
-		
-		if(imovelDTO.getOidLocador() != null && !imovelDTO.getOidLocador().isEmpty()) {
-			Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getOidLocador());
-			
-			if(locatario.isPresent())
-				imoveis.get(0).setLocatario(locatario.get());
-			locatario.get().getImoveisAlugados().add(imoveis.get(0));
-		}else {
-			if(imoveis.get(0).getLocatario()!=null) {
-				temLocatario = false;
-			}
-			imoveis.get(0).setLocatario(null);
-		}
+		temProprietario = atualizarOuRemoverProprietario(imoveis,imovelDTO);
+		temLocatario = atualizarOuRemoverLocatario(imoveis,imovelDTO);
 		
 		try {
 			imovelResidencialRepository.salvar(imoveis.get(0));
@@ -685,6 +673,54 @@ public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		}
 			
 	}
+	private boolean atualizarOuRemoverLocatario(List<ImovelResidencial> imoveis, ImovelResidencialDTO imovelDTO) {
+	 boolean temLocatario = true;
+	 if(imovelDTO.getLocador()!=null) {
+			if(imovelDTO.getLocador().getCpf()!=null && !imovelDTO.getLocador().getCpf().isEmpty()) {
+				Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovelDTO.getLocador().getId());
+				if(locatario.isPresent()) {
+					locatario.get().getImoveisAlugados().add(imoveis.get(0));
+					imoveis.get(0).setLocatario(locatario.get());
+				}
+			}else {
+				if(imoveis.get(0).getLocatario()!=null) {
+					temLocatario = false;
+				}
+				imoveis.get(0).setLocatario(null);
+			}
+		}else {
+			if(imoveis.get(0).getLocatario()!=null) {
+				temLocatario = false;
+			}
+			imoveis.get(0).setLocatario(null);
+		}
+	return temLocatario;
+}
+
+	private boolean atualizarOuRemoverProprietario(List<ImovelResidencial> imoveis, ImovelResidencialDTO imovelDTO) {
+		boolean temProprietario = true;
+		if(imovelDTO.getProprietario() !=null ) {
+			if(imovelDTO.getProprietario().getCpf()!=null && !imovelDTO.getProprietario().getCpf().isEmpty()) {
+				Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovelDTO.getProprietario().getId());
+				if(proprietario.isPresent()) {
+					imoveis.get(0).setDonoImovel(proprietario.get());
+					proprietario.get().getImoveis().add(imoveis.get(0));
+				}
+			}else {
+				if(imoveis.get(0).getDonoImovel()!=null) {
+					temProprietario =false;
+				}
+				imoveis.get(0).setDonoImovel(null);
+			}
+		}else {
+			if(imoveis.get(0).getDonoImovel()!=null) {
+				temProprietario =false;
+			}
+			imoveis.get(0).setDonoImovel(null);
+		}
+	return temProprietario;
+}
+
 	public Optional<ImovelResidencial> recuperarImovelResidencialPorNumero(String numero){
 		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
 				.stream().filter(imovel -> imovel.getNumeroImovel().equals(numero)).collect(Collectors.toList());

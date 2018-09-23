@@ -1,6 +1,7 @@
 
 package domain.entity.negocio;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -40,6 +41,9 @@ public class Proprietario extends Pessoa {
 	}
 
 	public List<Imovel> getImoveis() {
+		if(imoveis==null) {
+			imoveis = new ArrayList<Imovel>();
+		}
 		return imoveis;
 	}
 
