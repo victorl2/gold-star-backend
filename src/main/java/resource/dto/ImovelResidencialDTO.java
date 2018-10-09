@@ -17,7 +17,21 @@ public class ImovelResidencialDTO {
 	private ProprietarioDTO proprietario;
 	private LocatarioDTO locador;
 	private List<ProcessoCondominial> processos;
+	private Boolean trocouColuna;
+	private String cobrancaBoleto;
 	
+	public Boolean getTrocouColuna() {
+		return trocouColuna;
+	}
+	public void setTrocouColuna(Boolean trocouColuna) {
+		this.trocouColuna = trocouColuna;
+	}
+	public String getCobrancaBoleto() {
+		return cobrancaBoleto;
+	}
+	public void setCobrancaBoleto(String cobrancaBoleto) {
+		this.cobrancaBoleto = cobrancaBoleto;
+	}
 	public List<Pessoa> getMoradores() {
 		return moradores;
 	}

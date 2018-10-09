@@ -60,6 +60,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 		}
 		
 		if(imovelComercial.isPresent()) {
+			imovelComercial.get().getLocatario().setEmail(locatarioDTO.getEmail());
 			imovelComercial.get().getLocatario().setCelular(locatarioDTO.getCelular());
 			imovelComercial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());
 			imovelComercial.get().getLocatario().setCpf(locatarioDTO.getCpf());
@@ -68,6 +69,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 		}
 		
 		Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
+		imovelResidencial.get().getLocatario().setEmail(locatarioDTO.getEmail());
 			imovelResidencial.get().getLocatario().setCelular(locatarioDTO.getCelular());
 			imovelResidencial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());
 			imovelResidencial.get().getLocatario().setCpf(locatarioDTO.getCpf());

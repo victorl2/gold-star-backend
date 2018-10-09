@@ -27,6 +27,9 @@ public class Pessoa extends BaseEntity{
 	 */
 	@Column(name = "E_POSSUIDOR_IMOVEL")
 	private Boolean possuidor;
+	
+	@Column(name = "EMAIL")
+	private String email;
 
 	public String getNome() {
 		return nome;
@@ -52,7 +55,7 @@ public class Pessoa extends BaseEntity{
 		this.celular = celular;
 	}
 
-	public Boolean isPossuidor() {
+	public Boolean getPossuidor() {
 		return possuidor;
 	}
 
@@ -64,6 +67,14 @@ public class Pessoa extends BaseEntity{
 	public String toString() {
 		return "Pessoa [nome=" + nome + ", telefone=" + telefone + ", celular=" + celular + "]";
 	}
-	
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	
 }
