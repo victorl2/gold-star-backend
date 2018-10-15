@@ -19,7 +19,29 @@ public class ImovelComercialDTO {
 	private List<ProcessoCondominial> processos;
 	private Boolean eSobreloja;
 	private TipoComercio tipoLoja;
+	private Boolean trocouColuna;
+	private String cobrancaBoleto;
+	private String nomeLoja;
 	
+	
+	public Boolean getTrocouColuna() {
+		return trocouColuna;
+	}
+	public void setTrocouColuna(Boolean trocouColuna) {
+		this.trocouColuna = trocouColuna;
+	}
+	public String getCobrancaBoleto() {
+		return cobrancaBoleto;
+	}
+	public void setCobrancaBoleto(String cobrancaBoleto) {
+		this.cobrancaBoleto = cobrancaBoleto;
+	}
+	public String getNomeLoja() {
+		return nomeLoja;
+	}
+	public void setNomeLoja(String nomeLoja) {
+		this.nomeLoja = nomeLoja;
+	}
 	public String getNumeroImovel() {
 		return numeroImovel;
 	}
@@ -83,6 +105,9 @@ public class ImovelComercialDTO {
 		imovel.setContatoEmergencia(this.getContatoEmergencia());
 		imovel.setNumeroImovel(this.getNumeroImovel());
 		imovel.setTrocouBarbara(this.getTrocouBarbara());
+		imovel.setCobrancaBoleto(this.getCobrancaBoleto());
+		imovel.setNomeLoja(this.getNomeLoja());
+		imovel.setTrocouColuna(this.getTrocouColuna());
 		imovel.setRgi(this.getRgi());
 		imovel.setProcessos(this.getProcessos());
 		imovel.setTipoLoja(this.getTipoLoja());

@@ -83,7 +83,8 @@ public class ImovelServiceImpl implements ImovelService{
 		novoImovel.setRgi(imovelDTO.getRgi());
 		novoImovel.setTrocouBarbara(imovelDTO.getTrocouBarbara());
 		novoImovel.setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
-		
+		novoImovel.setCobrancaBoleto(imovelDTO.getCobrancaBoleto());
+		novoImovel.setTrocouColuna(imovelDTO.getTrocouColuna());
 		novoImovel.setMoradores(imovelDTO.getMoradores());
 		novoImovel.setProcessos(imovelDTO.getProcessos());
 		novoImovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
@@ -310,6 +311,13 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	private void addInformacaoParaImovelUnico(Relatorio relatorio, Document document) {
 		ImovelResidencial imovelResidencial = (ImovelResidencial)relatorio.getImoveisPresentesRelatorio().get(0);
+		String sim ="";
+		if(imovelResidencial.isPossuiAnimalEstimacao()==null) sim = "Não.";
+		else {
+			sim = imovelResidencial.isPossuiAnimalEstimacao()? "Sim.":"Nao.";
+		}
+		document.add(new Paragraph("Possui animal de estimação: "+ sim));
+		
 		if(!imovelResidencial.getMoradores().isEmpty() || imovelResidencial.getMoradores() != null) {
 			Integer moradores = imovelResidencial.getMoradores().size();
 			document.add(new Paragraph("Número de moradores deste imóvel: "+ moradores.toString()+"."));
@@ -320,12 +328,19 @@ public class ImovelServiceImpl implements ImovelService{
 			}
 		}
 		
-		String sim ="";
-		if(imovelResidencial.isPossuiAnimalEstimacao()==null) sim = "Não.";
-		else {
-			sim = imovelResidencial.isPossuiAnimalEstimacao()? "Sim.":"Nao.";
+		if(!imovelResidencial.getProcessos().isEmpty() || imovelResidencial.getMoradores() != null) {
+			List<ProcessoCondominial> lista = imovelResidencial.getProcessos().stream()
+					.filter(processo -> processo.getProcessoAtivo())
+					.collect(Collectors.toList());
+			Integer processos = lista.size();
+			document.add(new Paragraph("Número de processos ativos deste imóvel: "+ processos.toString()+"."));
+			int i =1;
+			for(ProcessoCondominial processo : lista) {
+				document.add(new Paragraph("    "+i +" - Número do processo: "+ processo.getCodigoProcesso()));
+				i++;
+			}
 		}
-		document.add(new Paragraph("Possui animal de estimação: "+ sim));
+		
 		
 	}
 
@@ -567,6 +582,9 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(imoveis.isEmpty())
 			return false;
+		imoveis.get(0).setCobrancaBoleto(imovel.getCobrancaBoleto());
+		imoveis.get(0).setNomeLoja(imovel.getNomeLoja());
+		imoveis.get(0).setTrocouColuna(imovel.getTrocouColuna());
 		imoveis.get(0).setContatoEmergencia(imovel.getContatoEmergencia());
 		imoveis.get(0).seteSobreloja(imovel.geteSobreloja());
 		imoveis.get(0).setProcessos(imovel.getProcessos());
@@ -632,7 +650,7 @@ public class ImovelServiceImpl implements ImovelService{
 		}
 	}
 	
-public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
+	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		boolean temProprietario = true;
 		boolean temLocatario = true;
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
@@ -647,7 +665,9 @@ public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		imoveis.get(0).setRgi(imovelDTO.getRgi());
 		imoveis.get(0).setTrocouBarbara(imovelDTO.getTrocouBarbara());
 		imoveis.get(0).setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
+		imoveis.get(0).setTrocouColuna(imovelDTO.getTrocouColuna());
 		
+		imoveis.get(0).setCobrancaBoleto(imovelDTO.getCobrancaBoleto());
 		imoveis.get(0).setMoradores(imovelDTO.getMoradores());
 		imoveis.get(0).setProcessos(imovelDTO.getProcessos());
 		imoveis.get(0).setContatoEmergencia(imovelDTO.getContatoEmergencia());
@@ -673,6 +693,7 @@ public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		}
 			
 	}
+	
 	private boolean atualizarOuRemoverLocatario(List<ImovelResidencial> imoveis, ImovelResidencialDTO imovelDTO) {
 	 boolean temLocatario = true;
 	 if(imovelDTO.getLocador()!=null) {

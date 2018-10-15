@@ -59,6 +59,7 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			}
 			
 			if(imovelComercial.isPresent()) {
+				imovelComercial.get().getDonoImovel().setEmail(proprietarioDTO.getEmail());
 				imovelComercial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
 				imovelComercial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
 				imovelComercial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());
@@ -68,6 +69,7 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			}
 			
 			Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
+				imovelResidencial.get().getDonoImovel().setEmail(proprietarioDTO.getEmail());
 				imovelResidencial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
 				imovelResidencial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
 				imovelResidencial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());

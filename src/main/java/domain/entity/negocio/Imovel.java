@@ -38,6 +38,8 @@ public abstract class Imovel extends BaseEntity{
 	@Column(name = "TROCOU_BARBARA")
 	private Boolean trocouBarbara;
 	
+	@Column(name = "TROCOU_COLUNA_AGUA")
+	private Boolean trocouColuna;
 	/**
 	 * Contato de emergência associado ao imóvel
 	 */
@@ -68,7 +70,10 @@ public abstract class Imovel extends BaseEntity{
 	@JoinColumn(unique = false, name="PROCESSOS_POR_IMOVEL")
 	private List<ProcessoCondominial> processos;
 	
-
+	@Column(name = "COBRANCA_BOLETO")
+	private String cobrancaBoleto;
+	
+	
 	public String getNumeroImovel() {
 		return numeroImovel;
 	}
@@ -96,6 +101,16 @@ public abstract class Imovel extends BaseEntity{
 
 	public void setTrocouBarbara(Boolean trocouBarbara) {
 		this.trocouBarbara = trocouBarbara;
+	}
+	
+
+	public Boolean getTrocouColuna() {
+		return trocouColuna;
+	}
+
+
+	public void setTrocouColuna(Boolean trocouColuna) {
+		this.trocouColuna = trocouColuna;
 	}
 
 
@@ -135,6 +150,16 @@ public abstract class Imovel extends BaseEntity{
 
 	public void setContatoEmergencia(Pessoa contatoEmergencia) {
 		this.contatoEmergencia = contatoEmergencia;
+	}
+
+
+	public String getCobrancaBoleto() {
+		return cobrancaBoleto;
+	}
+
+
+	public void setCobrancaBoleto(String cobrancaBoleto) {
+		this.cobrancaBoleto = cobrancaBoleto;
 	}
 	
 	

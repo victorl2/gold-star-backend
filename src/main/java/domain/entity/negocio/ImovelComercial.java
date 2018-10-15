@@ -20,7 +20,10 @@ public class ImovelComercial extends Imovel{
 	@ManyToOne(cascade={CascadeType.PERSIST,CascadeType.MERGE})
 	@JoinColumn(name = "TIPO_COMERCIO")
 	private TipoComercio tipoLoja;
-
+	
+	@Column(name = "NOME_LOJA")
+	private String nomeLoja;
+	
 	public Boolean iseSobreloja() {
 		return eSobreloja;
 	}
@@ -35,6 +38,14 @@ public class ImovelComercial extends Imovel{
 
 	public void setTipoLoja(TipoComercio tipoLoja) {
 		this.tipoLoja = tipoLoja;
+	}
+
+	public String getNomeLoja() {
+		return nomeLoja;
+	}
+
+	public void setNomeLoja(String nomeLoja) {
+		this.nomeLoja = nomeLoja;
 	}		
 	
 }

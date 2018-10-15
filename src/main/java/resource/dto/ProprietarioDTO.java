@@ -10,9 +10,16 @@ public class ProprietarioDTO {
 	private Boolean possuidor;
 	private String cpf;
 	private String endereco;
+	private String email;
 	
 	public String getNome() {
 		return nome;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	public void setNome(String nome) {
 		this.nome = nome;
