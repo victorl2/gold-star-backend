@@ -1,5 +1,6 @@
 package services.impl;
 
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -88,6 +90,7 @@ public class ImovelServiceImpl implements ImovelService{
 		novoImovel.setMoradores(imovelDTO.getMoradores());
 		novoImovel.setProcessos(imovelDTO.getProcessos());
 		novoImovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
+		novoImovel.setAcordo(imovelDTO.getAcordo());
 		
 		if(imovelDTO.getProprietario() != null) {
 			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario());
@@ -172,7 +175,7 @@ public class ImovelServiceImpl implements ImovelService{
 			PdfFont font = PdfFontFactory.createFont("Helvetica");
 			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
 			if(relatorio.getNumeroDeImoveis() == 1) {
-				document.add(new Paragraph("Relatório: Imóvel Comercial.             " 
+				document.add(new Paragraph("Relatório: Imóvel Comercial.                            " 
 						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 									.format(data)).setFont(bold));
 			}else {
@@ -191,7 +194,9 @@ public class ImovelServiceImpl implements ImovelService{
 				}
 				document.add(new Paragraph());
 			}
-			
+			if(relatorio.getNumeroDeImoveis() == 1) {
+				addInformacaoParaImovelComercialUnico(relatorio,document);
+			}
 				document.close();
 		}catch(FileNotFoundException e){
 			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
@@ -203,8 +208,26 @@ public class ImovelServiceImpl implements ImovelService{
 		return true;
 	}
 	
+	private void addInformacaoParaImovelComercialUnico(Relatorio relatorio, Document document) {
+		ImovelComercial imovelComercial = (ImovelComercial)relatorio.getImoveisPresentesRelatorio().get(0);
+		
+		if(imovelComercial.getProcessos() != null && !imovelComercial.getProcessos().isEmpty()) {
+			List<ProcessoCondominial> lista = imovelComercial.getProcessos().stream()
+					.filter(processo -> processo.getProcessoAtivo())
+					.collect(Collectors.toList());
+			Integer processos = lista.size();
+			document.add(new Paragraph("Número de processos ativos deste imóvel: "+ processos.toString()+"."));
+			int i =1;
+			for(ProcessoCondominial processo : lista) {
+				document.add(new Paragraph("    "+i +" - Número do processo: "+ processo.getCodigoProcesso()));
+				i++;
+			}
+		}
+		
+	}
+
 	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel) {
-		Table table = new Table(new float[]{1,1});
+		Table table = new Table(new float[]{1,1,1});
 		table.setWidth(UnitValue.createPercentValue(100));
 		table.setFixedLayout();
 		processComercial(table,(ImovelComercial)imovel,bold,true);
@@ -216,46 +239,46 @@ public class ImovelServiceImpl implements ImovelService{
 	private void processComercial(Table table, ImovelComercial imovel, PdfFont font, boolean isHeader) {
 		if (isHeader) {
             table.addHeaderCell(
-                new Cell().add( 
-                    new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).setFont(font)));
+                new Cell(1,2).add( 
+                    new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
             if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
-                    new Cell().add(
-                        new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
+                    new Cell(1,2).add(
+                        new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
             }else {
             	table.addHeaderCell(
-                        new Cell().add(
-                            new Paragraph("RGI do imóvel não informado: " + imovel.getRgi().toString()).setFont(font)));
+                        new Cell(1,2).add(
+                            new Paragraph("RGI do imóvel não informado: " + imovel.getRgi().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
             }
         // Caso onde as informações serão geradas no corpo das tabelas no pdf
         }else {
         	if(imovel.iseSobreloja() != null && imovel.iseSobreloja()) {
     		    table.addCell(
     		            new Cell().add(
-    		                new Paragraph("É sobreloja").setFont(font)));
+    		                new Paragraph("É sobreloja").setFont(font).setFontSize(11)));
     	    }else if(imovel.iseSobreloja() != null){
     	    	table.addCell(
     		            new Cell().add(
-    		                new Paragraph("É loja").setFont(font)));
+    		                new Paragraph("É loja").setFont(font).setFontSize(11)));
     	    }else {
     	    	table.addCell(
     		            new Cell().add(
-    		                new Paragraph("Não informado").setFont(font)));
+    		                new Paragraph("Não informado").setFont(font).setFontSize(11)));
     	    }
         	
         	if(imovel.getTipoLoja()!=null) {
         		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null && !imovel.getTipoLoja().getNomeDoTipoComercio().isEmpty()) {
         			table.addCell(
         		            new Cell().add(
-        		                new Paragraph("Tipo de loja: " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
+        		                new Paragraph("Tipo de loja: " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font).setFontSize(11)));
         		}else {
         			table.addCell(
         		            new Cell().add(
-        		                new Paragraph("Tipo de loja não informado" + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font)));
+        		                new Paragraph("Tipo de loja não informado" + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font).setFontSize(11)));
         		}
         	}else {
         		table.addCell(
-    		            new Cell().add(new Paragraph("Tipo de loja não informado")));
+    		            new Cell().add(new Paragraph("Tipo de loja não informado").setFont(font).setFontSize(11)));
         	}
         }
 	}
@@ -296,7 +319,7 @@ public class ImovelServiceImpl implements ImovelService{
 				document.add(new Paragraph());
 			}
 			if(relatorio.getNumeroDeImoveis() == 1) {
-				addInformacaoParaImovelUnico(relatorio,document);
+				addInformacaoParaImovelResidencialUnico(relatorio,document);
 			}
 				document.close();
 		}catch(FileNotFoundException e){
@@ -309,7 +332,7 @@ public class ImovelServiceImpl implements ImovelService{
 		return true;
 	}
 	
-	private void addInformacaoParaImovelUnico(Relatorio relatorio, Document document) {
+	private void addInformacaoParaImovelResidencialUnico(Relatorio relatorio, Document document) {
 		ImovelResidencial imovelResidencial = (ImovelResidencial)relatorio.getImoveisPresentesRelatorio().get(0);
 		String sim ="";
 		if(imovelResidencial.isPossuiAnimalEstimacao()==null) sim = "Não.";
@@ -327,8 +350,8 @@ public class ImovelServiceImpl implements ImovelService{
 				i++;
 			}
 		}
-		
-		if(!imovelResidencial.getProcessos().isEmpty() || imovelResidencial.getMoradores() != null) {
+
+		if( imovelResidencial.getProcessos() != null && !imovelResidencial.getProcessos().isEmpty()) {
 			List<ProcessoCondominial> lista = imovelResidencial.getProcessos().stream()
 					.filter(processo -> processo.getProcessoAtivo())
 					.collect(Collectors.toList());
@@ -339,9 +362,7 @@ public class ImovelServiceImpl implements ImovelService{
 				document.add(new Paragraph("    "+i +" - Número do processo: "+ processo.getCodigoProcesso()));
 				i++;
 			}
-		}
-		
-		
+		}	
 	}
 
 	private Table montaTabelaResidencial(PdfFont bold, PdfFont font, Imovel imovel) {
@@ -378,26 +399,26 @@ public class ImovelServiceImpl implements ImovelService{
 		    if(imovel.getTrocouBarbara() != null && imovel.getTrocouBarbara()) {
 			    table.addCell(
 			            new Cell().add(
-			                new Paragraph("Trocou barbará").setFont(font)));
+			                new Paragraph("Trocou barbará").setFont(font).setFontSize(11)));
 		    }else if(imovel.getTrocouBarbara() != null) {
 		    	table.addCell(
 			            new Cell().add(
-			                new Paragraph("Não trocou barbará").setFont(font)));
+			                new Paragraph("Não trocou barbará").setFont(font).setFontSize(11)));
 		    }else {
 		    	table.addCell(
 			            new Cell().add(
-			                new Paragraph("Não informado").setFont(font)));
+			                new Paragraph("Não informado").setFont(font).setFontSize(11)));
 		    }
 		    
 		    //processo
 		    if(possuiProcessoAtivo(imovel)) {
 		    	table.addCell(
 		            new Cell().add(
-		                new Paragraph("Possui ação condominial").setFont(font)));
+		                new Paragraph("Possui ação condominial").setFont(font).setFontSize(11)));
 		    }else {
 		    	table.addCell(
 			        new Cell().add(
-			            new Paragraph("Não possui ação condominial").setFont(font)));
+			            new Paragraph("Não possui ação condominial").setFont(font).setFontSize(11)));
 		    }
 		    
 		    //contato emergencia
@@ -405,28 +426,28 @@ public class ImovelServiceImpl implements ImovelService{
 		    	if(imovel.getContatoEmergencia().getNome()!=null && !imovel.getContatoEmergencia().getNome().isEmpty()) {
 				    table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Contato emergência: " + imovel.getContatoEmergencia().getNome()).setFont(font)));
+				                new Paragraph("Contato emergência: " + imovel.getContatoEmergencia().getNome()).setFont(font).setFontSize(11)));
 		    	}else {
 		    		table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Contato emergência não informado").setFont(font)));
+				                new Paragraph("Contato emergência não informado").setFont(font).setFontSize(11)));
 		    	}
 		    	if(imovel.getContatoEmergencia().getCelular() !=null && !imovel.getContatoEmergencia().getCelular().isEmpty()) {
 		    		table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Tel emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font)));
+				                new Paragraph("Tel emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font).setFontSize(11)));
 		    	}else {
 		    		table.addCell(
 				    		new Cell().add(
-				                new Paragraph("Tel emergência não informado").setFont(font)));
+				                new Paragraph("Tel emergência não informado").setFont(font).setFontSize(11)));
 		    	}
 		    }else {
 		    	table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Contato emergência não informado").setFont(font)));
+			                new Paragraph("Contato emergência não informado").setFont(font).setFontSize(11)));
 		    	table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel emergência não informado").setFont(font)));
+			                new Paragraph("Tel emergência não informado").setFont(font).setFontSize(11)));
 		    }
         }
 	}
@@ -445,28 +466,28 @@ public class ImovelServiceImpl implements ImovelService{
 	    	if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font)));
+			                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font).setFontSize(11)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
 			                new Paragraph("Nome locatário não informado").setFont(font)));
 	    	}
-	    	if(imovel.getLocatario().getCelular() !=null && !imovel.getLocatario().getCelular().isEmpty()) {
+	    	if(imovel.getLocatario().getTelefone() !=null && !imovel.getLocatario().getTelefone().isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel locatário: " + imovel.getLocatario().getCelular()).setFont(font)));
+			                new Paragraph("Tel locatário: " + imovel.getLocatario().getCelular()).setFont(font).setFontSize(11)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel locatário não informado").setFont(font)));
+			                new Paragraph("Tel locatário não informado").setFont(font).setFontSize(11)));
 	    	}
 	    }else {
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Nome locatário não informado").setFont(font)));
+		                new Paragraph("Nome locatário não informado").setFont(font).setFontSize(11)));
 	    	table.addCell(
 			    	new Cell().add(
-			               new Paragraph("Tel locatário não informado").setFont(font)));
+			               new Paragraph("Tel locatário não informado").setFont(font).setFontSize(11)));
 	    }
 		
 	}
@@ -476,28 +497,28 @@ public class ImovelServiceImpl implements ImovelService{
 	    	if(imovel.getDonoImovel().getNome()!=null && !imovel.getDonoImovel().getNome().isEmpty()) {
 			    table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome proprietário: " + imovel.getDonoImovel().getNome()).setFont(font)));
+			                new Paragraph("Nome proprietário: " + imovel.getDonoImovel().getNome()).setFont(font).setFontSize(11)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Nome proprietário: não informado").setFont(font)));
+			                new Paragraph("Nome proprietário: não informado").setFont(font).setFontSize(11)));
 	    	}
-	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular() .isEmpty()) {
+	    	if(imovel.getDonoImovel().getTelefone() !=null && !imovel.getDonoImovel().getTelefone().isEmpty()) {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font)));
+			                new Paragraph("Tel proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font).setFontSize(11)));
 	    	}else {
 	    		table.addCell(
 			    		new Cell().add(
-			                new Paragraph("Tel proprietário: não informado").setFont(font)));
+			                new Paragraph("Tel proprietário: não informado").setFont(font).setFontSize(11)));
 	    	}	    
 	    }else {
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Nome proprietário: não informado").setFont(font)));
+		                new Paragraph("Nome proprietário: não informado").setFont(font).setFontSize(11)));
 	    	table.addCell(
 		    		new Cell().add(
-		                new Paragraph("Tel proprietário: não informado").setFont(font)));
+		                new Paragraph("Tel proprietário: não informado").setFont(font).setFontSize(11)));
 	    }
 		
 	}
@@ -591,56 +612,74 @@ public class ImovelServiceImpl implements ImovelService{
 		imoveis.get(0).setRgi(imovel.getRgi());
 		imoveis.get(0).setTipoLoja(imovel.getTipoLoja());
 		imoveis.get(0).setTrocouBarbara(imovel.getTrocouBarbara());
+		imoveis.get(0).setAcordo(imovel.getAcordo());
 		
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
-		if(imovel.getProprietario() !=null ) {
-			if(imovel.getProprietario().getCpf()!=null && !imovel.getProprietario().getCpf().isEmpty()) {
-				Optional<Proprietario> proprietario = proprietarioRepository.buscarPorID(imovel.getProprietario().getId());
-				if(proprietario.isPresent()) {
-					imoveis.get(0).setDonoImovel(proprietario.get());
-					proprietario.get().getImoveis().add(imoveis.get(0));
+		if(prop == null) {
+			if(imovel.getProprietario()!=null) {
+				prop = imovel.getProprietario().build();
+				if(prop.getImoveis()== null) {
+					prop.setImoveis(new ArrayList<Imovel>());
 				}
-			}else {
-				if(imoveis.get(0).getDonoImovel()!=null) {
-					temProprietario =false;
-				}
-				imoveis.get(0).setDonoImovel(null);
+				prop.getImoveis().add(imoveis.get(0));
+				imoveis.get(0).setDonoImovel(prop);
 			}
 		}else {
-			if(imoveis.get(0).getDonoImovel()!=null) {
-				temProprietario =false;
+			if(imovel.getProprietario() !=null ) {
+				if(imovel.getProprietario().getCpf()!=null && !imovel.getProprietario().getCpf().isEmpty()) {
+					if(imovel.getProprietario().getCpf().equals(prop.getCpf())) {
+						imoveis.get(0).getDonoImovel().setCelular(imovel.getProprietario().getCelular());
+						imoveis.get(0).getDonoImovel().setEmail(imovel.getProprietario().getEmail());
+						imoveis.get(0).getDonoImovel().setEndereco(imovel.getProprietario().getEndereco());
+						imoveis.get(0).getDonoImovel().setNome(imovel.getProprietario().getNome());
+						imoveis.get(0).getDonoImovel().setTelefone(imovel.getProprietario().getTelefone());
+					}else {
+						imoveis.get(0).setDonoImovel(imovel.getProprietario().build());
+					}
+				}else {
+					prop = removeImovelDoProprietario(imoveis);
+					proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+					imoveis.get(0).setDonoImovel(null);
+				}
 			}
-			imoveis.get(0).setDonoImovel(null);
 		}
 		
-		if(imovel.getLocador()!=null) {
-			if(imovel.getLocador().getCpf()!=null && !imovel.getLocador().getCpf().isEmpty()) {
-				Optional<Locatario> locatario = locatarioRepository.buscarPorID(imovel.getLocador().getId());
-				if(locatario.isPresent()) {
-					locatario.get().getImoveisAlugados().add(imoveis.get(0));
-					imoveis.get(0).setLocatario(locatario.get());
+		if(loc == null) {
+			if(imovel.getLocador()!=null) {
+				loc = imovel.getLocador().build();
+				if(loc.getImoveisAlugados()== null) {
+					loc.setImoveisAlugados(new ArrayList<Imovel>());
 				}
-			}else {
-				if(imoveis.get(0).getLocatario()!=null) {
-					temLocatario = false;
-				}
-				imoveis.get(0).setLocatario(null);
+				loc.getImoveisAlugados().add(imoveis.get(0));
+				imoveis.get(0).setLocatario(loc);
 			}
 		}else {
-			if(imoveis.get(0).getLocatario()!=null) {
-				temLocatario = false;
+			if(imovel.getLocador() !=null ) {
+				if(imovel.getLocador().getCpf()!=null && !imovel.getLocador().getCpf().isEmpty()) {
+					if(imovel.getLocador().getCpf().equals(loc.getCpf())) {
+						imoveis.get(0).getLocatario().setCelular(imovel.getLocador().getCelular());
+						imoveis.get(0).getLocatario().setEmail(imovel.getLocador().getEmail());
+						imoveis.get(0).getLocatario().setNome(imovel.getLocador().getNome());
+						imoveis.get(0).getLocatario().setTelefone(imovel.getLocador().getTelefone());
+						imoveis.get(0).getLocatario().setPossuidor(imovel.getLocador().getPossuidor());
+					}else {
+						imoveis.get(0).setLocatario(imovel.getLocador().build());
+					}
+				}else {
+					loc = removeImovelDoLocador(imoveis);
+					locatarioRepository.salvar(imoveis.get(0).getLocatario());
+					imoveis.get(0).setDonoImovel(null);
+				}
 			}
-			imoveis.get(0).setLocatario(null);
 		}
-		
 		try {
 			imovelComercialRepository.salvar(imoveis.get(0));
-			if(!temProprietario) {
+			if(prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
-			if(!temLocatario) {
+			if(loc.getImoveisAlugados().size() == 0) {
 				locatarioRepository.deletar(loc);
 			}
 			return true;
@@ -650,6 +689,24 @@ public class ImovelServiceImpl implements ImovelService{
 		}
 	}
 	
+	private Locatario removeImovelDoLocador(List<ImovelComercial> imoveis) {
+		for (Imovel imovel : imoveis.get(0).getLocatario().getImoveisAlugados()) {
+			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
+				imoveis.get(0).getLocatario().getImoveisAlugados().remove(imovel);
+			}
+		}
+		return imoveis.get(0).getLocatario();
+	}
+
+	private Proprietario removeImovelDoProprietario(List<ImovelComercial> imoveis) {
+		for (Imovel imovel : imoveis.get(0).getDonoImovel().getImoveis()) {
+			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
+				imoveis.get(0).getDonoImovel().getImoveis().remove(imovel);
+			}
+		}
+		return imoveis.get(0).getDonoImovel();
+	}
+
 	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		boolean temProprietario = true;
 		boolean temLocatario = true;
@@ -671,6 +728,7 @@ public class ImovelServiceImpl implements ImovelService{
 		imoveis.get(0).setMoradores(imovelDTO.getMoradores());
 		imoveis.get(0).setProcessos(imovelDTO.getProcessos());
 		imoveis.get(0).setContatoEmergencia(imovelDTO.getContatoEmergencia());
+		imoveis.get(0).setAcordo(imovelDTO.getAcordo());
 		
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();

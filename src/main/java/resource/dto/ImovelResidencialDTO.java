@@ -19,7 +19,14 @@ public class ImovelResidencialDTO {
 	private List<ProcessoCondominial> processos;
 	private Boolean trocouColuna;
 	private String cobrancaBoleto;
+	private String acordo;
 	
+	public String getAcordo() {
+		return acordo;
+	}
+	public void setAcordo(String acordo) {
+		this.acordo = acordo;
+	}
 	public Boolean getTrocouColuna() {
 		return trocouColuna;
 	}
