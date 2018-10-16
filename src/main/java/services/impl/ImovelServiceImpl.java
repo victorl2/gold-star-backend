@@ -71,10 +71,10 @@ public class ImovelServiceImpl implements ImovelService{
 	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
-				.buscarTodos().stream()//
-					.filter(residencia -> // 
-						(residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel()))//
-					).collect(Collectors.toList());//
+				.buscarTodos().stream()
+					.filter(residencia -> 
+						residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel()) || residencia.getRgi().equals(imovelDTO.getRgi())
+					).collect(Collectors.toList());
 		
 		if(!imoveis.isEmpty()) 
 			return false;
@@ -93,14 +93,13 @@ public class ImovelServiceImpl implements ImovelService{
 		novoImovel.setAcordo(imovelDTO.getAcordo());
 		
 		if(imovelDTO.getProprietario() != null) {
-			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario());
+			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario(), novoImovel);
 			if(proprietario.isPresent()) {
 				novoImovel.setDonoImovel(proprietario.get());
-				proprietario.get().getImoveis().add(novoImovel);
 			}
 		}
 		if(imovelDTO.getLocador()!=null) {
-			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovelDTO.getLocador());
+			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovelDTO.getLocador(), novoImovel);
 			if(locatario.isPresent()) {
 				novoImovel.setLocatario(locatario.get());
 				locatario.get().getImoveisAlugados().add(novoImovel);
@@ -121,7 +120,7 @@ public class ImovelServiceImpl implements ImovelService{
 
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
-						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
+						comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) || comercio.getRgi().equals(imovel.getRgi())
 					).collect(Collectors.toList());
 		
 		if(!imoveis.isEmpty())
@@ -129,17 +128,15 @@ public class ImovelServiceImpl implements ImovelService{
 		ImovelComercial comercio = imovel.build();
 		
 		if(imovel.getProprietario() != null) {
-			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario());
+			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario(),comercio);
 			if(proprietario.isPresent()) {
 				comercio.setDonoImovel(proprietario.get());
-				proprietario.get().getImoveis().add(comercio);
 			}
 		}
 		if(imovel.getLocador()!=null) {
-			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador());
+			Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador(),comercio);
 			if(locatario.isPresent()) {
 				comercio.setLocatario(locatario.get());
-				locatario.get().getImoveisAlugados().add(comercio);
 			}
 		}
 		try {
@@ -594,8 +591,6 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	public Boolean atualizarImovelComercial(ImovelComercialDTO imovel) {
-		boolean temProprietario = true;
-		boolean temLocatario = true;
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
 						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
@@ -708,8 +703,6 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 
 	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
-		boolean temProprietario = true;
-		boolean temLocatario = true;
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
 				.buscarTodos().stream()//
 					.filter(residencia -> // 
@@ -733,15 +726,70 @@ public class ImovelServiceImpl implements ImovelService{
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
-		temProprietario = atualizarOuRemoverProprietario(imoveis,imovelDTO);
-		temLocatario = atualizarOuRemoverLocatario(imoveis,imovelDTO);
+		if(prop == null) {
+			if(imovelDTO.getProprietario()!=null) {
+				prop = imovelDTO.getProprietario().build();
+				if(prop.getImoveis()== null) {
+					prop.setImoveis(new ArrayList<Imovel>());
+				}
+				prop.getImoveis().add(imoveis.get(0));
+				imoveis.get(0).setDonoImovel(prop);
+			}
+		}else {
+			if(imovelDTO.getProprietario() !=null ) {
+				if(imovelDTO.getProprietario().getCpf()!=null && !imovelDTO.getProprietario().getCpf().isEmpty()) {
+					if(imovelDTO.getProprietario().getCpf().equals(prop.getCpf())) {
+						imoveis.get(0).getDonoImovel().setCelular(imovelDTO.getProprietario().getCelular());
+						imoveis.get(0).getDonoImovel().setEmail(imovelDTO.getProprietario().getEmail());
+						imoveis.get(0).getDonoImovel().setEndereco(imovelDTO.getProprietario().getEndereco());
+						imoveis.get(0).getDonoImovel().setNome(imovelDTO.getProprietario().getNome());
+						imoveis.get(0).getDonoImovel().setTelefone(imovelDTO.getProprietario().getTelefone());
+					}else {
+						imoveis.get(0).setDonoImovel(imovelDTO.getProprietario().build());
+					}
+				}else {
+					prop = removeImovelDoProprietarioResidencial(imoveis);
+					proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+					imoveis.get(0).setDonoImovel(null);
+				}
+			}
+		}
+		
+		if(loc == null) {
+			if(imovelDTO.getLocador()!=null) {
+				loc = imovelDTO.getLocador().build();
+				if(loc.getImoveisAlugados()== null) {
+					loc.setImoveisAlugados(new ArrayList<Imovel>());
+				}
+				loc.getImoveisAlugados().add(imoveis.get(0));
+				imoveis.get(0).setLocatario(loc);
+			}
+		}else {
+			if(imovelDTO.getLocador() !=null ) {
+				if(imovelDTO.getLocador().getCpf()!=null && !imovelDTO.getLocador().getCpf().isEmpty()) {
+					if(imovelDTO.getLocador().getCpf().equals(loc.getCpf())) {
+						imoveis.get(0).getLocatario().setCelular(imovelDTO.getLocador().getCelular());
+						imoveis.get(0).getLocatario().setEmail(imovelDTO.getLocador().getEmail());
+						imoveis.get(0).getLocatario().setNome(imovelDTO.getLocador().getNome());
+						imoveis.get(0).getLocatario().setTelefone(imovelDTO.getLocador().getTelefone());
+						imoveis.get(0).getLocatario().setPossuidor(imovelDTO.getLocador().getPossuidor());
+					}else {
+						imoveis.get(0).setLocatario(imovelDTO.getLocador().build());
+					}
+				}else {
+					loc = removeImovelDoLocadorResidencial(imoveis);
+					locatarioRepository.salvar(imoveis.get(0).getLocatario());
+					imoveis.get(0).setDonoImovel(null);
+				}
+			}
+		}
 		
 		try {
 			imovelResidencialRepository.salvar(imoveis.get(0));
-			if(!temProprietario) {
+			if(prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
-			if(!temLocatario) {
+			if(loc.getImoveisAlugados().size() == 0) {
 				locatarioRepository.deletar(loc);
 			}
 			return true;
@@ -752,6 +800,24 @@ public class ImovelServiceImpl implements ImovelService{
 			
 	}
 	
+	private Locatario removeImovelDoLocadorResidencial(List<ImovelResidencial> imoveis) {
+		for (Imovel imovel : imoveis.get(0).getLocatario().getImoveisAlugados()) {
+			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
+				imoveis.get(0).getLocatario().getImoveisAlugados().remove(imovel);
+			}
+		}
+		return imoveis.get(0).getLocatario();
+	}
+
+	private Proprietario removeImovelDoProprietarioResidencial(List<ImovelResidencial> imoveis) {
+		for (Imovel imovel : imoveis.get(0).getDonoImovel().getImoveis()) {
+			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
+				imoveis.get(0).getDonoImovel().getImoveis().remove(imovel);
+			}
+		}
+		return imoveis.get(0).getDonoImovel();
+	}
+
 	private boolean atualizarOuRemoverLocatario(List<ImovelResidencial> imoveis, ImovelResidencialDTO imovelDTO) {
 	 boolean temLocatario = true;
 	 if(imovelDTO.getLocador()!=null) {

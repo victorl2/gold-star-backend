@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Locatario extends Pessoa {
 	private static final long serialVersionUID = -4180334420040116206L;
 
-	@Column(name = "CPF")
+	@Column(name = "CPF", unique = true)
 	private String cpf;
 	
 	@JsonBackReference
@@ -39,5 +39,11 @@ public class Locatario extends Pessoa {
 		this.imoveisAlugados = imoveisAlugados;
 	}
 	
-	
+	public void addImovel(Imovel imovel) {
+		if(this.imoveisAlugados==null) {
+			imoveisAlugados = new ArrayList<Imovel>();
+		}
+		imoveisAlugados.add(imovel);
+		imovel.setLocatario(this);
+	}
 }

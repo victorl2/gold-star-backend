@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
@@ -29,12 +30,18 @@ public class LocatarioServiceImpl implements LocatarioService{
 	@Inject 
 	private ImovelResidencialRepository imovelResidencialRepository;
 	
-	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO) {	
+	public  Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO, Imovel imovel) {
 		if(locatarioDTO.getCpf() == null || locatarioDTO.getCpf().isEmpty() ) 
 			return Optional.empty();
-	
-		//Removida a verificação de unicidade de cpf temporariamente
-		return Optional.of(locatarioRepository.salvar(locatarioDTO.build()));
+		Optional<Locatario> locatario = buscaLocatarioPorCPF(locatarioDTO.getCpf());
+		if(locatario.isPresent()) {
+			locatario.get().getImoveisAlugados().add(imovel);
+			
+			return Optional.of(locatarioRepository.salvar(locatario.get()));
+		}
+		Locatario loc = locatarioDTO.build();
+		loc.getImoveisAlugados().add(imovel);
+		return Optional.of(locatarioRepository.salvar(loc));
 	}
 	
 	public Optional<Locatario> buscaLocatarioPorCPF(String cpf) {
@@ -56,7 +63,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 		Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
 
 		if(imovelComercial.isPresent() && imovelComercial.get().getLocatario() == null) {
-			return this.cadastrarLocatario(locatarioDTO);
+			//return this.cadastrarLocatario(locatarioDTO);
 		}
 		
 		if(imovelComercial.isPresent()) {

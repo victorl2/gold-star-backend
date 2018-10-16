@@ -27,16 +27,6 @@ public class LocatarioResource{
 	@Inject
 	private LocatarioService locatarioSrv;
 	
-	@POST
-	@Path("/cadastrar-locatario")
-	public Response cadastroLocatario(LocatarioDTO locatarioDTO) {
-		Optional<Locatario> locatario = locatarioSrv.cadastrarLocatario(locatarioDTO);
-		if(locatario.isPresent()) {
-			return Response.ok("Cadastro realizado com sucesso").entity(locatario.get().getID()).build();
-		}
-		return Response.status(412).entity("Cadastro não efetuado").build();
-	}
-	
 	@GET
 	@Path("/{cpf}")
 	public Response buscarLocatarioPorCPF(@PathParam("cpf") String cpf) {
