@@ -29,7 +29,7 @@ public abstract class Imovel extends BaseEntity{
 	/**
 	 * Código RGI do imóvel
 	 */
-	@Column(name = "RGI", unique = true)
+	@Column(name = "RGI")
 	private String rgi;
 		
 	/**

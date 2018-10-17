@@ -76,7 +76,7 @@ public class ImovelServiceImpl implements ImovelService{
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
 				.buscarTodos().stream()
 					.filter(residencia -> 
-						residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel()) || residencia.getRgi().equals(imovelDTO.getRgi())
+						residencia.getNumeroImovel().equals(imovelDTO.getNumeroImovel())
 					).collect(Collectors.toList());
 		
 		if(!imoveis.isEmpty()) 
@@ -123,7 +123,8 @@ public class ImovelServiceImpl implements ImovelService{
 
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
-						comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) || comercio.getRgi().equals(imovel.getRgi())
+						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) && comercio.iseSobreloja() && imovel.geteSobreloja()) ||
+						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) && !comercio.iseSobreloja() && !imovel.geteSobreloja())
 					).collect(Collectors.toList());
 		
 		if(!imoveis.isEmpty())
