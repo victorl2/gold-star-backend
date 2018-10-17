@@ -25,7 +25,10 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Tab;
+import com.itextpdf.layout.element.TabStop;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.property.TabAlignment;
 import com.itextpdf.layout.property.UnitValue;
 
 import domain.entity.negocio.Imovel;
@@ -235,18 +238,15 @@ public class ImovelServiceImpl implements ImovelService{
 
 	private void processComercial(Table table, ImovelComercial imovel, PdfFont font, boolean isHeader) {
 		if (isHeader) {
+			if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
             table.addHeaderCell(
-                new Cell(1,2).add( 
-                    new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
-            table.addHeaderCell(
-                    new Cell(1,2).add(
-                        new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-            }else {
+                new Cell(1,3).add( 
+                    new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()).add("RGI imóvel: " + imovel.getRgi().toString()+"    ").setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
+			}else{
             	table.addHeaderCell(
-                        new Cell(1,2).add(
-                            new Paragraph("RGI do imóvel não informado: " + imovel.getRgi().toString()).setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-            }
+                        new Cell(1,3).add( 
+                            new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()).add("RGI imóvel não informado    ").setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
+        	}
         // Caso onde as informações serão geradas no corpo das tabelas no pdf
         }else {
         	if(imovel.iseSobreloja() != null && imovel.iseSobreloja()) {
@@ -677,12 +677,10 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(prop == null) {
 			if(imovel.getProprietario()!=null) {
-				prop = imovel.getProprietario().build();
-				if(prop.getImoveis()== null) {
-					prop.setImoveis(new ArrayList<Imovel>());
+				Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario(), imoveis.get(0));
+				if(proprietario.isPresent()) {
+					imoveis.get(0).setDonoImovel(proprietario.get());
 				}
-				prop.getImoveis().add(imoveis.get(0));
-				imoveis.get(0).setDonoImovel(prop);
 			}
 		}else {
 			if(imovel.getProprietario() !=null ) {
@@ -706,12 +704,10 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(loc == null) {
 			if(imovel.getLocador()!=null) {
-				loc = imovel.getLocador().build();
-				if(loc.getImoveisAlugados()== null) {
-					loc.setImoveisAlugados(new ArrayList<Imovel>());
+				Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador(), imoveis.get(0));
+				if(locatario.isPresent()) {
+					imoveis.get(0).setLocatario(locatario.get());
 				}
-				loc.getImoveisAlugados().add(imoveis.get(0));
-				imoveis.get(0).setLocatario(loc);
 			}
 		}else {
 			if(imovel.getLocador() !=null ) {
@@ -727,17 +723,17 @@ public class ImovelServiceImpl implements ImovelService{
 					}
 				}else {
 					loc = removeImovelDoLocador(imoveis);
-					locatarioRepository.salvar(imoveis.get(0).getLocatario());
-					imoveis.get(0).setDonoImovel(null);
+					locatarioRepository.salvar(loc);
+					imoveis.get(0).setLocatario(null);
 				}
 			}
 		}
 		try {
 			imovelComercialRepository.salvar(imoveis.get(0));
-			if(prop.getImoveis().size() == 0) {
+			if(prop !=null && prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
-			if(loc.getImoveisAlugados().size() == 0) {
+			if(loc != null && loc.getImoveisAlugados().size() == 0) {
 				locatarioRepository.deletar(loc);
 			}
 			return true;
@@ -748,19 +744,31 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	private Locatario removeImovelDoLocador(List<ImovelComercial> imoveis) {
+		Imovel remover = null;
 		for (Imovel imovel : imoveis.get(0).getLocatario().getImoveisAlugados()) {
 			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
-				imoveis.get(0).getLocatario().getImoveisAlugados().remove(imovel);
+				remover = imovel;
+			}else {
+				remover =null;
 			}
+		}
+		if(remover!=null) {
+			imoveis.get(0).getLocatario().getImoveisAlugados().remove(remover);
 		}
 		return imoveis.get(0).getLocatario();
 	}
 
 	private Proprietario removeImovelDoProprietario(List<ImovelComercial> imoveis) {
+		Imovel remover = null;
 		for (Imovel imovel : imoveis.get(0).getDonoImovel().getImoveis()) {
 			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
-				imoveis.get(0).getDonoImovel().getImoveis().remove(imovel);
+				remover = imovel;
+			}else {
+				remover =null;
 			}
+		}
+		if(remover!=null) {
+			imoveis.get(0).getDonoImovel().getImoveis().remove(remover);
 		}
 		return imoveis.get(0).getDonoImovel();
 	}
@@ -791,12 +799,10 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(prop == null) {
 			if(imovelDTO.getProprietario()!=null) {
-				prop = imovelDTO.getProprietario().build();
-				if(prop.getImoveis()== null) {
-					prop.setImoveis(new ArrayList<Imovel>());
+				Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario(), imoveis.get(0));
+				if(proprietario.isPresent()) {
+					imoveis.get(0).setDonoImovel(proprietario.get());
 				}
-				prop.getImoveis().add(imoveis.get(0));
-				imoveis.get(0).setDonoImovel(prop);
 			}
 		}else {
 			if(imovelDTO.getProprietario() !=null ) {
@@ -820,12 +826,10 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(loc == null) {
 			if(imovelDTO.getLocador()!=null) {
-				loc = imovelDTO.getLocador().build();
-				if(loc.getImoveisAlugados()== null) {
-					loc.setImoveisAlugados(new ArrayList<Imovel>());
+				Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovelDTO.getLocador(), imoveis.get(0));
+				if(locatario.isPresent()) {
+					imoveis.get(0).setLocatario(locatario.get());
 				}
-				loc.getImoveisAlugados().add(imoveis.get(0));
-				imoveis.get(0).setLocatario(loc);
 			}
 		}else {
 			if(imovelDTO.getLocador() !=null ) {
@@ -842,17 +846,17 @@ public class ImovelServiceImpl implements ImovelService{
 				}else {
 					loc = removeImovelDoLocadorResidencial(imoveis);
 					locatarioRepository.salvar(imoveis.get(0).getLocatario());
-					imoveis.get(0).setDonoImovel(null);
+					imoveis.get(0).setLocatario(null);
 				}
 			}
 		}
 		
 		try {
 			imovelResidencialRepository.salvar(imoveis.get(0));
-			if(prop.getImoveis().size() == 0) {
+			if(prop != null && prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
-			if(loc.getImoveisAlugados().size() == 0) {
+			if(loc != null && loc.getImoveisAlugados().size() == 0) {
 				locatarioRepository.deletar(loc);
 			}
 			return true;
@@ -864,19 +868,31 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	private Locatario removeImovelDoLocadorResidencial(List<ImovelResidencial> imoveis) {
+		Imovel remover = null;
 		for (Imovel imovel : imoveis.get(0).getLocatario().getImoveisAlugados()) {
 			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
-				imoveis.get(0).getLocatario().getImoveisAlugados().remove(imovel);
+				remover = imovel;
+			}else {
+				remover =null;
 			}
+		}
+		if(remover!=null) {
+			imoveis.get(0).getLocatario().getImoveisAlugados().remove(remover);
 		}
 		return imoveis.get(0).getLocatario();
 	}
 
 	private Proprietario removeImovelDoProprietarioResidencial(List<ImovelResidencial> imoveis) {
+		Imovel remover = null;
 		for (Imovel imovel : imoveis.get(0).getDonoImovel().getImoveis()) {
 			if(imovel.getNumeroImovel().equals(imoveis.get(0).getNumeroImovel())){
-				imoveis.get(0).getDonoImovel().getImoveis().remove(imovel);
+				remover = imovel;
+			}else {
+				remover =null;
 			}
+		}
+		if(remover!=null) {
+			imoveis.get(0).getDonoImovel().getImoveis().remove(remover);
 		}
 		return imoveis.get(0).getDonoImovel();
 	}
