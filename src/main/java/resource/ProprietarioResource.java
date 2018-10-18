@@ -27,16 +27,6 @@ public class ProprietarioResource {
 	@Inject
 	private ProprietarioService proprietarioSrv;
 	
-	@POST
-	@Path("/cadastrar-proprietario")
-	public Response cadastroProprietario(ProprietarioDTO proprietarioDTO) {
-		Optional<Proprietario> proprietario = proprietarioSrv.cadastrarProprietario(proprietarioDTO);
-		if(proprietario.isPresent()) {
-			return Response.ok("Cadastro realizado com sucesso").entity(proprietario.get().getID()).build();
-		}
-		return Response.status(412).entity("Cadastro não efetuado").build();
-	}
-	
 	@GET
 	@Path("/{cpf}")
 	public Response buscarProprietarioPorCPF(@PathParam("cpf") String cpf) {

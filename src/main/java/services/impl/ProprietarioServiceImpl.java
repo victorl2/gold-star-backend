@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Proprietario;
@@ -27,13 +28,18 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 	@Inject
 	private ImovelComercialRepository imovelComercialRepository;
 	
-	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO) {
+	
+	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO, Imovel imovel){
 		if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
 			return Optional.empty();
-		
-		//Removida a verificação de unicidade para cpf temporariamente
-		return Optional.of(proprietarioRepository.salvar(proprietarioDTO.build()));
-		
+		Optional<Proprietario> prop = buscaProprietarioPorCPF(proprietarioDTO.getCpf());
+		if(prop.isPresent()) {
+			prop.get().getImoveis().add(imovel);
+			return Optional.of(proprietarioRepository.salvar(prop.get()));
+		}
+		Proprietario proprietario = proprietarioDTO.build();
+		proprietario.getImoveis().add(imovel);
+		return Optional.of(proprietarioRepository.salvar(proprietario));
 	}
 	
 	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf) {
@@ -43,7 +49,12 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 					.collect(Collectors.toList());
 			if(proprietarios.isEmpty()) {
 				return Optional.empty();
-			}else return Optional.of(proprietarios.get(0));
+			}else {
+				if(proprietarios.size()>1) {
+					throw new RuntimeException("Existe mais de 1 proprietario com o cpf informado");
+				}
+				return Optional.of(proprietarios.get(0));
+			}
 		}
 		return Optional.empty();
 	}
@@ -55,7 +66,7 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
 	
 			if(imovelComercial.isPresent() && imovelComercial.get().getDonoImovel() == null) {
-				return this.cadastrarProprietario(proprietarioDTO);
+				//return this.cadastrarProprietario(proprietarioDTO);
 			}
 			
 			if(imovelComercial.isPresent()) {

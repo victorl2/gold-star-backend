@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -14,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Proprietario extends Pessoa {
 	private static final long serialVersionUID = -173814518654814808L;
 
-	@Column(name = "CPF")
+	@Column(name = "CPF", unique = true)
 	private String cpf;
 	
 	@Column(name = "ENDERECO")

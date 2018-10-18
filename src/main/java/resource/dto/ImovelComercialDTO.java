@@ -22,8 +22,14 @@ public class ImovelComercialDTO {
 	private Boolean trocouColuna;
 	private String cobrancaBoleto;
 	private String nomeLoja;
+	private String acordo;
 	
-	
+	public String getAcordo() {
+		return acordo;
+	}
+	public void setAcordo(String acordo) {
+		this.acordo = acordo;
+	}
 	public Boolean getTrocouColuna() {
 		return trocouColuna;
 	}
@@ -112,6 +118,7 @@ public class ImovelComercialDTO {
 		imovel.setProcessos(this.getProcessos());
 		imovel.setTipoLoja(this.getTipoLoja());
 		imovel.seteSobreloja(this.geteSobreloja());
+		imovel.setAcordo(this.getAcordo());
 		return imovel;
 	}
 	public String getId() {

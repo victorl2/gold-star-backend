@@ -73,6 +73,8 @@ public abstract class Imovel extends BaseEntity{
 	@Column(name = "COBRANCA_BOLETO")
 	private String cobrancaBoleto;
 	
+	@Column(name = "ACORDO_IMOVEL")
+	private String acordo;
 	
 	public String getNumeroImovel() {
 		return numeroImovel;
@@ -160,6 +162,16 @@ public abstract class Imovel extends BaseEntity{
 
 	public void setCobrancaBoleto(String cobrancaBoleto) {
 		this.cobrancaBoleto = cobrancaBoleto;
+	}
+
+
+	public String getAcordo() {
+		return acordo;
+	}
+
+
+	public void setAcordo(String acordo) {
+		this.acordo = acordo;
 	}
 	
 	

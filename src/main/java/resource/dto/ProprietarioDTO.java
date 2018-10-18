@@ -65,6 +65,7 @@ public class ProprietarioDTO {
 		Proprietario prop = new Proprietario();
 		prop.setCelular(this.getCelular());
 		prop.setCpf(this.getCpf());
+		prop.setEmail(this.getEmail());
 		prop.setEndereco(this.getEndereco());
 		prop.setNome(this.getNome());
 		prop.setTelefone(this.getTelefone());
