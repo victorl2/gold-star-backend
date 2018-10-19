@@ -36,14 +36,5 @@ public class ProprietarioResource {
 		}
 		return Response.status(412).entity("Locatario não cadastrado").build();
 	}
-	
-	@POST
-	@Path("/atualizar-proprietario/{idImovel}")
-	public Response atualizarProprietario(ProprietarioDTO proprietarioDTO, @PathParam("idImovel") String idImovel) {
-		Optional<Proprietario> proprietario = proprietarioSrv.atualizarProprietario(proprietarioDTO, idImovel);
-		if(proprietario.isPresent()) {
-			return Response.ok("Atualizacao realizada com sucesso").entity(proprietario.get().getID()).build();
-		}
-		return Response.status(412).entity("Atualizacao não efetuada").build();
-	}
+
 }

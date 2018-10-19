@@ -21,8 +21,6 @@ import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelResidencialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;
-import services.LocatarioService;
-import services.ProprietarioService;
 	
 @Path("/imovel-residencial")
 @Produces("application/json; charset=UTF-8")
@@ -40,15 +38,9 @@ public class ImovelResidencialResource {
 	@Inject
 	private ImovelService imovelService;
 	
-	@Inject
-	private ProprietarioService proprietarioService;
-	
-	@Inject
-	private LocatarioService locatarioService;
-
-	@POST
-	@Path("/gerar-relatorio")
-	public Response gerarRelatorioTodosImoveisResidenciais(String path) {
+	@GET
+	@Path("/gerar-relatorio-residenciais")
+	public Response gerarRelatorioTodosImoveisResidenciais() {
 		final String usuarioPC = System.getProperty("user.name");
 		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
 		
@@ -63,7 +55,7 @@ public class ImovelResidencialResource {
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) 
 			return Response.status(412).entity("Relatorio está vazio.").build(); 
 		
-		if(imovelService.gerarRelatorioTodosImoveisResidenciais(caminhoPadrao, relatorio)) {
+		if(gerarRelatorio.gerarPDFTodosImoveisResidenciais(caminhoPadrao, relatorio)) {
 			return Response.ok("Relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();		
@@ -141,7 +133,7 @@ public class ImovelResidencialResource {
 	
 	@GET
 	@Path("gerar-relatorio-imovel/{numero}")
-	public Response gerarRelatarorioImovelResidencial(@PathParam("numero") String numero) {
+	public Response gerarRelatorioImovelResidencial(@PathParam("numero") String numero) {
 		final String usuarioPC = System.getProperty("user.name");
 		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
 		
@@ -156,7 +148,7 @@ public class ImovelResidencialResource {
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) 
 			return Response.status(412).entity("Relatorio está vazio.").build(); 
 		
-		if(imovelService.gerarRelatorioTodosImoveisResidenciais(caminhoPadrao, relatorio)) {
+		if(gerarRelatorio.gerarPDFTodosImoveisResidenciais(caminhoPadrao, relatorio)) {
 			return Response.ok("Relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();	

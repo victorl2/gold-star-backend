@@ -42,4 +42,9 @@ public interface GeradorRelatorio {
 	public Relatorio gerarRelatorioImovelResidencial(String numero);
 	
 	public Relatorio gerarRelatorioImovelComercial(String numero);
+	
+	public boolean gerarPDFTodosImoveisResidenciais(String path, Relatorio relatorio);
+
+	public boolean gerarPDFTodosImoveisComerciais(String path, Relatorio relatorio);
+
 }

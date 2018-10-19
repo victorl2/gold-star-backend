@@ -37,13 +37,4 @@ public class LocatarioResource{
 		return Response.status(412).entity("Locatario não cadastrado").build();
 	}
 	
-	@POST
-	@Path("/atualizar-locatario/{idImovel}")
-	public Response atualizarLocatario(LocatarioDTO locatarioDTO, @PathParam("idImovel") String idImovel) {
-		Optional<Locatario> locatario = locatarioSrv.atualizarLocatario(locatarioDTO, idImovel);
-		if(locatario.isPresent()) {
-			return Response.ok("Atualizaçao realizada com sucesso").entity(locatario.get().getID()).build();
-		}
-		return Response.status(412).entity("Atualização não efetuada").build();
-	}
 }
