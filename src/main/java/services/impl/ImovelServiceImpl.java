@@ -20,6 +20,8 @@ import domain.entity.negocio.Proprietario;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
 import domain.repository.LocatarioRepository;
+import domain.repository.PessoaRepository;
+import domain.repository.ProcessoCondominialRepository;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
@@ -47,8 +49,13 @@ public class ImovelServiceImpl implements ImovelService{
 
 	@Inject
 	private LocatarioService locatarioService;
-
-
+	
+	@Inject
+	private PessoaRepository pessoaRepository;
+	
+	@Inject
+	private ProcessoCondominialRepository processoRepository;
+	
 	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
@@ -465,4 +472,82 @@ public class ImovelServiceImpl implements ImovelService{
 		if(imoveis.isEmpty()) return Optional.empty();
 		return Optional.ofNullable(imoveis.get(0));
 	}
+	
+	public void removerImovelResidencial(String numero) {
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero)).collect(Collectors.toList());
+		if(!imoveis.isEmpty()) {
+			ImovelResidencial imovel = imoveis.get(0);
+			Proprietario prop = imovel.getDonoImovel();
+			Locatario loc = imovel.getLocatario();
+			if(imovel.getProcessos() !=null) {
+				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
+			}
+			if(imovel.getMoradores()!=null) {
+				imovel.getMoradores().forEach(morador -> pessoaRepository.deletar(morador));
+			}
+			if(imovel.getContatoEmergencia()!=null) {
+				pessoaRepository.deletar(imovel.getContatoEmergencia());
+			}
+			if(imovel.getDonoImovel()!= null) {
+				prop = removeImovelDoProprietarioResidencial(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
+			}
+			if(imovel.getLocatario()!=null) {
+				loc = removeImovelDoLocadorResidencial(imoveis);
+				locatarioRepository.salvar(imoveis.get(0).getLocatario());
+				imoveis.get(0).setLocatario(null);
+			}
+			try {
+				imovelResidencialRepository.salvar(imoveis.get(0));
+				imovelResidencialRepository.deletar(imoveis.get(0));
+				if(prop != null && prop.getImoveis().size() == 0) {
+					proprietarioRepository.deletar(prop);
+				}
+				if(loc != null && loc.getImoveisAlugados().size() == 0) {
+					locatarioRepository.deletar(loc);
+				}
+			}catch(Exception e) {
+				LOGGER.log(Level.SEVERE, "Não foi possível deletar o imóvel residencial",e);			}
+		}
+	}
+	
+	public void removerImovelComercial(String numero) {
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero)).collect(Collectors.toList());
+		if(!imoveis.isEmpty()) {
+			ImovelComercial imovel = imoveis.get(0);
+			Proprietario prop = imovel.getDonoImovel();
+			Locatario loc = imovel.getLocatario();
+			if(imovel.getProcessos() !=null) {
+				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
+			}
+			if(imovel.getContatoEmergencia()!=null) {
+				pessoaRepository.deletar(imovel.getContatoEmergencia());
+			}
+			if(imovel.getDonoImovel()!= null) {
+				prop = removeImovelDoProprietario(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
+			}
+			if(imovel.getLocatario()!=null) {
+				loc = removeImovelDoLocador(imoveis);
+				locatarioRepository.salvar(imoveis.get(0).getLocatario());
+				imoveis.get(0).setLocatario(null);
+			}
+			try {
+				imovelComercialRepository.salvar(imoveis.get(0));
+				imovelComercialRepository.deletar(imoveis.get(0));
+				if(prop != null && prop.getImoveis().size() == 0) {
+					proprietarioRepository.deletar(prop);
+				}
+				if(loc != null && loc.getImoveisAlugados().size() == 0) {
+					locatarioRepository.deletar(loc);
+				}
+			}catch(Exception e) {
+				LOGGER.log(Level.SEVERE, "Não foi possível deletar o imóvel residencial",e);			}
+		}
+	}
 }
+

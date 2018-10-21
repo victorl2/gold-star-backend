@@ -154,6 +154,10 @@ public class ImovelResidencialResource {
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();	
 	}
 	
-	
-
+	@GET
+	@Path("remover-imovel/{numero}")
+	public Response removerImovelResidencial(@PathParam("numero") String numero) {
+		imovelService.removerImovelResidencial(numero);
+		return Response.ok().build();
+	}
 }
