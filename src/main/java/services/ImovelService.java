@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
-import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
 
@@ -28,10 +27,6 @@ public interface ImovelService extends Buscador{
 	 * @return ImovelComercial após ser persistido na base de dados
 	 */
 	public Boolean cadastrarImovelComercial(ImovelComercialDTO imovel);
-	
-	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio);
-	
-	public boolean gerarRelatorioTodosImoveisComerciais(String path, Relatorio relatorio);
 
 	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi);
 
@@ -52,4 +47,8 @@ public interface ImovelService extends Buscador{
 	public Optional<ImovelResidencial> recuperarImovelResidencialPorNumero(String numero);
 
 	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero);
+	
+	public void removerImovelResidencial(String numero);
+	
+	public void removerImovelComercial(String numero);
 }

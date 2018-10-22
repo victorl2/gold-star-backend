@@ -16,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.ImovelComercial;
-import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Relatorio;
 import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
@@ -39,9 +38,9 @@ public class ImovelComercialResource {
 	@Inject
 	private ImovelService imovelService;
 	
-	@POST
+	@GET
 	@Path("gerar-relatorio-comercial")
-	public Response gerarRelatorioTodosImoveisComerciais(String path) {
+	public Response gerarRelatorioTodosImoveisComerciais() {
 		
 		final String usuarioPC = System.getProperty("user.name");
 		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
@@ -56,7 +55,7 @@ public class ImovelComercialResource {
 		
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioTodosImoveisComerciais();
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
-		if(imovelService.gerarRelatorioTodosImoveisComerciais(caminhoPadrao, relatorio)) {
+		if(gerarRelatorio.gerarPDFTodosImoveisComerciais(caminhoPadrao, relatorio)) {
 			return Response.ok("relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
@@ -140,10 +139,17 @@ public class ImovelComercialResource {
 		
 		Relatorio relatorio = gerarRelatorio.gerarRelatorioImovelComercial(numero);
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
-		if(imovelService.gerarRelatorioTodosImoveisComerciais(caminhoPadrao, relatorio)) {
+		if(gerarRelatorio.gerarPDFTodosImoveisComerciais(caminhoPadrao, relatorio)) {
 			return Response.ok("relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
 		}
 		return Response.status(412).entity("Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.").build();
+	}
+
+	@GET
+	@Path("remover-imovel/{numero}")
+	public Response removerImovelComercial(@PathParam("numero") String numero) {
+		imovelService.removerImovelComercial(numero);
+		return Response.ok().build();
 	}
 
 }

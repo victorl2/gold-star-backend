@@ -1,13 +1,8 @@
 package services.impl;
 
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -17,31 +12,16 @@ import java.util.stream.Collectors;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Tab;
-import com.itextpdf.layout.element.TabStop;
-import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.TabAlignment;
-import com.itextpdf.layout.property.UnitValue;
-
 import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
-import domain.entity.negocio.Pessoa;
-import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Proprietario;
-import domain.entity.negocio.Relatorio;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
 import domain.repository.LocatarioRepository;
+import domain.repository.PessoaRepository;
+import domain.repository.ProcessoCondominialRepository;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ImovelComercialDTO;
 import resource.dto.ImovelResidencialDTO;
@@ -69,8 +49,13 @@ public class ImovelServiceImpl implements ImovelService{
 
 	@Inject
 	private LocatarioService locatarioService;
-
-
+	
+	@Inject
+	private PessoaRepository pessoaRepository;
+	
+	@Inject
+	private ProcessoCondominialRepository processoRepository;
+	
 	public Boolean cadastrarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
@@ -158,430 +143,6 @@ public class ImovelServiceImpl implements ImovelService{
 
 	public List<ImovelComercial> buscarTodosImoveisComerciais() {
 		return imovelComercialRepository.buscarTodos();
-	}
-	
-	public boolean gerarRelatorioTodosImoveisComerciais(String path, Relatorio relatorio) {
-		Date data = new Date(System.currentTimeMillis());
-		String pathFormatado= "";
-		if(relatorio.getNumeroDeImoveis() == 1) {
-			pathFormatado = path+"relatorioImovel"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
-		}else {
-			pathFormatado = path+"relatorioImoveis"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
-		}
-		try {
-			FileOutputStream fos = new FileOutputStream(pathFormatado);
-			PdfWriter writer = new PdfWriter(fos);
-			PdfDocument pdf = new PdfDocument(writer);
-			Document document = new Document(pdf);
-			PdfFont font = PdfFontFactory.createFont("Helvetica");
-			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
-			if(relatorio.getNumeroDeImoveis() == 1) {
-				document.add(new Paragraph("Relatório: Imóvel Comercial.                            " 
-						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-									.format(data)).setFont(bold));
-			}else {
-				document.add(new Paragraph("Relatório: Todos os imóveis Comerciais.             " 
-						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-									.format(data)+".").setFont(bold));
-				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
-			}
-			
-			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
-				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
-					Table table = montaTabelaComercial(bold,font,imovel);
-					document.add(new Paragraph());
-					document.add(new Paragraph());
-					document.add(table);
-				}
-				document.add(new Paragraph());
-			}
-			if(relatorio.getNumeroDeImoveis() == 1) {
-				addInformacaoParaImovelComercialUnico(relatorio,document);
-			}
-				document.close();
-		}catch(FileNotFoundException e){
-			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
-			return false;
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo");
-			return false;
-		}
-		return true;
-	}
-	
-	private void addInformacaoParaImovelComercialUnico(Relatorio relatorio, Document document) {
-		ImovelComercial imovelComercial = (ImovelComercial)relatorio.getImoveisPresentesRelatorio().get(0);
-		
-		if(imovelComercial.getProcessos() != null && !imovelComercial.getProcessos().isEmpty()) {
-			List<ProcessoCondominial> lista = imovelComercial.getProcessos().stream()
-					.filter(processo -> processo.getProcessoAtivo())
-					.collect(Collectors.toList());
-			Integer processos = lista.size();
-			document.add(new Paragraph("Número de processos ativos deste imóvel: "+ processos.toString()+"."));
-			int i =1;
-			for(ProcessoCondominial processo : lista) {
-				document.add(new Paragraph("    "+i +" - Número do processo: "+ processo.getCodigoProcesso()));
-				i++;
-			}
-		}
-		
-	}
-
-	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel) {
-		Table table = new Table(new float[]{1,1,1});
-		table.setWidth(UnitValue.createPercentValue(100));
-		table.setFixedLayout();
-		processComercial(table,(ImovelComercial)imovel,bold,true);
-		process(table, imovel, font, false);
-		processComercial(table,(ImovelComercial)imovel,font,false);
-		return table;
-	}
-
-	private void processComercial(Table table, ImovelComercial imovel, PdfFont font, boolean isHeader) {
-		if (isHeader) {
-			if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
-            table.addHeaderCell(
-                new Cell(1,3).add( 
-                    new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()).add("RGI imóvel: " + imovel.getRgi().toString()+"    ").setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-			}else{
-            	table.addHeaderCell(
-                        new Cell(1,3).add( 
-                            new Paragraph("Nº do comercio: " + imovel.getNumeroImovel().toString()).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()).add("RGI imóvel não informado    ").setFont(font)).setBackgroundColor(ColorConstants.LIGHT_GRAY));
-        	}
-        // Caso onde as informações serão geradas no corpo das tabelas no pdf
-        }else {
-        	if(imovel.iseSobreloja() != null && imovel.iseSobreloja()) {
-    		    table.addCell(
-    		            new Cell().add(
-    		                new Paragraph("É sobreloja").setFont(font).setFontSize(11)));
-    	    }else if(imovel.iseSobreloja() != null){
-    	    	table.addCell(
-    		            new Cell().add(
-    		                new Paragraph("É loja").setFont(font).setFontSize(11)));
-    	    }else {
-    	    	table.addCell(
-    		            new Cell().add(
-    		                new Paragraph("Não informado").setFont(font).setFontSize(11)));
-    	    }
-        	
-        	if(imovel.getTipoLoja()!=null) {
-        		if(imovel.getTipoLoja().getNomeDoTipoComercio()!=null && !imovel.getTipoLoja().getNomeDoTipoComercio().isEmpty()) {
-        			table.addCell(
-        		            new Cell().add(
-        		                new Paragraph("Tipo de loja: " + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font).setFontSize(11)));
-        		}else {
-        			table.addCell(
-        		            new Cell().add(
-        		                new Paragraph("Tipo de loja não informado" + imovel.getTipoLoja().getNomeDoTipoComercio()).setFont(font).setFontSize(11)));
-        		}
-        	}else {
-        		table.addCell(
-    		            new Cell().add(new Paragraph("Tipo de loja não informado").setFont(font).setFontSize(11)));
-        	}
-        }
-	}
-
-	public boolean gerarRelatorioTodosImoveisResidenciais(String path, Relatorio relatorio) {
-		Date data = new Date(System.currentTimeMillis());
-		String pathFormatado = "";
-		if(relatorio.getNumeroDeImoveis() == 1) {
-			pathFormatado = path+"relatorioImovel"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
-		}else {
-			pathFormatado = path+"relatorioImoveis"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
-		}
-		try {
-			FileOutputStream fos = new FileOutputStream(pathFormatado);
-			PdfWriter writer = new PdfWriter(fos);
-			PdfDocument pdf = new PdfDocument(writer);
-			Document document = new Document(pdf);
-			PdfFont font = PdfFontFactory.createFont("Helvetica");
-			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
-			if(relatorio.getNumeroDeImoveis() == 1) {
-				document.add(new Paragraph("Relatório: Imóvel Residencial.             " 
-						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-									.format(data)).setFont(bold));
-			}else {
-				document.add(new Paragraph("Relatório: Todos os imóveis Residênciais.             " 
-						+ "Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-									.format(data)).setFont(bold));
-				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
-			}
-			
-			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
-				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
-					Table table = montaTabelaResidencial(bold,font,imovel);
-					document.add(new Paragraph());
-					document.add(new Paragraph());
-					document.add(table);
-				}
-				document.add(new Paragraph());
-			}
-			if(relatorio.getNumeroDeImoveis() == 1) {
-				addInformacaoParaImovelResidencialUnico(relatorio,document);
-			}
-				document.close();
-		}catch(FileNotFoundException e){
-			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
-			return false;
-		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo");
-			return false;
-		}
-		return true;
-	}
-	
-	private void addInformacaoParaImovelResidencialUnico(Relatorio relatorio, Document document) {
-		ImovelResidencial imovelResidencial = (ImovelResidencial)relatorio.getImoveisPresentesRelatorio().get(0);
-		String sim ="";
-		if(imovelResidencial.isPossuiAnimalEstimacao()==null) sim = "Não.";
-		else {
-			sim = imovelResidencial.isPossuiAnimalEstimacao()? "Sim.":"Nao.";
-		}
-		document.add(new Paragraph("Possui animal de estimação: "+ sim));
-		
-		if(!imovelResidencial.getMoradores().isEmpty() || imovelResidencial.getMoradores() != null) {
-			Integer moradores = imovelResidencial.getMoradores().size();
-			document.add(new Paragraph("Número de moradores deste imóvel: "+ moradores.toString()+"."));
-			int i =1;
-			for(Pessoa pessoa : imovelResidencial.getMoradores()) {
-				document.add(new Paragraph("Morador "+ i +": "+ pessoa.getNome()));
-				i++;
-			}
-		}
-
-		if( imovelResidencial.getProcessos() != null && !imovelResidencial.getProcessos().isEmpty()) {
-			List<ProcessoCondominial> lista = imovelResidencial.getProcessos().stream()
-					.filter(processo -> processo.getProcessoAtivo())
-					.collect(Collectors.toList());
-			Integer processos = lista.size();
-			document.add(new Paragraph("Número de processos ativos deste imóvel: "+ processos.toString()+"."));
-			int i =1;
-			for(ProcessoCondominial processo : lista) {
-				document.add(new Paragraph("    "+i +" - Número do processo: "+ processo.getCodigoProcesso()));
-				i++;
-			}
-		}	
-	}
-
-	private Table montaTabelaResidencial(PdfFont bold, PdfFont font, Imovel imovel) {
-		Table table = new Table(new float[]{1,1});
-		table.setWidth(UnitValue.createPercentValue(100));
-		table.setFixedLayout();
-		process(table, imovel, bold, true);
-		process(table, imovel, font, false);
-		return table;
-	}
-
-	private void process(Table table, Imovel imovel, PdfFont font, boolean isHeader) {
-		//Caso em que as informações devem ser geradas como cabeçalho das tabelas no pdf
-		if (isHeader) {
-            table.addHeaderCell(
-                new Cell().add( 
-                    new Paragraph("Nº do apartamento: " + imovel.getNumeroImovel().toString()).setFont(font)));
-            if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
-            table.addHeaderCell(
-                    new Cell().add(
-                        new Paragraph("RGI imóvel: " + imovel.getRgi().toString()).setFont(font)));
-            }else {
-            	table.addHeaderCell(
-                        new Cell().add(
-                            new Paragraph("RGI do imóvel não informado: " + imovel.getRgi().toString()).setFont(font)));
-            }
-        // Caso onde as informações serão geradas no corpo das tabelas no pdf
-        }else {
-        	
-        	adicionaInformacaoSobreDonoDoImovel(imovel,table,font);
-		    adicionaInformacaoSobreLocatario(imovel,table,font);
-		    
-		    //barbara
-		    if(imovel.getTrocouBarbara() != null && imovel.getTrocouBarbara()) {
-			    table.addCell(
-			            new Cell().add(
-			                new Paragraph("Trocou barbará").setFont(font).setFontSize(11)));
-		    }else if(imovel.getTrocouBarbara() != null) {
-		    	table.addCell(
-			            new Cell().add(
-			                new Paragraph("Não trocou barbará").setFont(font).setFontSize(11)));
-		    }else {
-		    	table.addCell(
-			            new Cell().add(
-			                new Paragraph("Não informado").setFont(font).setFontSize(11)));
-		    }
-		    
-		    //coluna
-		    if(imovel.getTrocouColuna() != null && imovel.getTrocouColuna()) {
-			    table.addCell(
-			            new Cell().add(
-			                new Paragraph("Trocou coluna de água").setFont(font).setFontSize(11)));
-		    }else if(imovel.getTrocouColuna() != null) {
-		    	table.addCell(
-			            new Cell().add(
-			                new Paragraph("Não trocou coluna de água").setFont(font).setFontSize(11)));
-		    }else {
-		    	table.addCell(
-			            new Cell().add(
-			                new Paragraph("Não informado").setFont(font).setFontSize(11)));
-		    }
-		    
-		    //processo
-		    if(possuiProcessoAtivo(imovel)) {
-		    	table.addCell(
-		            new Cell().add(
-		                new Paragraph("Possui ação condominial").setFont(font).setFontSize(11)));
-		    }else {
-		    	table.addCell(
-			        new Cell().add(
-			            new Paragraph("Não possui ação condominial").setFont(font).setFontSize(11)));
-		    }
-		    
-		    //contato emergencia
-		    if(imovel.getContatoEmergencia()!=null) {
-		    	if(imovel.getContatoEmergencia().getNome()!=null && !imovel.getContatoEmergencia().getNome().isEmpty()) {
-				    table.addCell(
-				    		new Cell().add(
-				                new Paragraph("Contato emergência: " + imovel.getContatoEmergencia().getNome()).setFont(font).setFontSize(11)));
-		    	}else {
-		    		table.addCell(
-				    		new Cell().add(
-				                new Paragraph("Contato emergência não informado").setFont(font).setFontSize(11)));
-		    	}
-		    	if(imovel.getContatoEmergencia().getCelular() !=null && !imovel.getContatoEmergencia().getCelular().isEmpty()) {
-		    		table.addCell(
-				    		new Cell().add(
-				                new Paragraph("Tel emergência: " + imovel.getContatoEmergencia().getCelular()).setFont(font).setFontSize(11)));
-		    	}else {
-		    		table.addCell(
-				    		new Cell().add(
-				                new Paragraph("Tel emergência não informado").setFont(font).setFontSize(11)));
-		    	}
-		    }else {
-		    	table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Contato emergência não informado").setFont(font).setFontSize(11)));
-		    	table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Tel emergência não informado").setFont(font).setFontSize(11)));
-		    }
-        }
-	}
-	
-	private boolean possuiProcessoAtivo(Imovel imovel) {
-		if(imovel.getProcessos() == null) return false;
-			
-		for (ProcessoCondominial processo : imovel.getProcessos()) {
-			if(processo.getProcessoAtivo()) return true;
-		}
-		return false;
-	}
-	
-	private void adicionaInformacaoSobreLocatario(Imovel imovel, Table table, PdfFont font) {
-		if(imovel.getLocatario()!=null) {
-	    	if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario().getNome().isEmpty()) {
-			    table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Nome locatário: " + imovel.getLocatario().getNome()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Nome locatário não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getLocatario().getEmail()!=null && !imovel.getLocatario().getEmail().isEmpty()) {
-			    table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Email locatário: " + imovel.getLocatario().getEmail()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Email locatário não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getLocatario().getTelefone() !=null && !imovel.getLocatario().getTelefone().isEmpty()) {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Tel locatário: " + imovel.getLocatario().getTelefone()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Tel locatário não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getLocatario().getCelular() !=null && !imovel.getLocatario().getCelular().isEmpty()) {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Cell locatário: " + imovel.getLocatario().getCelular()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Cell locatário não informado").setFont(font).setFontSize(11)));
-	    	}
-	    }else {
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Nome locatário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Email locatário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-			    	new Cell().add(
-			               new Paragraph("Tel locatário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-			    	new Cell().add(
-			               new Paragraph("Cell locatário não informado").setFont(font).setFontSize(11)));
-	    }
-		
-	}
-
-	private void adicionaInformacaoSobreDonoDoImovel(Imovel imovel, Table table, PdfFont font) {
-		if(imovel.getDonoImovel()!=null) {
-	    	if(imovel.getDonoImovel().getNome()!=null && !imovel.getDonoImovel().getNome().isEmpty()) {
-			    table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Nome proprietário: " + imovel.getDonoImovel().getNome()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Nome proprietário: não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getDonoImovel().getEmail()!=null && !imovel.getDonoImovel().getEmail().isEmpty()) {
-			    table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Email Proprietário: " + imovel.getDonoImovel().getEmail()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Email Proprietário: não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getDonoImovel().getTelefone() !=null && !imovel.getDonoImovel().getTelefone().isEmpty()) {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Tel proprietário: " + imovel.getDonoImovel().getTelefone()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Tel proprietário: não informado").setFont(font).setFontSize(11)));
-	    	}
-	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular().isEmpty()) {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Cell proprietário: " + imovel.getDonoImovel().getCelular()).setFont(font).setFontSize(11)));
-	    	}else {
-	    		table.addCell(
-			    		new Cell().add(
-			                new Paragraph("Cell proprietário: não informado").setFont(font).setFontSize(11)));
-	    	}	    
-	    }else {
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Nome proprietário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Email proprietário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Tel proprietário não informado").setFont(font).setFontSize(11)));
-	    	table.addCell(
-		    		new Cell().add(
-		                new Paragraph("Cell proprietário não informado").setFont(font).setFontSize(11)));
-	    }
-		
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi){
@@ -911,4 +472,82 @@ public class ImovelServiceImpl implements ImovelService{
 		if(imoveis.isEmpty()) return Optional.empty();
 		return Optional.ofNullable(imoveis.get(0));
 	}
+	
+	public void removerImovelResidencial(String numero) {
+		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero)).collect(Collectors.toList());
+		if(!imoveis.isEmpty()) {
+			ImovelResidencial imovel = imoveis.get(0);
+			Proprietario prop = imovel.getDonoImovel();
+			Locatario loc = imovel.getLocatario();
+			if(imovel.getProcessos() !=null) {
+				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
+			}
+			if(imovel.getMoradores()!=null) {
+				imovel.getMoradores().forEach(morador -> pessoaRepository.deletar(morador));
+			}
+			if(imovel.getContatoEmergencia()!=null) {
+				pessoaRepository.deletar(imovel.getContatoEmergencia());
+			}
+			if(imovel.getDonoImovel()!= null) {
+				prop = removeImovelDoProprietarioResidencial(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
+			}
+			if(imovel.getLocatario()!=null) {
+				loc = removeImovelDoLocadorResidencial(imoveis);
+				locatarioRepository.salvar(imoveis.get(0).getLocatario());
+				imoveis.get(0).setLocatario(null);
+			}
+			try {
+				imovelResidencialRepository.salvar(imoveis.get(0));
+				imovelResidencialRepository.deletar(imoveis.get(0));
+				if(prop != null && prop.getImoveis().size() == 0) {
+					proprietarioRepository.deletar(prop);
+				}
+				if(loc != null && loc.getImoveisAlugados().size() == 0) {
+					locatarioRepository.deletar(loc);
+				}
+			}catch(Exception e) {
+				LOGGER.log(Level.SEVERE, "Não foi possível deletar o imóvel residencial",e);			}
+		}
+	}
+	
+	public void removerImovelComercial(String numero) {
+		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
+				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero)).collect(Collectors.toList());
+		if(!imoveis.isEmpty()) {
+			ImovelComercial imovel = imoveis.get(0);
+			Proprietario prop = imovel.getDonoImovel();
+			Locatario loc = imovel.getLocatario();
+			if(imovel.getProcessos() !=null) {
+				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
+			}
+			if(imovel.getContatoEmergencia()!=null) {
+				pessoaRepository.deletar(imovel.getContatoEmergencia());
+			}
+			if(imovel.getDonoImovel()!= null) {
+				prop = removeImovelDoProprietario(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
+			}
+			if(imovel.getLocatario()!=null) {
+				loc = removeImovelDoLocador(imoveis);
+				locatarioRepository.salvar(imoveis.get(0).getLocatario());
+				imoveis.get(0).setLocatario(null);
+			}
+			try {
+				imovelComercialRepository.salvar(imoveis.get(0));
+				imovelComercialRepository.deletar(imoveis.get(0));
+				if(prop != null && prop.getImoveis().size() == 0) {
+					proprietarioRepository.deletar(prop);
+				}
+				if(loc != null && loc.getImoveisAlugados().size() == 0) {
+					locatarioRepository.deletar(loc);
+				}
+			}catch(Exception e) {
+				LOGGER.log(Level.SEVERE, "Não foi possível deletar o imóvel residencial",e);			}
+		}
+	}
 }
+
