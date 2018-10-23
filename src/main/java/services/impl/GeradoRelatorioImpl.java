@@ -15,20 +15,16 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import com.itextpdf.kernel.colors.ColorConstants;
-import com.itextpdf.kernel.events.IEventHandler;
-import com.itextpdf.kernel.events.PdfDocumentEvent;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.TabStop;
 import com.itextpdf.layout.element.Table;
-import com.itextpdf.layout.property.AreaBreakType;
 import com.itextpdf.layout.property.TabAlignment;
 import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
@@ -46,8 +42,6 @@ import services.GeradorRelatorio;
 public class GeradoRelatorioImpl implements GeradorRelatorio{
 	private Logger LOGGER = Logger.getLogger(getClass().getName());
 	
-	@Inject
-	private IEventHandler handler;
 	@Inject
 	private ImovelResidencialRepository imovelResidencialRepository;
 	
