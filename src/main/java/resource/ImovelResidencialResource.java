@@ -38,8 +38,8 @@ public class ImovelResidencialResource {
 	@Inject
 	private ImovelService imovelService;
 	
-	@GET
-	@Path("/gerar-relatorio-residenciais")
+	@POST
+	@Path("/gerar-relatorio")
 	public Response gerarRelatorioTodosImoveisResidenciais() {
 		final String usuarioPC = System.getProperty("user.name");
 		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";

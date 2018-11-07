@@ -38,7 +38,7 @@ public class ImovelComercialResource {
 	@Inject
 	private ImovelService imovelService;
 	
-	@GET
+	@POST
 	@Path("gerar-relatorio-comercial")
 	public Response gerarRelatorioTodosImoveisComerciais() {
 		
