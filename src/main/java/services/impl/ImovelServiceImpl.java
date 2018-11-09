@@ -254,7 +254,12 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getDonoImovel().setNome(imovel.getProprietario().getNome());
 						imoveis.get(0).getDonoImovel().setTelefone(imovel.getProprietario().getTelefone());
 					}else {
-						imoveis.get(0).setDonoImovel(imovel.getProprietario().build());
+						prop = removeImovelDoProprietario(imoveis);
+						proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+						Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario(), imoveis.get(0));
+						if(proprietario.isPresent()) {
+							imoveis.get(0).setDonoImovel(proprietario.get());
+						}
 					}
 				}else {
 					prop = removeImovelDoProprietario(imoveis);
@@ -281,7 +286,12 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getLocatario().setTelefone(imovel.getLocador().getTelefone());
 						imoveis.get(0).getLocatario().setPossuidor(imovel.getLocador().getPossuidor());
 					}else {
-						imoveis.get(0).setLocatario(imovel.getLocador().build());
+						loc = removeImovelDoLocador(imoveis);
+						locatarioRepository.salvar(imoveis.get(0).getLocatario());
+						Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador(), imoveis.get(0));
+						if(locatario.isPresent()) {
+							imoveis.get(0).setLocatario(locatario.get());
+						}
 					}
 				}else {
 					loc = removeImovelDoLocador(imoveis);
@@ -376,7 +386,12 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getDonoImovel().setNome(imovelDTO.getProprietario().getNome());
 						imoveis.get(0).getDonoImovel().setTelefone(imovelDTO.getProprietario().getTelefone());
 					}else {
-						imoveis.get(0).setDonoImovel(imovelDTO.getProprietario().build());
+						prop = removeImovelDoProprietarioResidencial(imoveis);
+						proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+						Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario(), imoveis.get(0));
+						if(proprietario.isPresent()) {
+							imoveis.get(0).setDonoImovel(proprietario.get());
+						}
 					}
 				}else {
 					prop = removeImovelDoProprietarioResidencial(imoveis);
@@ -403,7 +418,12 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getLocatario().setTelefone(imovelDTO.getLocador().getTelefone());
 						imoveis.get(0).getLocatario().setPossuidor(imovelDTO.getLocador().getPossuidor());
 					}else {
-						imoveis.get(0).setLocatario(imovelDTO.getLocador().build());
+						loc = removeImovelDoLocadorResidencial(imoveis);
+						locatarioRepository.salvar(imoveis.get(0).getLocatario());
+						Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovelDTO.getLocador(), imoveis.get(0));
+						if(locatario.isPresent()) {
+							imoveis.get(0).setLocatario(locatario.get());
+						}
 					}
 				}else {
 					loc = removeImovelDoLocadorResidencial(imoveis);
