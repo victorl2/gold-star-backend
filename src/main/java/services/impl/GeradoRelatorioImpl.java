@@ -129,6 +129,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 						.add("Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 									.format(data)+".").setFont(bold));
 				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
+				document.add(new Paragraph("Quantidade de imóveis que trocaram o barbará: " + qtdImoveisTrocaBarbara(relatorio.getImoveisPresentesRelatorio())));
+				document.add(new Paragraph("Quantidade de imóveis que trocaram a coluna de água: " + qtdImoveisTrocaColuna(relatorio.getImoveisPresentesRelatorio())));
+				
 			}
 			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
@@ -145,12 +148,41 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
 			return false;
 		} catch (IOException e) {
-			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo");
+			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo\nTrace:",e);
 			return false;
 		}
 		return true;
 	}
 	
+	private String qtdImoveisTrocaBarbara(List<Imovel> imoveisPresentesRelatorio) {
+		if(imoveisPresentesRelatorio!=null) {
+			Integer numeroDeImoveisTrocaramBarbara = 0;
+			for( Imovel imovel : imoveisPresentesRelatorio){
+				if(imovel.getTrocouBarbara()) {
+					numeroDeImoveisTrocaramBarbara++;
+				}
+			}
+			return numeroDeImoveisTrocaramBarbara.toString();
+		}
+		return "0";
+	}
+	
+
+
+	private String qtdImoveisTrocaColuna(List<Imovel> imoveisPresentesRelatorio) {
+		if(imoveisPresentesRelatorio!=null) {
+			Integer numeroDeImoveisTrocaramColunaAgua = 0;
+			for( Imovel imovel : imoveisPresentesRelatorio){
+				if(imovel.getTrocouColuna()) {
+					numeroDeImoveisTrocaramColunaAgua++;
+				}
+			}
+			return numeroDeImoveisTrocaramColunaAgua.toString();
+		}
+		return "0";
+	}
+
+
 	private Table montaTabelaComercial(PdfFont bold, PdfFont font, Imovel imovel, Relatorio relatorio) {
 		Table table = new Table(new float[]{1});
 		table.setWidth(UnitValue.createPercentValue(100));
@@ -184,6 +216,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 						.add("Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
 									.format(data)).setFont(bold));
 				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
+				document.add(new Paragraph("Quantidade de imóveis que trocaram o barbará: " + qtdImoveisTrocaBarbara(relatorio.getImoveisPresentesRelatorio())));
+				document.add(new Paragraph("Quantidade de imóveis que trocaram a coluna de água: " + qtdImoveisTrocaColuna(relatorio.getImoveisPresentesRelatorio())));
 			}
 			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
