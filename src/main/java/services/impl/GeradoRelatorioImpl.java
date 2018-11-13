@@ -158,7 +158,7 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 		if(imoveisPresentesRelatorio!=null) {
 			Integer numeroDeImoveisTrocaramBarbara = 0;
 			for( Imovel imovel : imoveisPresentesRelatorio){
-				if(imovel.getTrocouBarbara()) {
+				if(imovel.getTrocouBarbara()!=null && imovel.getTrocouBarbara()) {
 					numeroDeImoveisTrocaramBarbara++;
 				}
 			}
@@ -173,7 +173,7 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 		if(imoveisPresentesRelatorio!=null) {
 			Integer numeroDeImoveisTrocaramColunaAgua = 0;
 			for( Imovel imovel : imoveisPresentesRelatorio){
-				if(imovel.getTrocouColuna()) {
+				if(imovel.getTrocouColuna() != null && imovel.getTrocouColuna()) {
 					numeroDeImoveisTrocaramColunaAgua++;
 				}
 			}

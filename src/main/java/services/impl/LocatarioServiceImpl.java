@@ -22,7 +22,7 @@ import services.LocatarioService;
 public class LocatarioServiceImpl implements LocatarioService{
 
 	@Inject
-	private LocatarioRepository locatarioRepository;
+	private LocatarioRepository locatarioRepositoryJPA;
 	
 	@Inject
 	private ImovelComercialRepository imovelComercialRepository;
@@ -37,16 +37,16 @@ public class LocatarioServiceImpl implements LocatarioService{
 		if(locatario.isPresent()) {
 			locatario.get().getImoveisAlugados().add(imovel);
 			
-			return Optional.of(locatarioRepository.salvar(locatario.get()));
+			return Optional.of(locatarioRepositoryJPA.salvar(locatario.get()));
 		}
 		Locatario loc = locatarioDTO.build();
 		loc.getImoveisAlugados().add(imovel);
-		return Optional.of(locatarioRepository.salvar(loc));
+		return Optional.of(locatarioRepositoryJPA.salvar(loc));
 	}
 	
 	public Optional<Locatario> buscaLocatarioPorCPF(String cpf) {
 		if(cpf !=null) {
-			List<Locatario> locatarios = locatarioRepository.buscarTodos()
+			List<Locatario> locatarios = locatarioRepositoryJPA.buscarTodos()
 					.stream().filter(locatario -> locatario.getCpf().equals(cpf))
 					.collect(Collectors.toList());
 			if(locatarios.isEmpty()) {
@@ -72,7 +72,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 			imovelComercial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());
 			imovelComercial.get().getLocatario().setCpf(locatarioDTO.getCpf());
 			imovelComercial.get().getLocatario().setNome(locatarioDTO.getNome());
-			return Optional.ofNullable(locatarioRepository.salvar(imovelComercial.get().getLocatario()));
+			return Optional.ofNullable(locatarioRepositoryJPA.salvar(imovelComercial.get().getLocatario()));
 		}
 		
 		Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
@@ -81,7 +81,7 @@ public class LocatarioServiceImpl implements LocatarioService{
 			imovelResidencial.get().getLocatario().setTelefone(locatarioDTO.getTelefone());
 			imovelResidencial.get().getLocatario().setCpf(locatarioDTO.getCpf());
 			imovelResidencial.get().getLocatario().setNome(locatarioDTO.getNome());
-			return Optional.ofNullable(locatarioRepository.salvar(imovelResidencial.get().getLocatario()));
+			return Optional.ofNullable(locatarioRepositoryJPA.salvar(imovelResidencial.get().getLocatario()));
 	}
 	
 }
