@@ -16,6 +16,7 @@ import domain.entity.negocio.Imovel;
 import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
+import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.Proprietario;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
@@ -216,6 +217,8 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	public Boolean atualizarImovelComercial(ImovelComercialDTO imovel) {
+		Pessoa emergencia = null;
+		
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
 						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
@@ -234,11 +237,15 @@ public class ImovelServiceImpl implements ImovelService{
 		imoveis.get(0).setTrocouBarbara(imovel.getTrocouBarbara());
 		imoveis.get(0).setAcordo(imovel.getAcordo());
 		
+		//FIXME: GAMBE QUE SÓ DEUS SABE O PORQUE
+		emergencia = imoveis.get(0).getContatoEmergencia();
+		imoveis.get(0).setContatoEmergencia(null);
+		
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
 		if(prop == null) {
-			if(imovel.getProprietario()!=null) {
+			if(imovel.getProprietario() !=null) {
 				Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovel.getProprietario(), imoveis.get(0));
 				if(proprietario.isPresent()) {
 					imoveis.get(0).setDonoImovel(proprietario.get());
@@ -266,11 +273,15 @@ public class ImovelServiceImpl implements ImovelService{
 					proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
 					imoveis.get(0).setDonoImovel(null);
 				}
+			}else {
+				prop = removeImovelDoProprietario(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
 			}
 		}
 		
 		if(loc == null) {
-			if(imovel.getLocador()!=null) {
+			if( imovel.getLocador()!=null) {
 				Optional<Locatario> locatario = locatarioService.cadastrarLocatario(imovel.getLocador(), imoveis.get(0));
 				if(locatario.isPresent()) {
 					imoveis.get(0).setLocatario(locatario.get());
@@ -298,10 +309,20 @@ public class ImovelServiceImpl implements ImovelService{
 					locatarioRepository.salvar(loc);
 					imoveis.get(0).setLocatario(null);
 				}
+			}else {
+				loc = removeImovelDoLocador(imoveis);
+				locatarioRepository.salvar(loc);
+				imoveis.get(0).setLocatario(null);
 			}
 		}
 		try {
 			imovelComercialRepository.salvar(imoveis.get(0));
+			
+			//FIXME: continuação da gambiarra divina
+			if(emergencia != null) {
+				imoveis.get(0).setContatoEmergencia(emergencia);
+				imovelComercialRepository.salvar(imoveis.get(0));
+			}
 			if(prop !=null && prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
@@ -346,6 +367,7 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 
 	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
+		Pessoa emergencia = null;
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
 				.buscarTodos().stream()//
 					.filter(residencia -> // 
@@ -365,6 +387,10 @@ public class ImovelServiceImpl implements ImovelService{
 		imoveis.get(0).setProcessos(imovelDTO.getProcessos());
 		imoveis.get(0).setContatoEmergencia(imovelDTO.getContatoEmergencia());
 		imoveis.get(0).setAcordo(imovelDTO.getAcordo());
+		
+		//FIXME: GAMBE QUE SÓ DEUS SABE O PORQUE
+		emergencia = imoveis.get(0).getContatoEmergencia();
+		imoveis.get(0).setContatoEmergencia(null);
 		
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
@@ -398,6 +424,10 @@ public class ImovelServiceImpl implements ImovelService{
 					proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
 					imoveis.get(0).setDonoImovel(null);
 				}
+			}else {
+				prop = removeImovelDoProprietarioResidencial(imoveis);
+				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
+				imoveis.get(0).setDonoImovel(null);
 			}
 		}
 		
@@ -430,11 +460,18 @@ public class ImovelServiceImpl implements ImovelService{
 					locatarioRepository.salvar(imoveis.get(0).getLocatario());
 					imoveis.get(0).setLocatario(null);
 				}
+			}else {
+				loc = removeImovelDoLocadorResidencial(imoveis);
+				locatarioRepository.salvar(imoveis.get(0).getLocatario());
+				imoveis.get(0).setLocatario(null);
 			}
 		}
 		
 		try {
-			imovelResidencialRepository.salvar(imoveis.get(0));
+			if(emergencia != null) {
+				imoveis.get(0).setContatoEmergencia(emergencia);
+				imovelResidencialRepository.salvar(imoveis.get(0));
+			}
 			if(prop != null && prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}

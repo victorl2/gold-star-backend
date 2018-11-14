@@ -5,14 +5,12 @@ import java.util.Optional;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.Proprietario;
-import resource.dto.ProprietarioDTO;
 import services.ProprietarioService;
 
 @Path("/proprietario")
@@ -34,7 +32,7 @@ public class ProprietarioResource {
 		if(proprietario.isPresent()) {
 			return Response.ok("Proprietário cadastrado").entity(proprietario.get()).build();
 		}
-		return Response.status(412).entity("Locatario não cadastrado").build();
+		return Response.status(412).entity("Proprietário não cadastrado").build();
 	}
 
 }

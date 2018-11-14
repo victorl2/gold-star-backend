@@ -3,6 +3,7 @@ package domain.dao;
 import javax.persistence.EntityManager;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;

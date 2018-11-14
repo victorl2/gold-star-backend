@@ -83,5 +83,4 @@ public class LocatarioServiceImpl implements LocatarioService{
 			imovelResidencial.get().getLocatario().setNome(locatarioDTO.getNome());
 			return Optional.ofNullable(locatarioRepository.salvar(imovelResidencial.get().getLocatario()));
 	}
-	
 }
