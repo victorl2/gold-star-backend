@@ -14,7 +14,7 @@ public class Locatario extends Pessoa {
 	private static final long serialVersionUID = -4180334420040116206L;
 
 	@Column(name = "CPF", unique = true)
-	private String cpf;
+	private String cpf;	
 	
 	@JsonBackReference
 	@OneToMany(mappedBy = "locador")
