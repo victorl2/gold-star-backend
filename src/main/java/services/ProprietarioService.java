@@ -10,7 +10,5 @@ public interface ProprietarioService {
 
 	public Optional<Proprietario> buscaProprietarioPorCPF(String cpf);
 
-	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO, String idImovel);
-
 	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietario, Imovel imovel);
 }

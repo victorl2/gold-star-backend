@@ -20,6 +20,7 @@ public class ImovelResidencialDTO {
 	private Boolean trocouColuna;
 	private String cobrancaBoleto;
 	private String acordo;
+	private String nomeRgi;
 	
 	public String getAcordo() {
 		return acordo;
@@ -102,4 +103,11 @@ public class ImovelResidencialDTO {
 	public void setId(String id) {
 		this.id = id;
 	}
+	public String getNomeRgi() {
+		return nomeRgi;
+	}
+	public void setNomeRgi(String nomeRgi) {
+		this.nomeRgi = nomeRgi;
+	}
+	
 }

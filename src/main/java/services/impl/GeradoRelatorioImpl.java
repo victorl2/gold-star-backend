@@ -335,6 +335,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					i++;
 				}
 			}
+		}else {
+			paragrafo.add("Processos Condominiais: não possui processos");
 		}
 		table.addCell(
 	    		new Cell().add((paragrafo).setFont(font).setFontSize(11))
@@ -425,6 +427,16 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 		table.addCell(
 	    		new Cell().add((paragrafo_4).setFont(font).setFontSize(11))
 				.setVerticalAlignment(VerticalAlignment.MIDDLE));
+		
+		Paragraph paragrafo_5 = new Paragraph();
+		if(imovel.getNomeRgi()!=null && !imovel.getNomeRgi().isEmpty()) {
+			paragrafo_5.add("Nome cadastrado no RGI: "+imovel.getNomeRgi() + "\n");
+	    }else {
+	    	paragrafo_5.add("Nome cadastrado no RGI: não informado"+ "\n");
+	    }
+		table.addCell(
+	    		new Cell().add((paragrafo_5).setFont(font).setFontSize(11))
+				.setVerticalAlignment(VerticalAlignment.MIDDLE));
 	}
 
 
@@ -509,7 +521,18 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	    		paragrafo.add("Celular proprietário: "+imovel.getDonoImovel().getCelular());
 	    	}else {
 	    		paragrafo.add("Celular proprietário: não informado");
-	    	}	    
+	    	}
+	    	if(imovel.getDonoImovel().getPossuidor() !=null){
+	    		if(imovel.getDonoImovel().getPossuidor()) {
+	    			paragrafo.add("Possuidor: Sim");
+	    		}
+	    		else {
+	    			paragrafo.add("Possuidor: Não");
+		    	}
+	    	}
+	    	else {
+	    		paragrafo.add("Possuidor: Não informado");
+	    	}
 	    }else {
 	    	paragrafo.add("Este imóvel não possui proprietário cadastrado");	
 	    }

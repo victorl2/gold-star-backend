@@ -23,6 +23,7 @@ public class ImovelComercialDTO {
 	private String cobrancaBoleto;
 	private String nomeLoja;
 	private String acordo;
+	private String nomeRgi;
 	
 	public String getAcordo() {
 		return acordo;
@@ -119,6 +120,7 @@ public class ImovelComercialDTO {
 		imovel.setTipoLoja(this.getTipoLoja());
 		imovel.seteSobreloja(this.geteSobreloja());
 		imovel.setAcordo(this.getAcordo());
+		imovel.setNomeRgi(this.getRgi());
 		return imovel;
 	}
 	public String getId() {
@@ -127,4 +129,11 @@ public class ImovelComercialDTO {
 	public void setId(String id) {
 		this.id = id;
 	}
+	public String getNomeRgi() {
+		return nomeRgi;
+	}
+	public void setNomeRgi(String nomeRgi) {
+		this.nomeRgi = nomeRgi;
+	}
+	
 }
