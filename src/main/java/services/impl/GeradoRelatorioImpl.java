@@ -131,7 +131,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis comerciais."));
 				document.add(new Paragraph("Quantidade de imóveis que trocaram o barbará: " + qtdImoveisTrocaBarbara(relatorio.getImoveisPresentesRelatorio())));
 				document.add(new Paragraph("Quantidade de imóveis que trocaram a coluna de água: " + qtdImoveisTrocaColuna(relatorio.getImoveisPresentesRelatorio())));
-				
+				document.add(new Paragraph("Quantidade de imóveis que possuem processos ativos: " + qtdImoveisPossuemProcessos(relatorio.getImoveisPresentesRelatorio())));
+				document.add(new Paragraph("Quantidade de imóveis que possuem RGI: " + qtdImoveisPossuemRGI(relatorio.getImoveisPresentesRelatorio())));
 			}
 			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
@@ -218,6 +219,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 				document.add(new Paragraph("Relatório gerado com: "+relatorio.getNumeroDeImoveis()+" imóveis residenciais."));
 				document.add(new Paragraph("Quantidade de imóveis que trocaram o barbará: " + qtdImoveisTrocaBarbara(relatorio.getImoveisPresentesRelatorio())));
 				document.add(new Paragraph("Quantidade de imóveis que trocaram a coluna de água: " + qtdImoveisTrocaColuna(relatorio.getImoveisPresentesRelatorio())));
+				document.add(new Paragraph("Quantidade de imóveis que possuem processos ativos: " + qtdImoveisPossuemProcessos(relatorio.getImoveisPresentesRelatorio())));
+				document.add(new Paragraph("Quantidade de imóveis que possuem RGI: " + qtdImoveisPossuemRGI(relatorio.getImoveisPresentesRelatorio())));
 			}
 			
 			if(!relatorio.getImoveisPresentesRelatorio().isEmpty()) {
@@ -241,6 +244,40 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 		return true;
 	}
 	
+	private String qtdImoveisPossuemRGI(List<Imovel> imoveisPresentesRelatorio) {
+		if(imoveisPresentesRelatorio!=null) {
+			Integer numeroDeImoveisPossuemRGI = 0;
+			for( Imovel imovel : imoveisPresentesRelatorio){
+				if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
+					numeroDeImoveisPossuemRGI++;
+				}
+			}
+			return numeroDeImoveisPossuemRGI.toString();
+		}
+		return "0";
+	}
+
+
+	private String qtdImoveisPossuemProcessos(List<Imovel> imoveisPresentesRelatorio) {
+		if(imoveisPresentesRelatorio!=null) {
+			Integer numeroDeImoveisPossuemProcessosAtivos = 0;
+			for( Imovel imovel : imoveisPresentesRelatorio){
+				if(imovel.getProcessos()!=null && !imovel.getProcessos().isEmpty()) {
+					List<ProcessoCondominial> lista = imovel.getProcessos().stream()
+							.filter(processo -> processo.getProcessoAtivo())
+							.collect(Collectors.toList());
+					Integer processos = lista.size();
+					if(processos > 0) {
+						numeroDeImoveisPossuemProcessosAtivos ++;
+					}
+				}
+			}
+			return numeroDeImoveisPossuemProcessosAtivos.toString();
+		}
+		return "0";
+	}
+
+
 	private Table montaTabelaResidencial(PdfFont bold, PdfFont font, Imovel imovel, Relatorio relatorio) {
 		Table table = new Table(new float[]{1});
 		table.setWidth(UnitValue.createPercentValue(100));
