@@ -8,11 +8,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import domain.entity.negocio.Imovel;
-import domain.entity.negocio.ImovelComercial;
-import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Proprietario;
-import domain.repository.ImovelComercialRepository;
-import domain.repository.ImovelResidencialRepository;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ProprietarioDTO;
 import services.ProprietarioService;
@@ -20,14 +16,7 @@ import services.ProprietarioService;
 @Stateless
 public class ProprietarioServiceImpl implements ProprietarioService{
 	@Inject
-	private ProprietarioRepository proprietarioRepository;
-	
-	@Inject
-	private ImovelResidencialRepository imovelResidencialRepository;
-	
-	@Inject
-	private ImovelComercialRepository imovelComercialRepository;
-	
+	private ProprietarioRepository proprietarioRepository;	
 	
 	public Optional<Proprietario> cadastrarProprietario(ProprietarioDTO proprietarioDTO, Imovel imovel){
 		if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
@@ -57,35 +46,5 @@ public class ProprietarioServiceImpl implements ProprietarioService{
 			}
 		}
 		return Optional.empty();
-	}
-	
-	public Optional<Proprietario> atualizarProprietario(ProprietarioDTO proprietarioDTO, String idImovel){
-			if(proprietarioDTO.getCpf()==null || proprietarioDTO.getCpf().isEmpty()) 
-				return Optional.empty();
-			
-			Optional<ImovelComercial> imovelComercial = imovelComercialRepository.buscarPorID(idImovel);
-	
-			if(imovelComercial.isPresent() && imovelComercial.get().getDonoImovel() == null) {
-				//return this.cadastrarProprietario(proprietarioDTO);
-			}
-			
-			if(imovelComercial.isPresent()) {
-				imovelComercial.get().getDonoImovel().setEmail(proprietarioDTO.getEmail());
-				imovelComercial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
-				imovelComercial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
-				imovelComercial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());
-				imovelComercial.get().getDonoImovel().setEndereco(proprietarioDTO.getEndereco());
-				imovelComercial.get().getDonoImovel().setNome(proprietarioDTO.getNome());
-				return Optional.ofNullable(proprietarioRepository.salvar(imovelComercial.get().getDonoImovel()));
-			}
-			
-			Optional<ImovelResidencial> imovelResidencial = imovelResidencialRepository.buscarPorID(idImovel);
-				imovelResidencial.get().getDonoImovel().setEmail(proprietarioDTO.getEmail());
-				imovelResidencial.get().getDonoImovel().setCelular(proprietarioDTO.getCelular());
-				imovelResidencial.get().getDonoImovel().setTelefone(proprietarioDTO.getTelefone());
-				imovelResidencial.get().getDonoImovel().setCpf(proprietarioDTO.getCpf());
-				imovelResidencial.get().getDonoImovel().setEndereco(proprietarioDTO.getEndereco());
-				imovelResidencial.get().getDonoImovel().setNome(proprietarioDTO.getNome());
-				return Optional.ofNullable(proprietarioRepository.salvar(imovelResidencial.get().getDonoImovel()));
 	}
 }

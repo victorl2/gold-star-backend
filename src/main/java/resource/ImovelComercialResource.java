@@ -16,9 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import domain.entity.negocio.ImovelComercial;
-import domain.entity.negocio.Pessoa;
 import domain.entity.negocio.Relatorio;
-import domain.repository.ImovelComercialRepository;
 import resource.dto.ImovelComercialDTO;
 import services.GeradorRelatorio;
 import services.ImovelService;

@@ -31,7 +31,9 @@ public abstract class Imovel extends BaseEntity{
 	 */
 	@Column(name = "RGI")
 	private String rgi;
-		
+	
+	@Column(name = "NOME_RGI")
+	private String nomeRgi;
 	/**
 	 * Indica se o cano ( barbara ) foi trocado
 	 */
@@ -173,7 +175,15 @@ public abstract class Imovel extends BaseEntity{
 	public void setAcordo(String acordo) {
 		this.acordo = acordo;
 	}
-	
-	
+
+
+	public String getNomeRgi() {
+		return nomeRgi;
+	}
+
+
+	public void setNomeRgi(String nomeRgi) {
+		this.nomeRgi = nomeRgi;
+	}
 	
 }

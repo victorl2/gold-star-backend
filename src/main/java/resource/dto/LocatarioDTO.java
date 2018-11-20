@@ -62,7 +62,6 @@ public class LocatarioDTO {
 		loc.setCelular(this.getCelular());
 		loc.setCpf(this.getCpf());
 		loc.setNome(this.getNome());
-		loc.setPossuidor(this.getPossuidor());
 		loc.setEmail(this.getEmail());
 		loc.setTelefone(this.getTelefone());
 		return loc;

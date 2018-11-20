@@ -10,6 +10,4 @@ public interface LocatarioService {
 	public Optional<Locatario> cadastrarLocatario(LocatarioDTO locatarioDTO, Imovel novoImovel);
 	
 	public Optional<Locatario> buscaLocatarioPorCPF(String cpf);
-
-	public Optional<Locatario> atualizarLocatario(LocatarioDTO locatarioDTO, String idImovel);
 }

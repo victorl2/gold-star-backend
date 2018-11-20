@@ -21,7 +21,6 @@ import domain.entity.negocio.Proprietario;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
 import domain.repository.LocatarioRepository;
-import domain.repository.PessoaRepository;
 import domain.repository.ProcessoCondominialRepository;
 import domain.repository.ProprietarioRepository;
 import resource.dto.ImovelComercialDTO;
@@ -50,9 +49,6 @@ public class ImovelServiceImpl implements ImovelService{
 
 	@Inject
 	private LocatarioService locatarioService;
-	
-	@Inject
-	private PessoaRepository pessoaRepository;
 	
 	@Inject
 	private ProcessoCondominialRepository processoRepository;
@@ -226,6 +222,7 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		if(imoveis.isEmpty())
 			return false;
+		imoveis.get(0).setNomeRgi(imovel.getNomeRgi());
 		imoveis.get(0).setCobrancaBoleto(imovel.getCobrancaBoleto());
 		imoveis.get(0).setNomeLoja(imovel.getNomeLoja());
 		imoveis.get(0).setTrocouColuna(imovel.getTrocouColuna());
@@ -260,6 +257,7 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getDonoImovel().setEndereco(imovel.getProprietario().getEndereco());
 						imoveis.get(0).getDonoImovel().setNome(imovel.getProprietario().getNome());
 						imoveis.get(0).getDonoImovel().setTelefone(imovel.getProprietario().getTelefone());
+						imoveis.get(0).getDonoImovel().setPossuidor(imovel.getProprietario().getPossuidor());
 					}else {
 						prop = removeImovelDoProprietario(imoveis);
 						proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
@@ -295,7 +293,6 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getLocatario().setEmail(imovel.getLocador().getEmail());
 						imoveis.get(0).getLocatario().setNome(imovel.getLocador().getNome());
 						imoveis.get(0).getLocatario().setTelefone(imovel.getLocador().getTelefone());
-						imoveis.get(0).getLocatario().setPossuidor(imovel.getLocador().getPossuidor());
 					}else {
 						loc = removeImovelDoLocador(imoveis);
 						locatarioRepository.salvar(imoveis.get(0).getLocatario());
@@ -377,6 +374,7 @@ public class ImovelServiceImpl implements ImovelService{
 		if(imoveis.isEmpty()) 
 			return false;
 		
+		imoveis.get(0).setNomeRgi(imovelDTO.getRgi());
 		imoveis.get(0).setRgi(imovelDTO.getRgi());
 		imoveis.get(0).setTrocouBarbara(imovelDTO.getTrocouBarbara());
 		imoveis.get(0).setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
@@ -411,6 +409,7 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getDonoImovel().setEndereco(imovelDTO.getProprietario().getEndereco());
 						imoveis.get(0).getDonoImovel().setNome(imovelDTO.getProprietario().getNome());
 						imoveis.get(0).getDonoImovel().setTelefone(imovelDTO.getProprietario().getTelefone());
+						imoveis.get(0).getDonoImovel().setPossuidor(imovelDTO.getProprietario().getPossuidor());
 					}else {
 						prop = removeImovelDoProprietarioResidencial(imoveis);
 						proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
@@ -446,7 +445,6 @@ public class ImovelServiceImpl implements ImovelService{
 						imoveis.get(0).getLocatario().setEmail(imovelDTO.getLocador().getEmail());
 						imoveis.get(0).getLocatario().setNome(imovelDTO.getLocador().getNome());
 						imoveis.get(0).getLocatario().setTelefone(imovelDTO.getLocador().getTelefone());
-						imoveis.get(0).getLocatario().setPossuidor(imovelDTO.getLocador().getPossuidor());
 					}else {
 						loc = removeImovelDoLocadorResidencial(imoveis);
 						locatarioRepository.salvar(imoveis.get(0).getLocatario());
@@ -540,12 +538,6 @@ public class ImovelServiceImpl implements ImovelService{
 			if(imovel.getProcessos() !=null) {
 				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
 			}
-			if(imovel.getMoradores()!=null) {
-				imovel.getMoradores().forEach(morador -> pessoaRepository.deletar(morador));
-			}
-			if(imovel.getContatoEmergencia()!=null) {
-				pessoaRepository.deletar(imovel.getContatoEmergencia());
-			}
 			if(imovel.getDonoImovel()!= null) {
 				prop = removeImovelDoProprietarioResidencial(imoveis);
 				proprietarioRepository.salvar(imoveis.get(0).getDonoImovel());
@@ -579,9 +571,6 @@ public class ImovelServiceImpl implements ImovelService{
 			Locatario loc = imovel.getLocatario();
 			if(imovel.getProcessos() !=null) {
 				imovel.getProcessos().forEach(processo -> processoRepository.deletar(processo));
-			}
-			if(imovel.getContatoEmergencia()!=null) {
-				pessoaRepository.deletar(imovel.getContatoEmergencia());
 			}
 			if(imovel.getDonoImovel()!= null) {
 				prop = removeImovelDoProprietario(imoveis);

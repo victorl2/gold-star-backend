@@ -16,6 +16,7 @@ public class ImovelResidencialAssembler {
 	
 	public ImovelResidencial build(ImovelResidencialDTO imovelDTO) {
 		ImovelResidencial imovel = new ImovelResidencial();
+		imovel.setNomeRgi(imovelDTO.getNomeRgi());
 		imovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
 		imovel.setMoradores(imovelDTO.getMoradores());
 		imovel.setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
