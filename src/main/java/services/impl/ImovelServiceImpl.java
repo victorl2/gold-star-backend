@@ -76,6 +76,7 @@ public class ImovelServiceImpl implements ImovelService{
 		novoImovel.setProcessos(imovelDTO.getProcessos());
 		novoImovel.setContatoEmergencia(imovelDTO.getContatoEmergencia());
 		novoImovel.setAcordo(imovelDTO.getAcordo());
+		novoImovel.setNomeRgi(imovelDTO.getNomeRgi());
 		
 		if(imovelDTO.getProprietario() != null) {
 			Optional<Proprietario> proprietario = proprietarioService.cadastrarProprietario(imovelDTO.getProprietario(), novoImovel);
@@ -374,7 +375,7 @@ public class ImovelServiceImpl implements ImovelService{
 		if(imoveis.isEmpty()) 
 			return false;
 		
-		imoveis.get(0).setNomeRgi(imovelDTO.getRgi());
+		imoveis.get(0).setNomeRgi(imovelDTO.getNomeRgi());
 		imoveis.get(0).setRgi(imovelDTO.getRgi());
 		imoveis.get(0).setTrocouBarbara(imovelDTO.getTrocouBarbara());
 		imoveis.get(0).setPossuiAnimalEstimacao(imovelDTO.getPossuiAnimalEstimacao());
