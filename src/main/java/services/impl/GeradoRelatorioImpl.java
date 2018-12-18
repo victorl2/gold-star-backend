@@ -578,6 +578,150 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	    		new Cell().add((paragrafo).setFont(font).setFontSize(11))
 				.setVerticalAlignment(VerticalAlignment.MIDDLE));
 	}
+
+	@Override
+	public Relatorio gerarRelatorioImoveisBarbara() {
+		Relatorio relatorio = new Relatorio();
+		List<Imovel> lista = imovelResidencialRepository
+				.buscarTodos()
+					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+						.filter(imovel->imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false)
+							.collect(Collectors.toList());
+		lista.addAll(imovelComercialRepository
+					.buscarTodos()
+						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+							.filter(imovel->imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false)
+								.collect(Collectors.toList()));
+		
+		relatorio.setImoveisPresentesRelatorio(lista);
+	    return relatorio;
+	}
+
+
+	@Override
+	public Relatorio gerarRelatorioImoveisColuna() {
+		Relatorio relatorio = new Relatorio();
+		List<Imovel> lista = imovelResidencialRepository
+				.buscarTodos()
+					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+						.filter(imovel->imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false)
+							.collect(Collectors.toList());
+		lista.addAll(imovelComercialRepository
+					.buscarTodos()
+						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+							.filter(imovel->imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false)
+								.collect(Collectors.toList()));
+		
+		relatorio.setImoveisPresentesRelatorio(lista);
+	    return relatorio;
+	}
+
+
+	@Override
+	public Relatorio gerarRelatorioImoveisProcessos() {
+		Relatorio relatorio = new Relatorio();
+		List<Imovel> lista = imovelResidencialRepository
+				.buscarTodos()
+					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+						.filter(imovel->temProcesso(imovel))
+							.collect(Collectors.toList());
+		lista.addAll(imovelComercialRepository
+					.buscarTodos()
+						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+							.filter(imovel->temProcesso(imovel))
+								.collect(Collectors.toList()));
+		
+		relatorio.setImoveisPresentesRelatorio(lista);
+	    return relatorio;
+	}
+	
+	@Override
+	public Relatorio gerarRelatorioImoveisRgi() {
+		Relatorio relatorio = new Relatorio();
+		List<Imovel> lista = imovelResidencialRepository
+				.buscarTodos()
+					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+						.filter(imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty())
+							.collect(Collectors.toList());
+		lista.addAll(imovelComercialRepository
+					.buscarTodos()
+						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
+							.filter(imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty())
+								.collect(Collectors.toList()));
+		
+		relatorio.setImoveisPresentesRelatorio(lista);
+	    return relatorio;
+	}
+	
+	private Boolean temProcesso(Imovel imovel) {
+		if(imovel.getProcessos()!=null && !imovel.getProcessos().isEmpty()) {
+			for (ProcessoCondominial processo: imovel.getProcessos() ) {
+				if(processo.getProcessoAtivo()) return true;
+			}
+		}
+		return false;
+	}
+
+
+	@Override
+	public boolean gerarPDFTodosImoveisFiltro(String path, Relatorio relatorio, String filtro) {
+		Date data = new Date(System.currentTimeMillis());
+		String pathFormatado = "";
+		pathFormatado = path+"relatorioImoveis"+java.text.SimpleDateFormat.getTimeInstance().format(data).replace(":","")+".pdf";
+		try {
+			FileOutputStream fos = new FileOutputStream(pathFormatado);
+			PdfWriter writer = new PdfWriter(fos);
+			PdfDocument pdf = new PdfDocument(writer);
+			Document document = new Document(pdf);
+			PdfFont bold = PdfFontFactory.createFont("Helvetica-Bold");
+			String frase = "";
+			if("barbara".equals(filtro)) {
+				frase = "Imóveis que trocaram barbará";
+			}
+			if("coluna".equals(filtro)) {
+				frase = "Imóveis que trocaram coluna de água";
+			}
+			if("processos".equals(filtro)) {
+				frase = "Imóveis que possuem processos ativos";
+			}
+			if("rgi".equals(filtro)) {
+				frase = "Imóveis que possuem rgi";
+			}
+			document.add(new Paragraph("Relatório: "+frase).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()) 
+						.add("Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
+									.format(data)).setFont(bold));
+			PdfFont font = PdfFontFactory.createFont("Helvetica");
+			Paragraph imoveisResidenciais = new Paragraph();
+			Paragraph imoveisComerciais = new Paragraph();
+			if(relatorio.getImoveisPresentesRelatorio() != null && !relatorio.getImoveisPresentesRelatorio().isEmpty()) {
+				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
+					if(imovel instanceof ImovelResidencial) {
+						imoveisResidenciais.add("Apt. "+imovel.getNumeroImovel()+ "\n");
+					}
+					else {
+						ImovelComercial imovelComercial = (ImovelComercial) imovel;
+						imoveisComerciais.add(adicionaIsSobreloja(imovelComercial)+ imovelComercial.getNumeroImovel() + "\n");
+					}
+				}
+				document.add(new Paragraph("Imóveis Residenciais: ").setFont(font));
+				document.add(imoveisResidenciais.setFont(font).setFontSize(11));
+				document.add(new Paragraph("Imóveis Comerciais: ").setFont(font));
+				document.add(imoveisComerciais.setFont(font).setFontSize(11));
+				document.add(new Paragraph());
+			}
+		
+			document.close();
+		}catch(FileNotFoundException e){
+			LOGGER.log(Level.SEVERE, "Falha ao tentar encontrar caminho para gerar o relatório: Relatório não gerado.");
+			return false;
+		} catch (IOException e) {
+			LOGGER.log(Level.WARNING, "Falha durante a leitura do arquivo");
+			return false;
+		}
+		return true;
+	}
 }
+
+
 
 
