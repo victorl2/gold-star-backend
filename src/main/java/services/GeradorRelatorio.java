@@ -47,4 +47,14 @@ public interface GeradorRelatorio {
 
 	public boolean gerarPDFTodosImoveisComerciais(String path, Relatorio relatorio);
 
+	public Relatorio gerarRelatorioImoveisBarbara();
+
+	public Relatorio gerarRelatorioImoveisColuna();
+
+	public Relatorio gerarRelatorioImoveisProcessos();
+
+	public Relatorio gerarRelatorioImoveisRgi();
+
+	public boolean gerarPDFTodosImoveisFiltro(String caminhoPadrao, Relatorio relatorio, String filtro);
+
 }
