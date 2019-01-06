@@ -115,9 +115,9 @@ public class ImovelComercialResource {
 	}
 	
 	@GET
-	@Path("recuperar-imovelComercial-completo/{numero}")
-	public Response recuperarImovelCompleto(@PathParam("numero") String numero) {
-		Optional<ImovelComercial> imovelComercial = imovelService.recuperarImovelComercialPorNumero(numero);
+	@Path("recuperar-imovelComercial-completo/{numero}/{eSobreloja}")
+	public Response recuperarImovelCompleto(@PathParam("numero") String numero, @PathParam("eSobreloja") String eSobreloja) {
+		Optional<ImovelComercial> imovelComercial = imovelService.recuperarImovelComercialPorNumeroESobreloja(numero, eSobreloja);
 		if(imovelComercial.isPresent()) {
 			return Response.ok().entity(imovelComercial.get()).build();
 		}

@@ -522,9 +522,9 @@ public class ImovelServiceImpl implements ImovelService{
 		return Optional.ofNullable(imoveis.get(0));
 	}
 	
-	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero){
+	public Optional<ImovelComercial> recuperarImovelComercialPorNumeroESobreloja(String numero, String eSobreloja){
 		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
-				.stream().filter(imovel -> imovel.getNumeroImovel().equals(numero)).collect(Collectors.toList());
+				.stream().filter((imovel) -> (imovel.getNumeroImovel().equals(numero) && (imovel.iseSobreloja()!=null?("sim".equals(eSobreloja)?imovel.iseSobreloja()==true:imovel.iseSobreloja()==false):true))).collect(Collectors.toList());
 		if(imoveis.isEmpty()) return Optional.empty();
 		return Optional.ofNullable(imoveis.get(0));
 	}
