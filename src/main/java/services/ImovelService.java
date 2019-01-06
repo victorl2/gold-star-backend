@@ -46,7 +46,7 @@ public interface ImovelService extends Buscador{
 
 	public Optional<ImovelResidencial> recuperarImovelResidencialPorNumero(String numero);
 
-	public Optional<ImovelComercial> recuperarImovelComercialPorNumero(String numero);
+	public Optional<ImovelComercial> recuperarImovelComercialPorNumeroESobreloja(String numero, String eSobreloja);
 	
 	public void removerImovelResidencial(String numero);
 	
