@@ -50,5 +50,5 @@ public interface ImovelService extends Buscador{
 	
 	public void removerImovelResidencial(String numero);
 	
-	public void removerImovelComercial(String numero);
+	public void removerImovelComercial(String numero, String eSobreloja);
 }

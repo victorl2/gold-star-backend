@@ -95,12 +95,13 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	    return relatorio;
 	}
 	
-	public Relatorio gerarRelatorioImovelComercial(String numero) {
+	public Relatorio gerarRelatorioImovelComercial(String numero, String eSobreloja) {
 		Relatorio relatorio = new Relatorio();
 		relatorio.setImoveisPresentesRelatorio(
 				imovelComercialRepository
 					.buscarTodos()
-						.stream().filter(imovel->imovel.getNumeroImovel().equals(numero))
+						.stream().filter(imovel->imovel.getNumeroImovel().equals(numero) && 
+								(imovel.iseSobreloja()!=null?("sim".equals(eSobreloja)?imovel.iseSobreloja()==true:imovel.iseSobreloja()==false):true))
 										.collect(Collectors.toList()));
 	    return relatorio;
 	}
