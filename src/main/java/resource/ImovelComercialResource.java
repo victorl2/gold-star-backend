@@ -125,8 +125,8 @@ public class ImovelComercialResource {
 	}
 	
 	@GET
-	@Path("gerar-relatorio-imovel/{numero}")
-	public Response gerarRelatarorioImovelComercial(@PathParam("numero") String numero) {
+	@Path("gerar-relatorio-imovel/{numero}/{eSobreloja}")
+	public Response gerarRelatarorioImovelComercial(@PathParam("numero") String numero, @PathParam("eSobreloja") String eSobreloja) {
 		final String usuarioPC = System.getProperty("user.name");
 		final String caminhoPadrao = "C:\\Users\\" + usuarioPC + "\\Documents\\gerenciador-goldstar\\";
 		
@@ -138,7 +138,7 @@ public class ImovelComercialResource {
 			pasta.mkdir();
 		}
 		
-		Relatorio relatorio = gerarRelatorio.gerarRelatorioImovelComercial(numero);
+		Relatorio relatorio = gerarRelatorio.gerarRelatorioImovelComercial(numero, eSobreloja);
 		if(relatorio.getImoveisPresentesRelatorio().isEmpty()) return Response.status(412).entity("Relatorio está vazio.").build(); 
 		if(gerarRelatorio.gerarPDFTodosImoveisComerciais(caminhoPadrao, relatorio)) {
 			return Response.ok("relatório gerado com sucesso em ".concat(caminhoPadrao)).build();
@@ -147,9 +147,9 @@ public class ImovelComercialResource {
 	}
 
 	@GET
-	@Path("remover-imovel/{numero}")
-	public Response removerImovelComercial(@PathParam("numero") String numero) {
-		imovelService.removerImovelComercial(numero);
+	@Path("remover-imovel/{numero}/{eSobreloja}")
+	public Response removerImovelComercial(@PathParam("numero") String numero, @PathParam("eSobreloja") String eSobreloja) {
+		imovelService.removerImovelComercial(numero, eSobreloja);
 		return Response.ok().build();
 	}
 

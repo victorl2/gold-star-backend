@@ -218,7 +218,8 @@ public class ImovelServiceImpl implements ImovelService{
 		
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
-						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()))
+						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) &&
+								(imovel.geteSobreloja()!=null?imovel.geteSobreloja().equals(comercio.iseSobreloja()):true ) )
 					).collect(Collectors.toList());
 		
 		if(imoveis.isEmpty())
@@ -563,9 +564,11 @@ public class ImovelServiceImpl implements ImovelService{
 		}
 	}
 	
-	public void removerImovelComercial(String numero) {
+	public void removerImovelComercial(String numero, String eSobreloja) {
 		List<ImovelComercial> imoveis = imovelComercialRepository.buscarTodos()
-				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero)).collect(Collectors.toList());
+				.stream().filter(imovel -> imovel.getNumeroImovel().equalsIgnoreCase(numero) &&
+						(imovel.iseSobreloja()!=null?("sim".equals(eSobreloja)?imovel.iseSobreloja()==true:imovel.iseSobreloja()==false):true)
+						).collect(Collectors.toList());
 		if(!imoveis.isEmpty()) {
 			ImovelComercial imovel = imoveis.get(0);
 			Proprietario prop = imovel.getDonoImovel();
