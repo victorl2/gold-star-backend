@@ -13,7 +13,7 @@ import domain.entity.BaseEntity;
 public class Pessoa extends BaseEntity{
 	private static final long serialVersionUID = 1310521356899772315L;
 	
-	@Column(name = "CPF", unique = true)
+	@Column(name = "CPF")
 	private String cpf;
 
 	@Column(name = "NOME")
