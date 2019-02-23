@@ -12,21 +12,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Locatario extends Pessoa {
 	private static final long serialVersionUID = -4180334420040116206L;
-
-	@Column(name = "CPF", unique = true)
-	private String cpf;	
 	
 	@JsonBackReference
 	@OneToMany(mappedBy = "locador")
 	private List<Imovel> imoveisAlugados;
-
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
 
 	public List<Imovel> getImoveisAlugados() {
 		if(imoveisAlugados == null) {

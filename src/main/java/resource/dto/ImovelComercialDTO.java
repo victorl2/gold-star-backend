@@ -120,7 +120,7 @@ public class ImovelComercialDTO {
 		imovel.setTipoLoja(this.getTipoLoja());
 		imovel.seteSobreloja(this.geteSobreloja());
 		imovel.setAcordo(this.getAcordo());
-		imovel.setNomeRgi(this.getRgi());
+		imovel.setNomeRgi(this.getNomeRgi());
 		return imovel;
 	}
 	public String getId() {
