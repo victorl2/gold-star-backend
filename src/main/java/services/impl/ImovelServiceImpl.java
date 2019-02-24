@@ -468,6 +468,7 @@ public class ImovelServiceImpl implements ImovelService{
 		}
 		
 		try {
+			imovelResidencialRepository.salvar(imoveis.get(0));
 			if(emergencia != null) {
 				imoveis.get(0).setContatoEmergencia(emergencia);
 				imovelResidencialRepository.salvar(imoveis.get(0));

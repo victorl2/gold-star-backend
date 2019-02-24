@@ -14,9 +14,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 public class Proprietario extends Pessoa {
 	private static final long serialVersionUID = -173814518654814808L;
-
-	@Column(name = "CPF", unique = true)
-	private String cpf;
 	
 	@Column(name = "ENDERECO")
 	private String endereco;
@@ -24,14 +21,6 @@ public class Proprietario extends Pessoa {
 	@JsonBackReference
 	@OneToMany(mappedBy = "donoImovel")
 	private List<Imovel> imoveis;
-
-	public String getCpf() {
-		return cpf;
-	}
-
-	public void setCpf(String cpf) {
-		this.cpf = cpf;
-	}
 
 	public String getEndereco() {
 		return endereco;

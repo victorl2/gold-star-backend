@@ -12,6 +12,9 @@ import domain.entity.BaseEntity;
 @AttributeOverride(name = "ID", column = @Column(name = "PESSOA_ID"))
 public class Pessoa extends BaseEntity{
 	private static final long serialVersionUID = 1310521356899772315L;
+	
+	@Column(name = "CPF")
+	private String cpf;
 
 	@Column(name = "NOME")
 	private String nome;
@@ -58,7 +61,15 @@ public class Pessoa extends BaseEntity{
 	public Boolean getPossuidor() {
 		return possuidor;
 	}
+	
+	public String getCpf() {
+		return cpf;
+	}
 
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+	
 	public void setPossuidor(Boolean possuidor) {
 		this.possuidor = possuidor;
 	}

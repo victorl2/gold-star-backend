@@ -295,19 +295,26 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 			if(isResidencial) {
 				paragrafo.add("Número do apartamento: "+imovel.getNumeroImovel()+"\n");
 				if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
-					paragrafo.add("RGI imóvel: " + imovel.getRgi());
+					paragrafo.add("RGI imóvel: " + imovel.getRgi()+ "\n");
 				}else{
-					paragrafo.add("Rgi imóvel: não informado");
+					paragrafo.add("Rgi imóvel: não informado \n");
 		        }
 				
 			}else {
 				paragrafo.add("Número do comércio: "+ adicionaIsSobreloja((ImovelComercial)imovel) + imovel.getNumeroImovel().toString()+"\n");
 				if(imovel.getRgi()!=null && !imovel.getRgi().isEmpty()) {
-					paragrafo.add("RGI imóvel: " + imovel.getRgi());
+					paragrafo.add("RGI imóvel: " + imovel.getRgi() + "\n");
 				}else{
-					paragrafo.add("Rgi imóvel: não informado");
+					paragrafo.add("Rgi imóvel: não informado \n");
 		        }
 			}
+			
+			if(imovel.getNomeRgi()!=null && !imovel.getNomeRgi().isEmpty()) {
+				paragrafo.add("Nome cadastrado no RGI: "+imovel.getNomeRgi() + "\n");
+		    }else {
+		    	paragrafo.add("Nome cadastrado no RGI: não informado"+ "\n");
+		    }
+
 			table.addHeaderCell(
                     new Cell().add( 
                         paragrafo).setFont(font).setBackgroundColor(ColorConstants.LIGHT_GRAY));
@@ -383,7 +390,7 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 
 
 	private void adicionaInformacaoImovelResidencial(Imovel imovel, Table table, PdfFont font, Relatorio relatorio) {
-		ImovelResidencial imovelResidencial = (ImovelResidencial)relatorio.getImoveisPresentesRelatorio().get(0);
+		ImovelResidencial imovelResidencial = (ImovelResidencial)imovel;
 		
 		Paragraph paragrafo_1 = new Paragraph();
 		if(imovelResidencial.getMoradores() != null && !imovelResidencial.getMoradores().isEmpty()) {
@@ -396,6 +403,8 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					i++;
 				}
 			}
+		}else {
+			paragrafo_1.add("Não possui moradores cadastrados");
 		}
 		table.addCell(
 	    		new Cell().add((paragrafo_1).setFont(font).setFontSize(11))
@@ -464,16 +473,6 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	    }
 		table.addCell(
 	    		new Cell().add((paragrafo_4).setFont(font).setFontSize(11))
-				.setVerticalAlignment(VerticalAlignment.MIDDLE));
-		
-		Paragraph paragrafo_5 = new Paragraph();
-		if(imovel.getNomeRgi()!=null && !imovel.getNomeRgi().isEmpty()) {
-			paragrafo_5.add("Nome cadastrado no RGI: "+imovel.getNomeRgi() + "\n");
-	    }else {
-	    	paragrafo_5.add("Nome cadastrado no RGI: não informado"+ "\n");
-	    }
-		table.addCell(
-	    		new Cell().add((paragrafo_5).setFont(font).setFontSize(11))
 				.setVerticalAlignment(VerticalAlignment.MIDDLE));
 	}
 
@@ -556,9 +555,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 	    		paragrafo.add("Telefone proprietário: não informado"+"\n");
 	    	}
 	    	if(imovel.getDonoImovel().getCelular() !=null && !imovel.getDonoImovel().getCelular().isEmpty()) {
-	    		paragrafo.add("Celular proprietário: "+imovel.getDonoImovel().getCelular());
+	    		paragrafo.add("Celular proprietário: "+imovel.getDonoImovel().getCelular() + "\n");
 	    	}else {
-	    		paragrafo.add("Celular proprietário: não informado");
+	    		paragrafo.add("Celular proprietário: não informado"+ "\n");
 	    	}
 	    	if(imovel.getDonoImovel().getPossuidor() !=null){
 	    		if(imovel.getDonoImovel().getPossuidor()) {
@@ -588,11 +587,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
 						.filter(imovel->imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false)
 							.collect(Collectors.toList());
-		lista.addAll(imovelComercialRepository
-					.buscarTodos()
-						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
-							.filter(imovel->imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false)
-								.collect(Collectors.toList()));
+		List<ImovelComercial> imoveisComerciais = imovelComercialRepository.buscarTodos().stream().sorted(Comparator.comparing(ImovelComercial::getNumeroImovel)).collect(Collectors.toList());
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> (imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false) && !imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> (imovel.getTrocouBarbara()!=null?imovel.getTrocouBarbara():false) && imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
 		
 		relatorio.setImoveisPresentesRelatorio(lista);
 	    return relatorio;
@@ -607,11 +604,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
 						.filter(imovel->imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false)
 							.collect(Collectors.toList());
-		lista.addAll(imovelComercialRepository
-					.buscarTodos()
-						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
-							.filter(imovel->imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false)
-								.collect(Collectors.toList()));
+		List<ImovelComercial> imoveisComerciais = imovelComercialRepository.buscarTodos().stream().sorted(Comparator.comparing(ImovelComercial::getNumeroImovel)).collect(Collectors.toList());
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> (imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false) && !imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> (imovel.getTrocouColuna()!=null?imovel.getTrocouColuna():false) && imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
 		
 		relatorio.setImoveisPresentesRelatorio(lista);
 	    return relatorio;
@@ -626,11 +621,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
 						.filter(imovel->temProcesso(imovel))
 							.collect(Collectors.toList());
-		lista.addAll(imovelComercialRepository
-					.buscarTodos()
-						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
-							.filter(imovel->temProcesso(imovel))
-								.collect(Collectors.toList()));
+		List<ImovelComercial> imoveisComerciais = imovelComercialRepository.buscarTodos().stream().sorted(Comparator.comparing(ImovelComercial::getNumeroImovel)).collect(Collectors.toList());
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> temProcesso(imovel) && !imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> temProcesso(imovel) && imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
 		
 		relatorio.setImoveisPresentesRelatorio(lista);
 	    return relatorio;
@@ -644,12 +637,9 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 					.stream().map(imovel -> (Imovel) imovel).sorted(Comparator.comparing(Imovel::getNumeroImovel))
 						.filter(imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty())
 							.collect(Collectors.toList());
-		lista.addAll(imovelComercialRepository
-					.buscarTodos()
-						.stream().map(imovelC -> (Imovel) imovelC).sorted(Comparator.comparing(Imovel::getNumeroImovel))
-							.filter(imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty())
-								.collect(Collectors.toList()));
-		
+		List<ImovelComercial> imoveisComerciais = imovelComercialRepository.buscarTodos().stream().sorted(Comparator.comparing(ImovelComercial::getNumeroImovel)).collect(Collectors.toList());
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty() && !imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
+		lista.addAll(imoveisComerciais.stream().filter( imovel -> imovel.getRgi()!=null && !imovel.getRgi().isEmpty() && imovel.iseSobreloja() ).map(imovelC -> (Imovel) imovelC).collect(Collectors.toList()));
 		relatorio.setImoveisPresentesRelatorio(lista);
 	    return relatorio;
 	}
@@ -690,23 +680,29 @@ public class GeradoRelatorioImpl implements GeradorRelatorio{
 			}
 			document.add(new Paragraph("Relatório: "+frase).addTabStops(new TabStop(1000, TabAlignment.RIGHT)).add(new Tab()) 
 						.add("Relatório gerado em: " + java.text.DateFormat.getDateInstance(DateFormat.MEDIUM)
-									.format(data)).setFont(bold));
+									.format(data) ).setFont(bold));
 			PdfFont font = PdfFontFactory.createFont("Helvetica");
 			Paragraph imoveisResidenciais = new Paragraph();
 			Paragraph imoveisComerciais = new Paragraph();
+			
 			if(relatorio.getImoveisPresentesRelatorio() != null && !relatorio.getImoveisPresentesRelatorio().isEmpty()) {
+				int contadorResidencia = 0;
+				int contadorComercio = 0;
 				for(Imovel imovel : relatorio.getImoveisPresentesRelatorio()) {
 					if(imovel instanceof ImovelResidencial) {
-						imoveisResidenciais.add("Apt. "+imovel.getNumeroImovel()+ "\n");
+						imoveisResidenciais.add("Apt. "+imovel.getNumeroImovel()+ (imovel.getRgi()!=null?!imovel.getRgi().isEmpty()?(" ----  Rgi: "+ imovel.getRgi()+ "\n"):"\n":"\n"));
+						contadorResidencia += 1;
 					}
 					else {
 						ImovelComercial imovelComercial = (ImovelComercial) imovel;
-						imoveisComerciais.add(adicionaIsSobreloja(imovelComercial)+ imovelComercial.getNumeroImovel() + "\n");
+						imoveisComerciais.add(adicionaIsSobreloja(imovelComercial)+ imovelComercial.getNumeroImovel() + (imovel.getRgi()!=null?!imovel.getRgi().isEmpty()?(" ----  Rgi: "+ imovel.getRgi()+ "\n"):"\n":"\n"));
+						contadorComercio += 1;
 					}
 				}
-				document.add(new Paragraph("Imóveis Residenciais: ").setFont(font));
+				
+				document.add(new Paragraph("Imóveis Residenciais: "+contadorResidencia+ " residências.").setFont(font));
 				document.add(imoveisResidenciais.setFont(font).setFontSize(11));
-				document.add(new Paragraph("Imóveis Comerciais: ").setFont(font));
+				document.add(new Paragraph("Imóveis Comerciais: "+contadorComercio+ " Lojas/Sobrelojas.").setFont(font));
 				document.add(imoveisComerciais.setFont(font).setFontSize(11));
 				document.add(new Paragraph());
 			}
