@@ -144,11 +144,7 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String rgi){
-		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
-													.stream().filter(imovel -> imovel.getRgi().contains(rgi))
-															.sorted(Comparator.comparing(ImovelResidencial :: getNumeroImovel))
-																	.collect(Collectors.toList());
-		return imoveis;
+		return imovelResidencialRepository.buscarImovelResidencialPorRGI(rgi);
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorNumero(String numero){
@@ -156,22 +152,7 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nome){
-		List<ImovelResidencial> imoveis = 
-				imovelResidencialRepository.buscarTodos().stream()
-												.sorted(Comparator.comparing(ImovelResidencial :: getNumeroImovel))
-														.collect(Collectors.toList());
-		List<ImovelResidencial> temp = new ArrayList<ImovelResidencial>();
-		imoveis.forEach(imovel -> {
-			if (imovel.getLocatario()!=null) {
-				if(imovel.getLocatario().getNome()!=null && !imovel.getLocatario()
-																	.getNome().isEmpty()) {
-					if(imovel.getLocatario().getNome().toLowerCase().contains(nome.toLowerCase())) {
-						temp.add(imovel);
-					}
-				}
-			}
-		});
-		return temp;
+		return imovelResidencialRepository.buscarImovelResidencialPorNomeLocatario(nome);
 	}
 	
 	public List<ImovelComercial> buscarImovelComercialPorRGI(String rgi){

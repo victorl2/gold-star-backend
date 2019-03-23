@@ -19,17 +19,25 @@ public class ImovelResidencialDAO extends BaseDAO<ImovelResidencial> implements 
 						.setMaxResults(MAX_RESULTS)
 							.getResultList();
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImovelResidencial> buscarImovelResidencialPorRGI(String RGI) {
-		// TODO Auto-generated method stub
-		return null;
+		return getEntityManager()
+				.createQuery("SELECT residencia FROM ImovelResidencial residencia WHERE residencia.rgi LIKE :rgi")
+					.setParameter("rgi", "%" + RGI + "%")
+						.setMaxResults(MAX_RESULTS)
+							.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nomeLocatario) {
-		// TODO Auto-generated method stub
-		return null;
+		return getEntityManager()
+				.createQuery("SELECT residencia FROM ImovelResidencial residencia WHERE residencia.locador.nome LIKE :locatario")
+					.setParameter("locatario", "%" + nomeLocatario + "%")
+						.setMaxResults(MAX_RESULTS)
+							.getResultList();
 	}
 	
 }
