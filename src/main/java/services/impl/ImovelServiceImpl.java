@@ -152,11 +152,7 @@ public class ImovelServiceImpl implements ImovelService{
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorNumero(String numero){
-		List<ImovelResidencial> imoveis = imovelResidencialRepository.buscarTodos()
-				.stream().filter(imovel -> imovel.getNumeroImovel().toString().contains(numero))
-								.sorted(Comparator.comparing(ImovelResidencial :: getNumeroImovel))
-										.collect(Collectors.toList());
-		return imoveis;
+		return imovelResidencialRepository.buscarImovelResidencialPorNumero(numero);
 	}
 	
 	public List<ImovelResidencial> buscarImovelResidencialPorNomeLocatario(String nome){

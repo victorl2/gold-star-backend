@@ -21,8 +21,10 @@ import domain.repository.Repository;
 /**
  * Implementação das definições de persistencia utilizando tipos <b>genéricos</b>
  */
-public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{	
+public abstract class BaseDAO<E extends BaseEntity> implements Repository<E>{
 	private Logger LOGGER = Logger.getLogger(getClass().getName());
+	
+	protected final int MAX_RESULTS = 5;
 	
 	private EntityManager em;
 	
