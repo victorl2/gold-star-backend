@@ -1,8 +1,6 @@
 package services.impl;
 
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -17,6 +15,7 @@ import domain.entity.negocio.ImovelComercial;
 import domain.entity.negocio.ImovelResidencial;
 import domain.entity.negocio.Locatario;
 import domain.entity.negocio.Pessoa;
+import domain.entity.negocio.ProcessoCondominial;
 import domain.entity.negocio.Proprietario;
 import domain.repository.ImovelComercialRepository;
 import domain.repository.ImovelResidencialRepository;
@@ -169,7 +168,7 @@ public class ImovelServiceImpl implements ImovelService{
 	
 	public Boolean atualizarImovelComercial(ImovelComercialDTO imovel) {
 		Pessoa emergencia = null;
-		
+		List<ProcessoCondominial> processos = null;
 		List<ImovelComercial> imoveis = imovelComercialRepository
 				.buscarTodos().stream().filter(comercio -> 
 						(comercio.getNumeroImovel().equals(imovel.getNumeroImovel()) &&
@@ -193,6 +192,9 @@ public class ImovelServiceImpl implements ImovelService{
 		//FIXME: GAMBE QUE SÓ DEUS SABE O PORQUE
 		emergencia = imoveis.get(0).getContatoEmergencia();
 		imoveis.get(0).setContatoEmergencia(null);
+		
+		processos = imoveis.get(0).getProcessos();
+		imoveis.get(0).setProcessos(null);
 		
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
@@ -276,6 +278,10 @@ public class ImovelServiceImpl implements ImovelService{
 				imoveis.get(0).setContatoEmergencia(emergencia);
 				imovelComercialRepository.salvar(imoveis.get(0));
 			}
+			if(processos != null) {
+				imoveis.get(0).setProcessos(processos);
+				imovelComercialRepository.salvar(imoveis.get(0));
+			}
 			if(prop !=null && prop.getImoveis().size() == 0) {
 				proprietarioRepository.deletar(prop);
 			}
@@ -321,6 +327,8 @@ public class ImovelServiceImpl implements ImovelService{
 
 	public Boolean atualizarImovelResidencial(ImovelResidencialDTO imovelDTO) {
 		Pessoa emergencia = null;
+		List<Pessoa> moradores = null;
+		List<ProcessoCondominial> processos = null;
 		List<ImovelResidencial> imoveis = imovelResidencialRepository
 				.buscarTodos().stream()//
 					.filter(residencia -> // 
@@ -346,6 +354,12 @@ public class ImovelServiceImpl implements ImovelService{
 		emergencia = imoveis.get(0).getContatoEmergencia();
 		imoveis.get(0).setContatoEmergencia(null);
 		
+		moradores = imoveis.get(0).getMoradores();
+		imoveis.get(0).setMoradores(null);
+		
+		processos = imoveis.get(0).getProcessos();
+		imoveis.get(0).setProcessos(null);
+		//------------------------
 		Proprietario prop = imoveis.get(0).getDonoImovel();
 		Locatario loc = imoveis.get(0).getLocatario();
 		
@@ -425,6 +439,14 @@ public class ImovelServiceImpl implements ImovelService{
 			imovelResidencialRepository.salvar(imoveis.get(0));
 			if(emergencia != null) {
 				imoveis.get(0).setContatoEmergencia(emergencia);
+				imovelResidencialRepository.salvar(imoveis.get(0));
+			}
+			if(moradores != null) {
+				imoveis.get(0).setMoradores(moradores);
+				imovelResidencialRepository.salvar(imoveis.get(0));
+			}
+			if(processos != null) {
+				imoveis.get(0).setProcessos(processos);
 				imovelResidencialRepository.salvar(imoveis.get(0));
 			}
 			if(prop != null && prop.getImoveis().size() == 0) {
